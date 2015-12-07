@@ -1,0 +1,66 @@
+package com.mygaienko.practice.dao;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import com.mygaienko.practice.Application;
+import com.mygaienko.practice.model.City;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.Assert.assertEquals;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(Application.class)
+@ActiveProfiles("local")
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+        DbUnitTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class})
+@DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+public class CityRepositoryTest {
+
+    @Autowired
+    private  CityRepository cityRepository;
+
+    @Test
+    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+    @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    public void testFindAll() {
+        cityRepository.findAll();
+    }
+
+    @Test
+    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+    public void testFindByNameAndCountryNameAllIgnoringCaseExactCase() {
+        City actual = cityRepository.findByNameAndCountryNameAllIgnoringCase("Zaporizhiya", "Ukraine");
+        assertEquals(5, (long) actual.getId());
+    }
+
+    @Test
+    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+    public void testFindByNameAndCountryNameAllIgnoringCaseUpperCase() {
+        City actual = cityRepository.findByNameAndCountryNameAllIgnoringCase("zaporizhiya", "UKRAINE");
+        assertEquals(5, (long) actual.getId());
+    }
+
+    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+    @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest_testDelete.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    @Test
+    public void testDeleteVinnutsiya() {
+        cityRepository.delete((long) 5);
+    }
+
+}
