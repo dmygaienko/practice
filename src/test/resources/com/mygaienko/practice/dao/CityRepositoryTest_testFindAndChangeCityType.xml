@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
 
+    <City id="5" city_type="2" name="Zaporizhiya" country_name="Ukraine"/>
     <City id="6" city_type="1" name="Vinnutsiya" country_name="Ukraine"/>
     <City id="7" city_type="2" name="Lviv" country_name="Ukraine"/>
 

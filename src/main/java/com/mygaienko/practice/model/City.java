@@ -1,15 +1,18 @@
 package com.mygaienko.practice.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.mygaienko.practice.model.listener.CityListener;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * Created by mygadmy on 03/12/15.
  */
 @Entity
+@EntityListeners(CityListener.class)
 public class City implements Serializable {
 
     @Id
@@ -21,6 +24,20 @@ public class City implements Serializable {
 
     @Column(name = "country_name")
     private String countryName;
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "country_id1", referencedColumnName = "id1"),
+            @JoinColumn(name = "country_id2", referencedColumnName = "id2")})
+    private Country country;
+
+    @Enumerated
+    @Column(name = "city_type")
+    private CityType cityType;
+
+    @Transient
+    private String shortInfo;
 
     public Long getId() {
         return id;
@@ -44,5 +61,24 @@ public class City implements Serializable {
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    public CityType getCityType() {
+        return cityType;
+    }
+
+    public void setCityType(CityType cityType) {
+        this.cityType = cityType;
+    }
+
+    public String getShortInfo() {
+        if (StringUtils.isEmpty(shortInfo)) {
+            shortInfo = id + ": " + name + " - " + countryName;
+        }
+        return shortInfo;
+    }
+
+    public Country getCountry() {
+        return country;
     }
 }

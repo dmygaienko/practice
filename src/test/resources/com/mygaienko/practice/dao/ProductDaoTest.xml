@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <Product id="5" version="0" name="Apple 1" code="1"  />
+    <Product id="6" version="1" name="Apple 2" code="2" />
+    <Product id="7" version="2" name="Apple 3" code="3" />
+
+</dataset>

@@ -6,6 +6,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import com.mygaienko.practice.Application;
 import com.mygaienko.practice.model.City;
+import com.mygaienko.practice.model.CityType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,15 @@ public class CityRepositoryTest {
     public void testFindByNameAndCountryNameAllIgnoringCaseUpperCase() {
         City actual = cityRepository.findByNameAndCountryNameAllIgnoringCase("zaporizhiya", "UKRAINE");
         assertEquals(5, (long) actual.getId());
+    }
+
+    @Test
+    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
+    @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest_testFindAndChangeCityType.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    public void testFindAndChangeCityType() {
+        City city = cityRepository.findByNameAndCountryNameAllIgnoringCase("zaporizhiya", "UKRAINE");
+        city.setCityType(CityType.CITY_TYPE3);
+        cityRepository.save(city);
     }
 
     @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")

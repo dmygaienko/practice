@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.List;
 
 /**
  * Created by liuda on 12/6/2015.
@@ -21,11 +22,17 @@ public class CountryDaoImpl implements CountryDao {
 
     @Override
     public Country get(CountryId id) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Country> cq = cb.createQuery(Country.class);
-        Root<Country> author = cq.from(Country.class);
-        cq.where(cb.equal(author.get(Country_.id), id));
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Country> query = builder.createQuery(Country.class);
+        Root<Country> author = query.from(Country.class);
+        query.where(builder.equal(author.get(Country_.id), id));
 
-        return  entityManager.createQuery(cq).getSingleResult();
+        return  entityManager.createQuery(query).getSingleResult();
+    }
+
+    @Override
+    public List<Country> getCountries() {
+        List<Country> countries = entityManager.createNamedQuery("getAllCountriesNamedQuery", Country.class).getResultList();
+        return countries;
     }
 }

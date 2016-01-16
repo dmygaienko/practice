@@ -1,15 +1,21 @@
 package com.mygaienko.practice.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by liuda on 12/6/2015.
  */
+
 @Entity
+@NamedNativeQuery(
+        name = "getAllCountriesNamedQuery",
+        query = "select * FROM country",
+        resultClass = Country.class
+)
 public class Country implements Serializable{
 
     @EmbeddedId
@@ -20,6 +26,10 @@ public class Country implements Serializable{
 
     @Embedded
     private ZipCode code;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "country")
+    private List<City> cities;
 
     public Country() {
     }
@@ -51,5 +61,13 @@ public class Country implements Serializable{
 
     public void setCode(ZipCode code) {
         this.code = code;
+    }
+
+    public List<City> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<City> cities) {
+        this.cities = cities;
     }
 }
