@@ -32,6 +32,14 @@ public class Author {
     @Column(table = "author_address")
     private Long flat;
 
+    @OneToOne
+    @JoinColumn(name = "beana_id1")
+    private BeanA beanA;
+
+    @OneToOne
+    @JoinColumn(name = "beanb_id1")
+    private BeanB beanB;
+
     public Long getId() {
         return id;
     }
@@ -54,6 +62,22 @@ public class Author {
 
     public Long getFlat() {
         return flat;
+    }
+
+    public BeanA getBeanA() {
+        return beanA;
+    }
+
+    public void setBeanA(BeanA beanA) {
+        this.beanA = beanA;
+    }
+
+    public BeanB getBeanB() {
+        return beanB;
+    }
+
+    public void setBeanB(BeanB beanB) {
+        this.beanB = beanB;
     }
 }
 
