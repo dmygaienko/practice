@@ -2,7 +2,6 @@ package com.mygaienko.practice.dao;
 
 import com.mygaienko.practice.dao.interfaces.AuthorDao;
 import com.mygaienko.practice.model.*;
-import org.springframework.context.Lifecycle;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -57,17 +56,11 @@ public class AuthorDaoImp implements AuthorDao {
         Root<BeanA> subRoot = subquery.from(BeanA.class);
         subquery.select(subRoot);
 
-        //Predicate subP = cb.like(subRoot.get(BeanA_.name), name);
         Predicate subP = cb.equal(subRoot.get(BeanA_.name), name);
         subquery.where(subP);
 
-        //cq.where(cb.exists(subquery));
-        cq.where(cb.in(subquery));
-
-        //cq.multiselect(beanARoot.get(BeanA_.id));
-
-        /*cq.select(authorRoot).where(
-                cb.in(authorRoot.get(Author_.beanA)).value(beanASubquery));*/
+        cq.select(root).where(
+                cb.in(root.get(Author_.beanA)).value(subquery));
 
         return entityManager.createQuery(cq).getResultList();
     }
@@ -80,18 +73,39 @@ public class AuthorDaoImp implements AuthorDao {
         Root<Author> root = cq.from(Author.class);
         cq.select(root);
 
+        //Subquery<Long> subquery = cq.subquery(Long.class);
         Subquery<BeanA> subquery = cq.subquery(BeanA.class);
         Root<BeanA> subRoot = subquery.from(BeanA.class);
         subquery.select(subRoot);
+        //subquery.select(subRoot.get(BeanA_.id));
 
         Predicate subP = cb.equal(subRoot.get(BeanA_.id), l);
         subquery.where(subP);
 
-        cq.where(cb.in(subquery));
+        cq.where(cb.in(root.get(Author_.beanA)).value(subquery));
 
         return entityManager.createQuery(cq).getResultList();
     }
 
+    @Override
+    public List<Author> getSubQuery(String name) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Author> cq = cb.createQuery(Author.class);
+        Root<Author> root = cq.from(Author.class);
+        cq.select(root);
+
+        Subquery<Long> subquery = cq.subquery(Long.class);
+        Root<Author> subRoot = subquery.from(Author.class);
+        subquery.select(subRoot.get(Author_.id));
+
+        Predicate subP = cb.equal(subRoot.get(Author_.name), name);
+        subquery.where(subP);
+
+        cq.where(cb.in(root.get(Author_.id)).value(subquery));
+
+        return entityManager.createQuery(cq).getResultList();
+    }
 
     @Override
     public List<Author> getByNameLike(String name) {

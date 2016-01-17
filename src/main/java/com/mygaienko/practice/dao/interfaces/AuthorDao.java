@@ -18,4 +18,6 @@ public interface AuthorDao {
     List<Author> getByNameLike(String name);
 
     List<Author> getByBeanAId(long l);
+
+    List<Author> getSubQuery(String name);
 }
