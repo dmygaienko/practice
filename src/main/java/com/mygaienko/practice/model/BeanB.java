@@ -8,7 +8,7 @@ import javax.persistence.Id;
 /**
  * Created by enda1n on 16.01.2016.
  */
-@Entity
+@Entity(name = "bean_b")
 public class BeanB {
 
     @Id

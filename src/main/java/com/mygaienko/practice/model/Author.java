@@ -33,11 +33,11 @@ public class Author {
     private Long flat;
 
     @OneToOne
-    @JoinColumn(name = "beana_id1")
+    @JoinColumn(name = "bean_a_id")
     private BeanA beanA;
 
     @OneToOne
-    @JoinColumn(name = "beanb_id1")
+    @JoinColumn(name = "bean_b_id")
     private BeanB beanB;
 
     public Long getId() {

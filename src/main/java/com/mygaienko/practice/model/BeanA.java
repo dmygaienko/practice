@@ -8,7 +8,7 @@ import javax.persistence.Id;
 /**
  * Created by mygadmy on 03/12/15.
  */
-@Entity
+@Entity(name = "bean_a")
 public class BeanA {
 
     @Id
@@ -16,6 +16,8 @@ public class BeanA {
     private long id;
     @Column
     private String name;
+
+    public BeanA(){}
 
     public BeanA(long id) {
         this.id = id;

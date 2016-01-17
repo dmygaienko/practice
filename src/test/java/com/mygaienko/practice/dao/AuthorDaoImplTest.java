@@ -30,7 +30,18 @@ public class AuthorDaoImplTest {
     private AuthorDao dao;
 
     @Test
-    public void test() {
+    public void testGet() {
         dao.get(1L);
     }
+
+    @Test
+    public void testGetByBeanANameAndBeanBCode() {
+        dao.getByBeanANameAndBeanBCode("Author1", "beanAName1", "beanBName1");
+    }
+
+    @Test
+    public void getByNameLike() {
+        dao.getByNameLike("Author");
+    }
+
 }
