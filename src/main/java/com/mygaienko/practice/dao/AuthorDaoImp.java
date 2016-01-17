@@ -7,10 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 /**
@@ -47,6 +44,54 @@ public class AuthorDaoImp implements AuthorDao {
 
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
+
+    @Override
+    public List<Author> getByBeanANameLike(String name) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Author> cq = cb.createQuery(Author.class);
+        Root<Author> root = cq.from(Author.class);
+        cq.select(root);
+
+        Subquery<BeanA> subquery = cq.subquery(BeanA.class);
+        Root<BeanA> subRoot = subquery.from(BeanA.class);
+        subquery.select(subRoot);
+
+        //Predicate subP = cb.like(subRoot.get(BeanA_.name), name);
+        Predicate subP = cb.equal(subRoot.get(BeanA_.name), name);
+        subquery.where(subP);
+
+        //cq.where(cb.exists(subquery));
+        cq.where(cb.in(subquery));
+
+        //cq.multiselect(beanARoot.get(BeanA_.id));
+
+        /*cq.select(authorRoot).where(
+                cb.in(authorRoot.get(Author_.beanA)).value(beanASubquery));*/
+
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<Author> getByBeanAId(long l) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Author> cq = cb.createQuery(Author.class);
+        Root<Author> root = cq.from(Author.class);
+        cq.select(root);
+
+        Subquery<BeanA> subquery = cq.subquery(BeanA.class);
+        Root<BeanA> subRoot = subquery.from(BeanA.class);
+        subquery.select(subRoot);
+
+        Predicate subP = cb.equal(subRoot.get(BeanA_.id), l);
+        subquery.where(subP);
+
+        cq.where(cb.in(subquery));
+
+        return entityManager.createQuery(cq).getResultList();
+    }
+
 
     @Override
     public List<Author> getByNameLike(String name) {

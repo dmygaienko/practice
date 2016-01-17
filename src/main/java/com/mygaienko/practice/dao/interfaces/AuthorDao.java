@@ -13,6 +13,9 @@ public interface AuthorDao {
 
     Author getByBeanANameAndBeanBCode(String name, String beanAName, String beanBCode);
 
+    List<Author> getByBeanANameLike(String name);
+
     List<Author> getByNameLike(String name);
 
+    List<Author> getByBeanAId(long l);
 }

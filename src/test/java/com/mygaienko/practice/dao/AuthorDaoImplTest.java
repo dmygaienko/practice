@@ -40,8 +40,19 @@ public class AuthorDaoImplTest {
     }
 
     @Test
-    public void getByNameLike() {
-        dao.getByNameLike("Author");
+    public void testGetByNameLike() {
+        dao.getByNameLike("Author%");
     }
+
+    @Test
+    public void testGetByBeanANameLike() {
+        dao.getByBeanANameLike("beanAName1");
+    }
+
+    @Test
+    public void testGetByBeanAId() {
+        dao.getByBeanAId(1L);
+    }
+
 
 }
