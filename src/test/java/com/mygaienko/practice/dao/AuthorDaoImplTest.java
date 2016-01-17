@@ -14,6 +14,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+//http://techblog.troyweb.com/index.php/2012/05/writing-strongly-typed-not-in-subqueries-with-jpa-criteriabuilder/
+//https://en.wikibooks.org/wiki/Java_Persistence/Criteria#subQuery_examples
+
 /**
  * Created by enda1n on 16.01.2016.
  */
@@ -52,6 +55,11 @@ public class AuthorDaoImplTest {
     @Test
     public void testGetByBeanAId() {
         dao.getByBeanAId(1L);
+    }
+
+    @Test
+    public void testSubQuery() {
+        dao.getSubQuery("Author2");
     }
 
 
