@@ -6,7 +6,12 @@
 
     <groupId>com.mygaienko</groupId>
     <artifactId>practice</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>practice-jpa</module>
+    </modules>
 
     <properties>
         <myNeo4jVersion>4.0.0.RELEASE</myNeo4jVersion>
