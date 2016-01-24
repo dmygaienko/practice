@@ -18,6 +18,7 @@ import org.springframework.data.neo4j.server.Neo4jServer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.io.File;
 
 
 /**
@@ -31,7 +32,7 @@ public class MyNeo4jConfig extends Neo4jConfiguration {
 
     @Bean
     GraphDatabaseService graphDatabaseService() {
-        return new GraphDatabaseFactory().newEmbeddedDatabase("accessingdataneo4j.db");
+        return new GraphDatabaseFactory().newEmbeddedDatabase(new File("accessingdataneo4j.db"));
     }
 
     @Bean
