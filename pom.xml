@@ -11,6 +11,7 @@
 
     <modules>
         <module>practice-jpa</module>
+        <module>practice-elacticsearch</module>
     </modules>
 
     <properties>
