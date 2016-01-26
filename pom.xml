@@ -13,6 +13,7 @@
         <module>practice-jpa</module>
         <module>practice-elacticsearch</module>
         <module>practice-cassandra</module>
+        <module>practice-mongodb</module>
     </modules>
 
     <properties>
