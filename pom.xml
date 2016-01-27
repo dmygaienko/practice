@@ -17,6 +17,7 @@
         <module>practice-cassandra</module>
         <module>practice-common</module>
         <module>practice-mongodb</module>
+        <module>practice-cglib</module>
     </modules>
 
     <properties>
