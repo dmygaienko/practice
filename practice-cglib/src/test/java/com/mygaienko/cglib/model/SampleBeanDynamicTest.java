@@ -9,11 +9,11 @@ import java.lang.reflect.Proxy;
 /**
  * Created by dmygaenko on 28/01/2016.
  */
-public class SampleClassDynamicTest {
+public class SampleBeanDynamicTest {
 
     @Test
     public void testSampleClass() {
-        final SampleClass delegate = new SampleClass();
+        final SampleBean delegate = new SampleBean();
 
         InvocationHandler invocationHandler = new InvocationHandler() {
             @Override
@@ -23,7 +23,7 @@ public class SampleClassDynamicTest {
             }
         };
 
-        Object proxyInstance = Proxy.newProxyInstance(SampleClass.class.getClassLoader(),
+        Object proxyInstance = Proxy.newProxyInstance(SampleBean.class.getClassLoader(),
                 new Class[]{SampleInterface.class}, invocationHandler);
 
         System.out.println(((SampleInterface) proxyInstance).test(""));
