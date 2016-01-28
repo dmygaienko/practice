@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  *
  * https://dzone.com/articles/cglib-missing-manual
  */
-public class SampleClassTest {
+public class SampleClassCglibTest {
 
     @Test
     public void testFixedValue() throws Exception {
