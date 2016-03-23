@@ -18,6 +18,7 @@
         <module>practice-common</module>
         <module>practice-mongodb</module>
         <module>practice-cglib</module>
+        <module>practice-patterns</module>
     </modules>
 
     <properties>
