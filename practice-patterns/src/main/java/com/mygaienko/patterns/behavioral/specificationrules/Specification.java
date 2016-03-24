@@ -1,4 +1,4 @@
-package com.mygaienko.patterns.behavioral.specification;
+package com.mygaienko.patterns.behavioral.specificationrules;
 
 /**
  * Created by dmygaenko on 23/03/2016.
