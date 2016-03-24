@@ -1,4 +1,4 @@
-package com.mygaienko.patterns.behavioral.specification;
+package com.mygaienko.patterns.behavioral.specificationrules;
 
 import java.util.ArrayList;
 
