@@ -6,6 +6,11 @@ package com.mygaienko.patterns.creational.buildercomposite;
 public class Main {
 
     public static void main(String[] args) {
+        Node xxxRoot = new Builder("xxxRoot")
+                .addChild("xxxChild1.1")
+                .addSibling("xxxChild1.2")
+                .getRoot();
+
         Node root = new Builder("root")
                 .addChild("child1.1")
                 .addSibling("child1.2")
@@ -15,7 +20,9 @@ public class Main {
                 .moveUp()
                 .moveRight()
                 .addChild("child2.2")
+                .addChild(xxxRoot)
                 .getRoot();
+
         System.out.println(root);
     }
 }
