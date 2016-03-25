@@ -22,6 +22,29 @@ public class Builder {
         return this;
     }
 
+    public Builder addChild(Node child) {
+        child.setParent(current);
+        current.addChild(child);
+        current = child;
+        moveToLowest();
+        return this;
+    }
+
+    private void moveToLowest() {
+        while (CollectionUtils.isNotEmpty(current.getChildren())) {
+            moveDown();
+            System.out.println("Current node: " + current.getName());
+        }
+    }
+
+    private Builder moveDown() {
+        List<Node> children = current.getChildren();
+        if (CollectionUtils.isNotEmpty(children)) {
+            current = children.get(0);
+        }
+        return this;
+    }
+
     private void addTo(Node parent, String name) {
         Node node = new Node(name, parent);
         parent.addChild(node);
