@@ -12,6 +12,13 @@ public class ReflectionService {
     private String stringA;
     private String stringB;
 
+    public ReflectionService(){}
+
+    public ReflectionService(String stringA, String stringB) {
+        this.stringA = stringA;
+        this.stringB = stringB;
+    }
+
     public void invokeDynamicStatic() throws Throwable {
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -34,6 +41,19 @@ public class ReflectionService {
         return (T) helloMethod.invoke(service);
     }
 
+    public <T> void invokeDynamicSetter(ReflectionService service, String name, Class<T> type, T value) throws Throwable {
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle helloMethod = lookup.findSetter(ReflectionService.class, name, type);
+        helloMethod.invokeWithArguments(service, value);
+    }
+
+    public <T> T invokeDynamicConstructor(Class<T> clazz, String... args) throws Throwable {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle constructor = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, String.class));
+        return (T) constructor.invokeWithArguments(args);
+    }
+
     public void virtual() throws Throwable {
         System.out.println("virtual");
     }
@@ -43,10 +63,12 @@ public class ReflectionService {
     }
 
     public String getStringA() {
+        System.out.println("getStringA invoked ");
         return stringA;
     }
 
     public void setStringA(String stringA) {
+        System.out.println("setStringA invoked ");
         this.stringA = stringA;
     }
 
@@ -56,5 +78,13 @@ public class ReflectionService {
 
     public void setStringB(String stringB) {
         this.stringB = stringB;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionService{" +
+                "stringA='" + stringA + '\'' +
+                ", stringB='" + stringB + '\'' +
+                '}';
     }
 }
