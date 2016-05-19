@@ -12,17 +12,21 @@ import java.util.List;
  */
 public interface BookRepository extends ElasticsearchRepository<Book, String> {
 
-    List<Book> findByNameAndPrice(String name, Integer price);
+    List<Book> findByNameAndPrice(String name, String price);
 
-    List<Book> findByNameOrPrice(String name, Integer price);
+    List<Book> findByNameOrPrice(String name, String price);
+
+    List<Book> findByNameAndPriceAndValue(String name, String price, String value);
 
     List<Book> findByName(String name);
 
     Page<Book> findByName(String name, Pageable page);
 
-    Page<Book> findByNameNot(String name,Pageable page);
+    Page<Book> findByNameNot(String name, Pageable page);
 
-    Page<Book> findByPriceBetween(int price,Pageable page);
+    Page<Book> findByPriceBetween(int price, Pageable page);
+
+    Page<Book> findByTags(List<String> tags, Pageable page);
 
     Page<Book> findByNameLike(String name,Pageable page);
 }

@@ -2,6 +2,10 @@ package com.mygaienko.practice.elasticsearch.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.util.List;
 
 /**
  * Created by enda1n on 24.01.2016.
@@ -10,15 +14,22 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class Book {
 
     @Id
-    private Long id;
+    private String id;
+
     private String name;
+
     private String price;
 
-    public Long getId() {
+    private String value;
+
+  /*  @Field(type = FieldType.Nested)*/
+    private List<String> tags;
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -38,4 +49,19 @@ public class Book {
         this.price = price;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
 }
