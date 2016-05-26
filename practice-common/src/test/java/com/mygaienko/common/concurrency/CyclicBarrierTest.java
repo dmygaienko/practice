@@ -20,7 +20,6 @@ public class CyclicBarrierTest {
         executor.shutdown();
         executor.awaitTermination(60, TimeUnit.SECONDS);
         System.out.println("main out");
-
     }
 
     private Runnable getAwaitTask(int i) {
