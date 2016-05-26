@@ -12,20 +12,21 @@ public class LockHolderTest {
     public void testName() throws Exception {
         ExecutorService executor = Executors.newFixedThreadPool(3);
         for (int i = 0; i < 10; i ++) {
-            executor.submit(getWriteTask());
+            executor.submit(getWriteTask(i));
         }
         executor.shutdown();
         executor.awaitTermination(60, TimeUnit.SECONDS);
+        System.out.println("main out");
     }
 
-    private Runnable getWriteTask() throws InterruptedException {
+    private Runnable getWriteTask(int i) throws InterruptedException {
         return () -> {
             while (!LockHolder.INSTANCE.writeLock.tryAcquire()) {
-                System.out.println("tryAcquire");
+                System.out.println("tryAcquire: " + i);
             }
-            System.out.println("acquired");
+            System.out.println("acquired: " + i);
             LockHolder.INSTANCE.writeLock.release();
-            System.out.println("release");
+            System.out.println("release: " + i);
         };
     }
 }
