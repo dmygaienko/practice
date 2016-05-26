@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @EnableAutoConfiguration
-@Import({PersistenceConfig.class, ServiceConfig.class, MyNeo4jConfig.class})
+@Import({PersistenceConfig.class, ServiceConfig.class/*, MyNeo4jConfig.class*/})
 @EntityScan(basePackages = {"com.mygaienko.practice.jpa.model"})
 @ComponentScan(basePackages = {"com.mygaienko.practice.jpa"})
 public class Application {
