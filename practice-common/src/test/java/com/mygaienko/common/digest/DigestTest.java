@@ -4,9 +4,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
@@ -33,6 +37,15 @@ public class DigestTest {
        // System.out.println(new BigInteger(1, digester.digest()).toString(16));
         //System.out.println(new BigInteger(digester.digest()).toString(16));
         System.out.println(DigestUtils.sha256Hex("salt" + "password"));
+    }
+
+    @Test
+    public void testPBKDF2WithHmacSHA1() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeySpec spec = new PBEKeySpec("password".toCharArray(), "salt".getBytes(), 10, 160);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] encoded = factory.generateSecret(spec).getEncoded();
+
+        System.out.println(new BigInteger(1, encoded).toString(16));
     }
 
     @Test
