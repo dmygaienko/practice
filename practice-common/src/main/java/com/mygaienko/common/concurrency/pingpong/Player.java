@@ -13,7 +13,7 @@ public class Player {
         this.no = no;
     }
 
-    public void play()  {
+    public String play()  {
         while (!game.isOver()) {
             try {
                 takeTurn();
@@ -21,6 +21,7 @@ public class Player {
                 e.printStackTrace();
             }
         }
+        return "done";
     }
 
     private void takeTurn() throws InterruptedException {
