@@ -19,8 +19,7 @@ public class Application {
     private ApplicationContext appContext;
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext ctx =
-                new AnnotationConfigApplicationContext();
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 
         ctx.register(SpringConfig.class);
 
@@ -32,6 +31,8 @@ public class Application {
         BeanB beanB = ctx.getBean("BeanB1", BeanB.class);
 
         BeanB beanBAll = ctx.getBean("BeanBAll", BeanB.class);
+
+        BeanB beanB2 = ctx.getBean("BeanB2", BeanB.class);
 
     }
 }
