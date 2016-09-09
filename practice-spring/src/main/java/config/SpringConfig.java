@@ -36,6 +36,12 @@ public class SpringConfig {
     }
 
     @Bean
+    @CustomQualifier(ValueEnum.MY)
+    public BeanB BeanB2(@CustomQualifier(ValueEnum.MY) List<String> strings) {
+        return new BeanB(strings);
+    }
+
+    @Bean
     @Qualifier("their")
     public BeanB BeanBAll(List<String> strings) {
         return new BeanB(strings);
@@ -56,6 +62,12 @@ public class SpringConfig {
     @Qualifier("theirString")
     public String string3() {
         return "String3";
+    }
+
+    @Bean
+    @CustomQualifier(ValueEnum.MY)
+    public String string4() {
+        return "String4 by CustomQualifier";
     }
 
 }
