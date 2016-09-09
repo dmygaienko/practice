@@ -22,4 +22,8 @@ public class BeanB {
     public String getName() {
         return name;
     }
+
+    public List<String> getStrings() {
+        return strings;
+    }
 }
