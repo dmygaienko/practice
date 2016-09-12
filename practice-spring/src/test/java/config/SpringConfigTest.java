@@ -37,4 +37,12 @@ public class SpringConfigTest {
         BeanB beanB3 = context.getBean("BeanB3", BeanB.class);
         assertTrue(beanB3.getStrings().contains("String5 by their CustomQualifier"));
     }
+
+    @Test
+    public void testBeanBWithAspect() throws Exception {
+        BeanB beanB2 = context.getBean("BeanB2", BeanB.class);
+        beanB2.serve();
+    }
+
+
 }

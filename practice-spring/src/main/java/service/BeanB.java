@@ -1,5 +1,7 @@
 package service;
 
+import advice.Audit;
+
 import java.util.List;
 
 /**
@@ -25,5 +27,10 @@ public class BeanB {
 
     public List<String> getStrings() {
         return strings;
+    }
+
+    @Audit("home")
+    public void serve() {
+        System.out.println("serve");
     }
 }

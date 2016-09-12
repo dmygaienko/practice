@@ -1,8 +1,10 @@
 package config;
 
+import advice.AuditAdvice;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import service.BeanA;
 import service.BeanB;
 
@@ -12,6 +14,7 @@ import java.util.List;
  * Created by dmygaenko on 06/09/2016.
  */
 @Configuration
+@EnableAspectJAutoProxy
 public class SpringConfig {
 
 /*    @Autowired
@@ -81,6 +84,11 @@ public class SpringConfig {
     @CustomQualifier(ValueEnum.THEIR)
     public String string5() {
         return "String5 by their CustomQualifier";
+    }
+
+    @Bean
+    public AuditAdvice myAspect() {
+        return new AuditAdvice();
     }
 
 }
