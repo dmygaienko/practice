@@ -8,6 +8,7 @@ import org.junit.runners.JUnit4;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import service.BeanB;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -30,6 +31,7 @@ public class SpringConfigTest {
     public void testBeanB2() throws Exception {
         BeanB beanB2 = context.getBean("BeanB2", BeanB.class);
         assertTrue(beanB2.getStrings().contains("String4 by my CustomQualifier"));
+        assertNotNull(beanB2.getAutowiredBean());
     }
 
     @Test
