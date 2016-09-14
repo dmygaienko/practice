@@ -1,6 +1,7 @@
 package service;
 
 import advice.Audit;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -8,6 +9,9 @@ import java.util.List;
  * Created by dmygaenko on 06/09/2016.
  */
 public class BeanB {
+
+    @Autowired
+    private AutowiredBean autowiredBean;
 
     private String name;
 
@@ -27,6 +31,10 @@ public class BeanB {
 
     public List<String> getStrings() {
         return strings;
+    }
+
+    public AutowiredBean getAutowiredBean() {
+        return autowiredBean;
     }
 
     @Audit("home")
