@@ -18,14 +18,15 @@ public class CountDownLatchAsCyclicBarrierTest {
 
         for (int o = 0; o < 3; ++o) {
 
-            CountDownLatch startSignal = new CountDownLatch(1);
+            CountDownLatch startSignal = new CountDownLatch(4);
             CountDownLatch doneSignal = new CountDownLatch(4);
 
             for (int i = 0; i < 4; ++i) // create and start threads
                 service.submit(new Worker(startSignal, doneSignal));
 
             System.out.println("main thread start workers: " + o + " iteration");
-            startSignal.countDown();      // let all threads proceed
+            startSignal.await();
+           // startSignal.countDown();      // let all threads proceed
             doneSignal.await();           // wait for all to finish
         }
     }
@@ -41,6 +42,8 @@ public class CountDownLatchAsCyclicBarrierTest {
 
         public void run() {
             try {
+                System.out.println("Thread " + Thread.currentThread().getId() + " awaited");
+                startSignal.countDown();
                 startSignal.await();
                 doWork();
                 doneSignal.countDown();
