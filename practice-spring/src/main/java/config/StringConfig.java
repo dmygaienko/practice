@@ -17,7 +17,7 @@ import service.BeanWithAutowiredString;
 public class StringConfig {
 
     @Autowired
-    Environment environment;
+    private Environment environment;
 
     @Bean
    /* @Qualifier("my")*/
