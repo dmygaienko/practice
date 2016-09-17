@@ -37,7 +37,7 @@ public class StringConfig {
         return "string3";
     }
 
-    @Bean
+    @Bean(initMethod = "init", destroyMethod = "clean")
     @Qualifier("my")
     public BeanWithAutowiredString bean1() {
         BeanWithAutowiredString bean = new BeanWithAutowiredString();
