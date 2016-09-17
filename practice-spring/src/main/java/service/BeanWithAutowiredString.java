@@ -19,6 +19,13 @@ public class BeanWithAutowiredString {
     @Autowired
     private List<String> autowiredStrings;
 
+    @Qualifier("my")
+    @Resource
+    private String resourceString;
+
+    @Qualifier("my")
+    @Autowired
+    private String autowiredString;
 
     public List<String> getResourceStrings() {
         return resourceStrings;
@@ -26,5 +33,13 @@ public class BeanWithAutowiredString {
 
     public List<String> getAutowiredStrings() {
         return autowiredStrings;
+    }
+
+    public String getResourceString() {
+        return resourceString;
+    }
+
+    public String getAutowiredString() {
+        return autowiredString;
     }
 }
