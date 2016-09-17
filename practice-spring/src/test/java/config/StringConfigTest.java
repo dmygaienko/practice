@@ -10,6 +10,7 @@ import service.BeanB;
 import service.BeanWithAutowiredString;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,6 +40,16 @@ public class StringConfigTest {
 
         assertEquals("string2", bean.getResourceString());
         assertEquals("string2", bean.getAutowiredString());
+
+        assertEquals("property1,property2,property3,property4", bean.getEnvPropertiesLine());
+        assertEquals("property1,property2,property3,property4", bean.getPropertiesLine());
+
+        Set<String> properties = bean.getProperties();
+        assertEquals(4, properties.size());
+        assertTrue(properties.contains("property1"));
+        assertTrue(properties.contains("property2"));
+        assertTrue(properties.contains("property3"));
+        assertTrue(properties.contains("property4"));
     }
 
 }
