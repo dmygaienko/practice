@@ -68,4 +68,12 @@ public class BeanWithAutowiredString {
     public void setEnvPropertiesLine(String envPropertiesLine) {
         this.envPropertiesLine = envPropertiesLine;
     }
+
+    public void init() {
+        System.out.println("init");
+    }
+
+    public void clean() {
+        System.out.println("clean");
+    }
 }
