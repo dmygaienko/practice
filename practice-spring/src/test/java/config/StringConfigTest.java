@@ -36,6 +36,9 @@ public class StringConfigTest {
         assertEquals(1, resourceStrings.size());
         assertTrue(resourceStrings.contains("string2"));
         System.out.println(resourceStrings);
+
+        assertEquals("string2", bean.getResourceString());
+        assertEquals("string2", bean.getAutowiredString());
     }
 
 }
