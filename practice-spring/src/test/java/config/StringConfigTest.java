@@ -57,6 +57,15 @@ public class StringConfigTest {
     }
 
     @Test
+    public void testMyStringsAsListBean() throws Exception {
+        List<String> stringsAsListBean = bean.getMyStringsAsListBean();
+        assertEquals(3, stringsAsListBean.size());
+        assertTrue(stringsAsListBean.contains("my1"));
+        assertTrue(stringsAsListBean.contains("my2"));
+        assertTrue(stringsAsListBean.contains("my3"));
+    }
+
+    @Test
     public void testAutowiredStringsAsMapBean() throws Exception {
         Map<String, String> map = bean.getAutowiredStringsAsMapBean();
         assertEquals(3, map.size());
