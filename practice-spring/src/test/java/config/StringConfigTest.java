@@ -27,20 +27,28 @@ public class StringConfigTest {
     private BeanWithAutowiredString bean;
 
     @Test
-    public void testStrings() throws Exception {
+    public void testAutowiredStrings() throws Exception {
         List<String> autowiredStrings = bean.getAutowiredStrings();
         assertEquals(1, autowiredStrings.size());
         assertTrue(autowiredStrings.contains("string2"));
         System.out.println(autowiredStrings);
 
+        assertEquals("string2", bean.getAutowiredString());
+    }
+
+    @Test
+    public void testResourceStrings() throws Exception {
         List<String> resourceStrings = bean.getResourceStrings();
         assertEquals(1, resourceStrings.size());
         assertTrue(resourceStrings.contains("string2"));
         System.out.println(resourceStrings);
 
         assertEquals("string2", bean.getResourceString());
-        assertEquals("string2", bean.getAutowiredString());
 
+    }
+
+    @Test
+    public void testProperties() throws Exception {
         assertEquals("property1,property2,property3,property4", bean.getEnvPropertiesLine());
         assertEquals("property1,property2,property3,property4", bean.getPropertiesLine());
 
@@ -51,5 +59,4 @@ public class StringConfigTest {
         assertTrue(properties.contains("property3"));
         assertTrue(properties.contains("property4"));
     }
-
 }
