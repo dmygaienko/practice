@@ -41,9 +41,13 @@ public class StringConfig {
     }
 
     @Bean
-    @Qualifier("their")
     public List<String> stringsAsListBean() {
         return Arrays.asList("string1", "string2", "string3");
+    }
+
+    @Bean
+    public List<String> myStringsAsListBean() {
+        return Arrays.asList("my1", "my2", "my3");
     }
 
     @Bean

@@ -25,8 +25,10 @@ public class BeanWithAutowiredString {
     @Autowired
     private List<String> autowiredAllStrings;
 
-    @Resource
-    @Qualifier("their")
+    @Resource(name = "myStringsAsListBean")
+    private List<String> myStringsAsListBean;
+
+    @Resource(name = "stringsAsListBean")
     private List<String> stringsAsListBean;
 
     @Autowired
@@ -93,6 +95,10 @@ public class BeanWithAutowiredString {
 
     public List<String> getAutowiredAllStrings() {
         return autowiredAllStrings;
+    }
+
+    public List<String> getMyStringsAsListBean() {
+        return myStringsAsListBean;
     }
 
     public List<String> getStringsAsListBean() {
