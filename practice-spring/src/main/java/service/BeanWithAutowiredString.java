@@ -21,6 +21,9 @@ public class BeanWithAutowiredString {
     @Autowired
     private List<String> autowiredStrings;
 
+    @Autowired
+    private List<String> autowiredAllStrings;
+
     @Qualifier("my")
     @Resource
     private String resourceString;
@@ -75,5 +78,9 @@ public class BeanWithAutowiredString {
 
     public void clean() {
         System.out.println("clean");
+    }
+
+    public List<String> getAutowiredAllStrings() {
+        return autowiredAllStrings;
     }
 }
