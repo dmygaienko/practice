@@ -37,6 +37,18 @@ public class StringConfigTest {
     }
 
     @Test
+    public void testAutowiredAllStrings() throws Exception {
+        List<String> autowiredStrings = bean.getAutowiredAllStrings();
+        assertEquals(3, autowiredStrings.size());
+        assertTrue(autowiredStrings.contains("string1"));
+        assertTrue(autowiredStrings.contains("string2"));
+        assertTrue(autowiredStrings.contains("string3"));
+        System.out.println(autowiredStrings);
+
+        assertEquals("string2", bean.getAutowiredString());
+    }
+
+    @Test
     public void testResourceStrings() throws Exception {
         List<String> resourceStrings = bean.getResourceStrings();
         assertEquals(1, resourceStrings.size());
