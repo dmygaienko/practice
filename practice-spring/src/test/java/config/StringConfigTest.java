@@ -6,14 +6,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import service.BeanB;
 import service.BeanWithAutowiredString;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -46,6 +45,32 @@ public class StringConfigTest {
         System.out.println(autowiredStrings);
 
         assertEquals("string2", bean.getAutowiredString());
+    }
+
+    @Test
+    public void testStringsAsListBean() throws Exception {
+        List<String> stringsAsListBean = bean.getStringsAsListBean();
+        assertEquals(3, stringsAsListBean.size());
+        assertTrue(stringsAsListBean.contains("string1"));
+        assertTrue(stringsAsListBean.contains("string2"));
+        assertTrue(stringsAsListBean.contains("string3"));
+    }
+
+    @Test
+    public void testAutowiredStringsAsMapBean() throws Exception {
+        Map<String, String> map = bean.getAutowiredStringsAsMapBean();
+        assertEquals(3, map.size());
+        assertTrue(map.containsKey("string1") && "string1".equals(map.get("string1")));
+        assertTrue(map.containsKey("string2") && "string2".equals(map.get("string2")));
+        assertTrue(map.containsKey("string3") && "string3".equals(map.get("string3")));
+    }
+    @Test
+    public void testResourceStringsAsMapBean() throws Exception {
+        Map<String, String> map = bean.getResourceStringsAsMapBean();
+        assertEquals(3, map.size());
+        assertTrue(map.containsKey("a") && "string1".equals(map.get("a")));
+        assertTrue(map.containsKey("b") && "string2".equals(map.get("b")));
+        assertTrue(map.containsKey("c") && "string3".equals(map.get("c")));
     }
 
     @Test
