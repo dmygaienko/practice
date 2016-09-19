@@ -9,6 +9,11 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import service.BeanWithAutowiredString;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by dmygaenko on 06/09/2016.
  */
@@ -33,6 +38,21 @@ public class StringConfig {
     @Bean
     public String string3() {
         return "string3";
+    }
+
+    @Bean
+    @Qualifier("their")
+    public List<String> stringsAsListBean() {
+        return Arrays.asList("string1", "string2", "string3");
+    }
+
+    @Bean
+    public Map<String, String> stringsAsMapBean() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("a", "string1");
+        map.put("b", "string2");
+        map.put("c", "string3");
+        return map;
     }
 
     @Bean(initMethod = "init", destroyMethod = "clean")

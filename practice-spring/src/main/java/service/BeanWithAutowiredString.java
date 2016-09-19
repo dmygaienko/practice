@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,6 +24,16 @@ public class BeanWithAutowiredString {
 
     @Autowired
     private List<String> autowiredAllStrings;
+
+    @Resource
+    @Qualifier("their")
+    private List<String> stringsAsListBean;
+
+    @Autowired
+    private Map<String, String> autowiredStringsAsMapBean;
+
+    @Resource(name = "stringsAsMapBean")
+    private Map<String, String> resourceStringsAsMapBean;
 
     @Qualifier("my")
     @Resource
@@ -82,5 +93,17 @@ public class BeanWithAutowiredString {
 
     public List<String> getAutowiredAllStrings() {
         return autowiredAllStrings;
+    }
+
+    public List<String> getStringsAsListBean() {
+        return stringsAsListBean;
+    }
+
+    public Map<String, String> getAutowiredStringsAsMapBean() {
+        return autowiredStringsAsMapBean;
+    }
+
+    public Map<String, String> getResourceStringsAsMapBean() {
+        return resourceStringsAsMapBean;
     }
 }
