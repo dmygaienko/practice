@@ -20,7 +20,6 @@ public class StringConfig {
     private Environment environment;
 
     @Bean
-   /* @Qualifier("my")*/
     public String string1() {
         return "string1";
     }
@@ -32,7 +31,6 @@ public class StringConfig {
     }
 
     @Bean
-   /* @Qualifier("my")*/
     public String string3() {
         return "string3";
     }
