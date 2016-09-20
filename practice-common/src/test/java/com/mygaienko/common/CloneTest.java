@@ -2,10 +2,12 @@ package com.mygaienko.common;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by dmygaenko on 20/09/2016.
@@ -21,9 +23,11 @@ public class CloneTest {
     @Test
     public void testSimpleBeanCloneableClone() throws CloneNotSupportedException {
         SimpleBeanCloneable bean = new SimpleBeanCloneable("simpleString", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
-        bean.clone();
+        SimpleBeanCloneable clone = (SimpleBeanCloneable) bean.clone();
 
-        assertEquals(bean, bean.clone());
+        assertEquals(bean, clone);
+        assertTrue(bean.getIntegersList() != clone.getIntegersList());
+        assertTrue(bean.getIntegersArray() != clone.getIntegersArray());
     }
 
 
@@ -31,23 +35,38 @@ public class CloneTest {
 
         private String simpleString;
 
-        private List<Integer> integers;
+        private List<Integer> integersList;
+
+        private Integer[] integersArray;
 
         public SimpleBeanCloneable(String simpleString, Integer... integers) {
             this.simpleString = simpleString;
-            this.integers = Arrays.asList(integers);
+            this.integersList = Arrays.asList(integers);
+            integersArray = Arrays.copyOf(integers, integers.length);
+        }
+
+        public SimpleBeanCloneable() {
         }
 
         public String getSimpleString() {
             return simpleString;
         }
 
-        public List<Integer> getIntegers() {
-            return integers;
+        public List<Integer> getIntegersList() {
+            return integersList;
         }
 
+        @Override
         public Object clone() throws CloneNotSupportedException {
-           return super.clone();
+            SimpleBeanCloneable copy = (SimpleBeanCloneable) super.clone();
+            copy.integersArray = this.integersArray.clone();
+            copy.integersList = new ArrayList<>();
+            copy.integersList.addAll(this.integersList);
+            return copy;
+        }
+
+        public Integer[] getIntegersArray() {
+            return integersArray;
         }
 
         @Override
@@ -59,14 +78,18 @@ public class CloneTest {
 
             if (simpleString != null ? !simpleString.equals(that.simpleString) : that.simpleString != null)
                 return false;
-            return integers != null ? integers.equals(that.integers) : that.integers == null;
+            if (integersList != null ? !integersList.equals(that.integersList) : that.integersList != null)
+                return false;
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            return Arrays.equals(integersArray, that.integersArray);
 
         }
 
         @Override
         public int hashCode() {
             int result = simpleString != null ? simpleString.hashCode() : 0;
-            result = 31 * result + (integers != null ? integers.hashCode() : 0);
+            result = 31 * result + (integersList != null ? integersList.hashCode() : 0);
+            result = 31 * result + Arrays.hashCode(integersArray);
             return result;
         }
     }
