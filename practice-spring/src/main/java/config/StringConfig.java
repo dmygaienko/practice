@@ -44,9 +44,9 @@ public class StringConfig {
     @Bean
     public ArrayList<String> autowiredAllStringArray() {
         ArrayList<String> list = new ArrayList<String>();
-        list.add("string1");
-        list.add("string2");
-        list.add("string3");
+        list.add("string111");
+        list.add("string222");
+        list.add("string333");
         return list;
     }
 
