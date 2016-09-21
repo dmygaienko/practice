@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,9 @@ public class BeanWithAutowiredString {
 
     @Autowired
     private List<String> autowiredAllStrings;
+
+    @Autowired
+    private ArrayList<String> autowiredAllStringArray;
 
     @Resource(name = "myStringsAsListBean")
     private List<String> myStringsAsListBean;
@@ -111,5 +115,9 @@ public class BeanWithAutowiredString {
 
     public Map<String, String> getResourceStringsAsMapBean() {
         return resourceStringsAsMapBean;
+    }
+
+    public ArrayList<String> getAutowiredAllStringArray() {
+        return autowiredAllStringArray;
     }
 }
