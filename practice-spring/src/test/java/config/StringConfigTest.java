@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import service.BeanWithAutowiredString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,16 @@ public class StringConfigTest {
         System.out.println(autowiredStrings);
 
         assertEquals("string2", bean.getAutowiredString());
+    }
+
+    @Test
+    public void testAutowiredAllStringsArray() throws Exception {
+        ArrayList<String> autowiredStrings = bean.getAutowiredAllStringArray();
+        assertEquals(3, autowiredStrings.size());
+        assertTrue(autowiredStrings.contains("string111"));
+        assertTrue(autowiredStrings.contains("string222"));
+        assertTrue(autowiredStrings.contains("string333"));
+        System.out.println(autowiredStrings);
     }
 
     @Test
