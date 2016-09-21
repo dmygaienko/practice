@@ -9,6 +9,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import service.BeanWithAutowiredString;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,15 @@ public class StringConfig {
     @Bean
     public String string3() {
         return "string3";
+    }
+
+    @Bean
+    public ArrayList<String> autowiredAllStringArray() {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("string1");
+        list.add("string2");
+        list.add("string3");
+        return list;
     }
 
     @Bean
