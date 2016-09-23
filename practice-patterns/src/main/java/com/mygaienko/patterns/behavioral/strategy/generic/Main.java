@@ -1,4 +1,9 @@
-package com.mygaienko.patterns.behavioral.strategy;
+package com.mygaienko.patterns.behavioral.strategy.generic;
+
+import com.mygaienko.patterns.behavioral.strategy.generic.strategies.DefaultTaxStrategy;
+import com.mygaienko.patterns.behavioral.strategy.generic.strategies.DodgingTaxStrategy;
+import com.mygaienko.patterns.behavioral.strategy.generic.strategies.TaxStrategy;
+import com.mygaienko.patterns.behavioral.strategy.generic.strategies.TrustTaxStrategy;
 
 /**
  * Created by dmygaenko on 23/03/2016.

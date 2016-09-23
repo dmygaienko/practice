@@ -1,9 +1,11 @@
-package com.mygaienko.patterns.behavioral.strategy;
+package com.mygaienko.patterns.behavioral.strategy.generic;
+
 
 /**
  * Created by dmygaenko on 19/05/2016.
  */
-public class Trust extends TaxPayer {
+public class Trust extends TaxPayer<Trust> {
+
     private boolean nonProfit;
 
     public Trust(long income, boolean nonProfit) {
@@ -11,7 +13,14 @@ public class Trust extends TaxPayer {
         this.nonProfit = nonProfit;
     }
 
+
+
     public boolean isNonProfit() {
         return nonProfit;
+    }
+
+    @Override
+    protected Trust getThis() {
+        return null;
     }
 }
