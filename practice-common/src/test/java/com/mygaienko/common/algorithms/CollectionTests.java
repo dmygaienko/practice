@@ -210,6 +210,29 @@ public class CollectionTests {
     }
 
     @Test
+    public void testHashMapVsTreeMapOnContainsValue() throws Exception {
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.putAll(generateStringMap(1000000));
+
+        Map<String, String> treeMap = new TreeMap<>();
+        treeMap.putAll(generateStringMap(1000000));
+
+        long start, end, hashMapTime, treeMapTime;
+
+        start = System.nanoTime();
+        hashMap.containsValue("String100000");
+        end = System.nanoTime();
+        hashMapTime = end - start;
+        System.out.println("hashMap.containsValue(\"String1000\") takes : " + hashMapTime);
+
+        start = System.nanoTime();
+        hashMap.containsValue("String100001");
+        end = System.nanoTime();
+        treeMapTime = end - start;
+        System.out.println("hashMap.containsValue(\"String1001\") takes: " + treeMapTime);
+    }
+
+    @Test
     public void testHashMapVsTreeMapOnToString() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.putAll(generateStringMap(1000));
