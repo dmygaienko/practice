@@ -12,10 +12,10 @@ public class CollectionTests {
     @Test
     public void testArrayVsSetOnContains() throws Exception {
         List<String> list = new ArrayList<>();
-        list.addAll(generateStrings());
+        list.addAll(generateStrings(1000000));
 
         Set<String> set = new HashSet<>();
-        set.addAll(generateStrings());
+        set.addAll(generateStrings(1000000));
 
         long start, end;
 
@@ -43,10 +43,10 @@ public class CollectionTests {
     @Test
     public void testArrayVsLinkedListOnRemoveAll() throws Exception {
         List<String> arrayList = new ArrayList<>();
-        arrayList.addAll(generateStrings());
+        arrayList.addAll(generateStrings(1000000));
 
         List<String> linkedList = new LinkedList<>();
-        linkedList.addAll(generateStrings());
+        linkedList.addAll(generateStrings(1000000));
 
         long start, end;
 
@@ -74,10 +74,10 @@ public class CollectionTests {
     @Test
     public void testArrayVsLinkedListOnRemove() throws Exception {
         List<String> arrayList = new ArrayList<>();
-        arrayList.addAll(generateStrings());
+        arrayList.addAll(generateStrings(1000000));
 
         List<String> linkedList = new LinkedList<>();
-        linkedList.addAll(generateStrings());
+        linkedList.addAll(generateStrings(1000000));
 
         long start, end;
 
@@ -105,10 +105,10 @@ public class CollectionTests {
     @Test
     public void testHashMapVsTreeMapOnRemove() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.putAll(generateStringMap());
+        hashMap.putAll(generateStringMap(1000000));
 
         Map<String, String> treeMap = new TreeMap<>();
-        treeMap.putAll(generateStringMap());
+        treeMap.putAll(generateStringMap(1000000));
 
         long start, end;
 
@@ -146,10 +146,10 @@ public class CollectionTests {
     @Test
     public void testHashMapVsTreeMapOnGet() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.putAll(generateStringMap());
+        hashMap.putAll(generateStringMap(1000000));
 
         Map<String, String> treeMap = new TreeMap<>();
-        treeMap.putAll(generateStringMap());
+        treeMap.putAll(generateStringMap(1000000));
 
         long start, end;
 
@@ -184,17 +184,28 @@ public class CollectionTests {
         System.out.println("treeMap.get(\"String1002\") takes: " + (end - start));
     }
 
-    private Map<? extends String, ? extends String> generateStringMap() {
+    @Test
+    public void testHashMapVsTreeMapOnToString() throws Exception {
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.putAll(generateStringMap(1000));
+        System.out.println("HashMap: " + hashMap.toString());
+
+        Map<String, String> treeMap = new TreeMap<>();
+        treeMap.putAll(generateStringMap(1000));
+        System.out.println("TreeMap: " + treeMap.toString());
+    }
+
+    private Map<? extends String, ? extends String> generateStringMap(int count) {
         HashMap<String, String> map = new HashMap<>();
-        for (String s : generateStrings()) {
+        for (String s : generateStrings(count)) {
             map.put(s, s);
         }
         return map;
     }
 
-    private Collection<? extends String> generateStrings() {
+    private Collection<? extends String> generateStrings(int count) {
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < count; i++) {
             list.add("String" + i);
         }
         return list;
