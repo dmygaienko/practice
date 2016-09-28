@@ -1,1 +1,8 @@
-practice-patterns.iml
+.idea/
+.idea/libraries/
+.idea/copyright/
+*.iml
+*.project
+.settings/
+*.classpath
+target/
