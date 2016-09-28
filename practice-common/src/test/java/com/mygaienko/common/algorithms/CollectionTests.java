@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by dmygaenko on 28/09/2016.
  */
@@ -100,6 +102,29 @@ public class CollectionTests {
         linkedList.remove("String1001");
         end = System.nanoTime();
         System.out.println("linkedList.remove(\"String1001\") takes: " + (end - start));
+    }
+
+    @Test
+    public void testArrayVsLinkedListOnSort() throws Exception {
+        List<String> arrayList = new ArrayList<>();
+        arrayList.addAll(generateStrings(10000));
+
+        List<String> linkedList = new LinkedList<>();
+        linkedList.addAll(generateStrings(10000));
+
+        long start, end, arrayListSortTime, linkedListSortTime;
+        start = System.nanoTime();
+        arrayList.sort(String::compareTo);
+        end = System.nanoTime();
+        arrayListSortTime = (end - start);
+        System.out.println("arrayList.sort takes : " + arrayListSortTime + "\n" + arrayList);
+
+        start = System.nanoTime();
+        linkedList.sort(String::compareTo);
+        end = System.nanoTime();
+        linkedListSortTime = (end - start);
+        System.out.println("linkedList.sort takes: " + linkedListSortTime + "\n" + linkedList);
+        assertTrue(linkedListSortTime < arrayListSortTime);
     }
 
     @Test
