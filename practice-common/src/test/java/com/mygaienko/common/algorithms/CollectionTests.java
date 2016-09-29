@@ -1,9 +1,20 @@
 package com.mygaienko.common.algorithms;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,11 +25,19 @@ public class CollectionTests {
 
     private Map<String, String> generatedMap;
     private List<String> generatedList;
+    private List<String> generatedList2;
+    private Set<String> generatedSet;
+    private Set<String> generatedSet2;
 
     @Before
     public void setUp() throws Exception {
         generatedMap = generateStringMap(1000000);
+
         generatedList = generateStrings(1000000);
+        generatedList2 = generateStrings(1000000);
+
+        generatedSet = new HashSet<>(generatedList);
+        generatedSet2 = new HashSet<>(generatedList2);
     }
 
     @Test
@@ -29,27 +48,58 @@ public class CollectionTests {
         Set<String> set = new HashSet<>();
         set.addAll(generatedList);
 
-        long start, end;
+        executeTestCommand(() -> list.contains("String100000"), "list.contains(\"String100000\") takes: ");
+        executeTestCommand(() -> list.contains("String100001"), "list.contains(\"String100001\") takes: ");
 
-        start = System.nanoTime();
-        list.contains("String100000");
-        end = System.nanoTime();
-        System.out.println("list.contains(\"String100000\") takes : " + (end - start));
+        executeTestCommand(() -> set.contains("String100000"), "set.contains(\"String100000\") takes: ");
+        executeTestCommand(() -> set.contains("String100001"), "set.contains(\"String100001\") takes: ");
+    }
 
-        start = System.nanoTime();
-        list.contains("String100000");
-        end = System.nanoTime();
-        System.out.println("list.contains(\"String100000\") takes: " + (end - start));
+    @Test
+    public void testArrayVsSetOnUnion() throws Exception {
+        List<String> list = new ArrayList<>();
+        list.addAll(generatedList);
 
-        start = System.nanoTime();
-        set.contains("String100000");
-        end = System.nanoTime();
-        System.out.println("set.contains(\"String100000\") takes: " + (end - start));
+        Set<String> set = new HashSet<>();
+        set.addAll(generatedSet);
 
-        start = System.nanoTime();
-        set.contains("String100000");
-        end = System.nanoTime();
-        System.out.println("set.contains(\"String100000\") takes: " + (end - start));
+        executeTestCommand(() -> CollectionUtils.union(generatedSet, generatedSet2),
+                "CollectionUtils.union(generatedSet, generatedSet2): ");
+        executeTestCommand(() -> generatedSet.addAll(generatedSet2), "generatedSet.addAll(generatedSet2): ");
+
+        executeTestCommand(() -> CollectionUtils.union(generatedList, generatedList2),
+                "CollectionUtils.union(generatedList, generatedList2): ");
+        executeTestCommand(() -> generatedList.addAll(generatedList2), "generatedList.addAll(generatedList2): ");
+    }
+
+    @Test
+    public void testArrayVsSetOnDisjunction() throws Exception {
+        List<String> list = new ArrayList<>();
+        list.addAll(generatedList);
+
+        Set<String> set = new HashSet<>();
+        set.addAll(generatedSet);
+
+        executeTestCommand(() -> CollectionUtils.disjunction(generatedSet, generatedSet2),
+                "CollectionUtils.disjunction(generatedSet, generatedSet2): ");
+
+        executeTestCommand(() -> CollectionUtils.disjunction(generatedList, generatedList2),
+                "CollectionUtils.disjunction(generatedList, generatedList2): ");
+    }
+
+    @Test
+    public void testArrayVsSetOnSubtract() throws Exception {
+        List<String> list = new ArrayList<>();
+        list.addAll(generatedList);
+
+        Set<String> set = new HashSet<>();
+        set.addAll(generatedSet);
+
+        executeTestCommand(() -> CollectionUtils.subtract(generatedSet, generatedSet2),
+                "CollectionUtils.subtract(generatedSet, generatedSet2): ");
+
+        executeTestCommand(() -> CollectionUtils.subtract(generatedList, generatedList2),
+                "CollectionUtils.subtract(generatedList, generatedList2): ");
     }
 
     @Test
@@ -60,27 +110,17 @@ public class CollectionTests {
         List<String> linkedList = new LinkedList<>();
         linkedList.addAll(generatedList);
 
-        long start, end;
 
-        start = System.nanoTime();
-        arrayList.removeAll(Arrays.asList("String1000", "String1001"));
-        end = System.nanoTime();
-        System.out.println("arrayList.removeAll takes : " + (end - start));
+        executeTestCommand(() -> arrayList.removeAll(Arrays.asList("String1000", "String1001")),
+                "arrayList.removeAll takes: ");
+        executeTestCommand(() -> arrayList.removeAll(Arrays.asList("String1002", "String1003")),
+                "arrayList.removeAll takes: ");
 
-        start = System.nanoTime();
-        arrayList.removeAll(Arrays.asList("String1002", "String1003"));
-        end = System.nanoTime();
-        System.out.println("arrayList.removeAll takes: " + (end - start));
 
-        start = System.nanoTime();
-        linkedList.removeAll(Arrays.asList("String1000", "String1001"));
-        end = System.nanoTime();
-        System.out.println("linkedList.removeAll takes: " + (end - start));
-
-        start = System.nanoTime();
-        linkedList.removeAll(Arrays.asList("String1002", "String1003"));
-        end = System.nanoTime();
-        System.out.println("linkedList.removeAll takes: " + (end - start));
+        executeTestCommand(() -> linkedList.removeAll(Arrays.asList("String1000", "String1001")),
+                "linkedList.removeAll takes: ");
+        executeTestCommand(() -> linkedList.removeAll(Arrays.asList("String1002", "String1003")),
+                "linkedList.removeAll takes: ");
     }
 
     @Test
@@ -91,27 +131,11 @@ public class CollectionTests {
         List<String> linkedList = new LinkedList<>();
         linkedList.addAll(generatedList);
 
-        long start, end;
+        executeTestCommand(() ->  arrayList.remove("String1000"), "arrayList.remove(\"String1000\") takes : ");
+        executeTestCommand(() ->  arrayList.remove("String1001"), "arrayList.remove(\"String1001\") takes : ");
 
-        start = System.nanoTime();
-        arrayList.remove("String1000");
-        end = System.nanoTime();
-        System.out.println("arrayList.remove(\"String1000\") takes : " + (end - start));
-
-        start = System.nanoTime();
-        arrayList.remove("String1001");
-        end = System.nanoTime();
-        System.out.println("arrayList.remove(\"String1001\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        linkedList.remove("String1000");
-        end = System.nanoTime();
-        System.out.println("linkedList.remove(\"String1000\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        linkedList.remove("String1001");
-        end = System.nanoTime();
-        System.out.println("linkedList.remove(\"String1001\") takes: " + (end - start));
+        executeTestCommand(() ->  linkedList.remove("String1000"), "linkedList.remove(\"String1000\") takes : ");
+        executeTestCommand(() ->  linkedList.remove("String1001"), "linkedList.remove(\"String1001\") takes : ");
     }
 
     @Test
@@ -195,7 +219,8 @@ public class CollectionTests {
 
         end = System.nanoTime();
         commandTime = end - start;
-        System.out.println(message + commandTime);
+        System.out.println(message + commandTime + " nanoseconds - " +
+                new BigDecimal(commandTime).divide(new BigDecimal(1_000_000_000)).setScale(2, RoundingMode.CEILING) + " seconds");
         return commandTime;
     }
 
