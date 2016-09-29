@@ -1,5 +1,6 @@
 package com.mygaienko.common.algorithms;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -11,13 +12,22 @@ import static org.junit.Assert.assertTrue;
  */
 public class CollectionTests {
 
+    private Map<String, String> generatedMap;
+    private List<String> generatedList;
+
+    @Before
+    public void setUp() throws Exception {
+        generatedMap = generateStringMap(1000000);
+        generatedList = generateStrings(1000000);
+    }
+
     @Test
     public void testArrayVsSetOnContains() throws Exception {
         List<String> list = new ArrayList<>();
-        list.addAll(generateStrings(1000000));
+        list.addAll(generatedList);
 
         Set<String> set = new HashSet<>();
-        set.addAll(generateStrings(1000000));
+        set.addAll(generatedList);
 
         long start, end;
 
@@ -45,10 +55,10 @@ public class CollectionTests {
     @Test
     public void testArrayVsLinkedListOnRemoveAll() throws Exception {
         List<String> arrayList = new ArrayList<>();
-        arrayList.addAll(generateStrings(1000000));
+        arrayList.addAll(generatedList);
 
         List<String> linkedList = new LinkedList<>();
-        linkedList.addAll(generateStrings(1000000));
+        linkedList.addAll(generatedList);
 
         long start, end;
 
@@ -76,10 +86,10 @@ public class CollectionTests {
     @Test
     public void testArrayVsLinkedListOnRemove() throws Exception {
         List<String> arrayList = new ArrayList<>();
-        arrayList.addAll(generateStrings(1000000));
+        arrayList.addAll(generatedList);
 
         List<String> linkedList = new LinkedList<>();
-        linkedList.addAll(generateStrings(1000000));
+        linkedList.addAll(generatedList);
 
         long start, end;
 
@@ -112,125 +122,86 @@ public class CollectionTests {
         List<String> linkedList = new LinkedList<>();
         linkedList.addAll(generateStrings(10000));
 
-        long start, end, arrayListSortTime, linkedListSortTime;
-        start = System.nanoTime();
-        arrayList.sort(String::compareTo);
-        end = System.nanoTime();
-        arrayListSortTime = (end - start);
-        System.out.println("arrayList.sort takes : " + arrayListSortTime + "\n" + arrayList);
+        long arrayListSortTime, linkedListSortTime;
+        arrayListSortTime = executeTestCommand(() -> arrayList.sort(String::compareTo), "arrayList.sort takes: ");
 
-        start = System.nanoTime();
-        linkedList.sort(String::compareTo);
-        end = System.nanoTime();
-        linkedListSortTime = (end - start);
-        System.out.println("linkedList.sort takes: " + linkedListSortTime + "\n" + linkedList);
+        linkedListSortTime = executeTestCommand(() -> linkedList.sort(String::compareTo), "linkedList.sort takes: ");
         assertTrue(linkedListSortTime < arrayListSortTime);
     }
 
     @Test
     public void testHashMapVsTreeMapOnRemove() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.putAll(generateStringMap(1000000));
+        hashMap.putAll(generatedMap);
 
         Map<String, String> treeMap = new TreeMap<>();
-        treeMap.putAll(generateStringMap(1000000));
+        treeMap.putAll(generatedMap);
 
-        long start, end;
+        executeTestCommand(() -> hashMap.remove("String1000"), "hashMap.remove(\"String1000\") takes: ");
+        executeTestCommand(() -> hashMap.remove("String1001"), "hashMap.remove(\"String1001\") takes: ");
+        executeTestCommand(() -> hashMap.remove("String1002"), "hashMap.remove(\"String1002\") takes: ");
+        executeTestCommand(() -> hashMap.remove("String1002"), "hashMap.remove(\"String1002\") which is already removed takes: ");
 
-        start = System.nanoTime();
-        hashMap.remove("String1000");
-        end = System.nanoTime();
-        System.out.println("hashMap.remove(\"String1000\") takes : " + (end - start));
-
-        start = System.nanoTime();
-        hashMap.remove("String1001");
-        end = System.nanoTime();
-        System.out.println("hashMap.remove(\"String1001\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        hashMap.remove("String1002");
-        end = System.nanoTime();
-        System.out.println("hashMap.remove(\"String1002\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.remove("String1000");
-        end = System.nanoTime();
-        System.out.println("treeMap.remove(\"String1000\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.remove("String1001");
-        end = System.nanoTime();
-        System.out.println("treeMap.remove(\"String1001\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.remove("String1002");
-        end = System.nanoTime();
-        System.out.println("treeMap.remove(\"String1002\") takes: " + (end - start));
+        executeTestCommand(() -> treeMap.remove("String1000"), "treeMap.remove(\"String1000\") takes: ");
+        executeTestCommand(() -> treeMap.remove("String1001"), "treeMap.remove(\"String1001\") takes: ");
+        executeTestCommand(() -> treeMap.remove("String1002"), "treeMap.remove(\"String1002\") takes: ");
+        executeTestCommand(() -> treeMap.remove("String1002"), "treeMap.remove(\"String1002\") which is already removed takes: ");
     }
 
     @Test
     public void testHashMapVsTreeMapOnGet() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.putAll(generateStringMap(1000000));
+        hashMap.putAll(generatedMap);
 
         Map<String, String> treeMap = new TreeMap<>();
-        treeMap.putAll(generateStringMap(1000000));
+        treeMap.putAll(generatedMap);
 
-        long start, end;
+        executeTestCommand(() ->    hashMap.get("String1000"), "treeMap.get(\"String1000\") takes: ");
+        executeTestCommand(() ->    hashMap.get("String1001"), "treeMap.get(\"String1001\") takes: ");
+        executeTestCommand(() ->    hashMap.get("String1002"), "treeMap.get(\"String1002\") takes: ");
 
-        start = System.nanoTime();
-        hashMap.get("String1000");
-        end = System.nanoTime();
-        System.out.println("hashMap.get(\"String1000\") takes : " + (end - start));
-
-        start = System.nanoTime();
-        hashMap.get("String1001");
-        end = System.nanoTime();
-        System.out.println("hashMap.get(\"String1001\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        hashMap.get("String1002");
-        end = System.nanoTime();
-        System.out.println("hashMap.get(\"String1002\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.get("String1000");
-        end = System.nanoTime();
-        System.out.println("treeMap.get(\"String1000\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.get("String1001");
-        end = System.nanoTime();
-        System.out.println("treeMap.get(\"String1001\") takes: " + (end - start));
-
-        start = System.nanoTime();
-        treeMap.get("String1002");
-        end = System.nanoTime();
-        System.out.println("treeMap.get(\"String1002\") takes: " + (end - start));
+        executeTestCommand(() ->    treeMap.get("String1000"), "treeMap.get(\"String1000\") takes: ");
+        executeTestCommand(() ->    treeMap.get("String1001"), "treeMap.get(\"String1001\") takes: ");
+        executeTestCommand(() ->    treeMap.get("String1002"), "treeMap.get(\"String1002\") takes: ");
     }
 
     @Test
     public void testHashMapVsTreeMapOnContainsValue() throws Exception {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.putAll(generateStringMap(1000000));
+        hashMap.putAll(generatedMap);
 
         Map<String, String> treeMap = new TreeMap<>();
-        treeMap.putAll(generateStringMap(1000000));
+        treeMap.putAll(generatedMap);
 
-        long start, end, hashMapTime, treeMapTime;
-
-        start = System.nanoTime();
-        hashMap.containsValue("String100000");
-        end = System.nanoTime();
-        hashMapTime = end - start;
-        System.out.println("hashMap.containsValue(\"String1000\") takes : " + hashMapTime);
-
-        start = System.nanoTime();
-        hashMap.containsValue("String100001");
-        end = System.nanoTime();
-        treeMapTime = end - start;
-        System.out.println("hashMap.containsValue(\"String1001\") takes: " + treeMapTime);
+        executeTestCommand(() ->   hashMap.containsValue("String100001"), "hashMap.containsValue(\"String1001\") takes: ");
+        executeTestCommand(() ->   treeMap.containsValue("String100001"), "treeMap.containsValue(\"String1001\") takes: ");
     }
+
+
+    @Test
+    public void testHashMapVsTreeMapOnPutAll() throws Exception {
+
+        executeTestCommand(() -> new HashMap<String, String>().putAll(generatedMap), "hashMap.putAll takes : " );
+
+        executeTestCommand(() -> new TreeMap<String, String>().putAll(generatedMap), "treeMap.putAll takes : " );
+
+    }
+
+    private long executeTestCommand(TestCommand command, String message) {
+        long end, start, commandTime;
+        start= System.nanoTime();
+
+        command.execute();
+
+        end = System.nanoTime();
+        commandTime = end - start;
+        System.out.println(message + commandTime);
+        return commandTime;
+    }
+
+   interface TestCommand {
+       void execute();
+   }
 
     @Test
     public void testHashMapVsTreeMapOnToString() throws Exception {
@@ -243,16 +214,16 @@ public class CollectionTests {
         System.out.println("TreeMap: " + treeMap.toString());
     }
 
-    private Map<? extends String, ? extends String> generateStringMap(int count) {
-        HashMap<String, String> map = new HashMap<>();
+    private Map<String,String> generateStringMap(int count) {
+        Map<String, String> map = new HashMap<>();
         for (String s : generateStrings(count)) {
             map.put(s, s);
         }
         return map;
     }
 
-    private Collection<? extends String> generateStrings(int count) {
-        ArrayList<String> list = new ArrayList<>();
+    private List<String> generateStrings(int count) {
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add("String" + i);
         }
