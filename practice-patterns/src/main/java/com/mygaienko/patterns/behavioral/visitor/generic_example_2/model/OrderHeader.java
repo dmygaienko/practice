@@ -2,10 +2,8 @@ package com.mygaienko.patterns.behavioral.visitor.generic_example_2.model;
 
 
 import com.mygaienko.patterns.behavioral.visitor.generic_example_2.visitors.Visitor;
-import com.sun.deploy.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
