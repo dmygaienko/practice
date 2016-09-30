@@ -78,6 +78,15 @@
             <version>3.14.0-GA</version>
             <type>jar</type>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.openjdk.jol/jol-core -->
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.6</version>
+        </dependency>
+
+
     </dependencies>
 
 
