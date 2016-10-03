@@ -16,6 +16,7 @@
         <module>practice-mongodb</module>
         <module>practice-cglib</module>
         <module>practice-patterns</module>
+        <module>practice-spring-web</module>
     </modules>
 
     <properties>
