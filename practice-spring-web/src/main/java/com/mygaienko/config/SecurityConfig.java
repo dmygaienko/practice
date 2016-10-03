@@ -18,6 +18,11 @@ import java.util.ArrayList;
 /**
  * Created by dmygaenko on 03/10/2016.
  *
+ * NEW SPRING
+ *
+ * http://www.baeldung.com/spring-security-session
+ * http://docs.spring.io/spring-security/site/docs/current/reference/html/new.html
+ *
  * http://docs.spring.io/spring-security/site/docs/current/reference/html/session-mgmt.html
  * http://keylesson.com/index.php/2016/02/24/spring-security-concurrency-control-example-2665/
  * https://www.mkyong.com/spring-security/spring-security-hello-world-annotation-example/
@@ -38,19 +43,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                /*.sessionManagement().sessionAuthenticationStrategy(sas())*/
+
                 .authorizeRequests()
-                .antMatchers("/signup","/about").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                    .antMatchers("/signup","/about").permitAll()
+                    .antMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated()
                 .and()
                 .formLogin()
                     .loginPage("/login.jsf")
                     .successHandler(authenticationSuccessHandler())
                     .failureHandler(authenticationFailureHandler())
                     .permitAll()
-                .and()
-                .addFilter(authenticationFilter())
-
+                .and().sessionManagement().maximumSessions(1)
         ;
     }
 
