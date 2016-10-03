@@ -56,6 +56,21 @@ public class CollectionTests {
     }
 
     @Test
+    public void testArrayVsListOnAdd() throws Exception {
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.addAll(generatedList);
+
+        LinkedList<String> linkedList = new LinkedList<>();
+        linkedList.addAll(generatedList);
+
+        executeTestCommand(() -> arrayList.add(555555, "String100000"), "arrayList.add(\"String100000\") takes: ");
+        executeTestCommand(() -> arrayList.add(333333, "String100001"), "arrayList.add(\"String100001\") takes: ");
+
+        executeTestCommand(() -> linkedList.add(555555, "String100000"), "linkedList.add(\"String100000\") takes: ");
+        executeTestCommand(() -> linkedList.add(333333, "String100001"), "linkedList.add(\"String100001\") takes: ");
+    }
+
+    @Test
     public void testArrayVsSetOnUnion() throws Exception {
         List<String> list = new ArrayList<>();
         list.addAll(generatedList);
