@@ -14,6 +14,13 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+
 //http://techblog.troyweb.com/index.php/2012/05/writing-strongly-typed-not-in-subqueries-with-jpa-criteriabuilder/
 //https://en.wikibooks.org/wiki/Java_Persistence/Criteria#subQuery_examples
 
@@ -30,7 +37,20 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 public class AuthorDaoImplTest {
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private AuthorDao dao;
+
+    @Test
+    public void testDataSource() throws Exception {
+        Connection connection = dataSource.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from Author where id = '1'");
+        if (resultSet.next()) {
+            assertEquals("1", resultSet.getString("id"));
+        }
+    }
 
     @Test
     public void testGet() {
