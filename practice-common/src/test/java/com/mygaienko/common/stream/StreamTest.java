@@ -1,5 +1,6 @@
 package com.mygaienko.common.stream;
 
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -190,6 +191,15 @@ public class StreamTest {
                 Paths.get("src/test/java/com/mygaienko/common/stream"),
                 path -> path.toString().endsWith(".java"))
                 .forEach(System.out::println);
+    }
+
+    @Test
+    public void testStreamWithComparator() throws Exception {
+        List<Integer> list = Arrays.asList(1, 4, 45, 12, 5, 6, 9, 101);
+        Comparator<Integer> c1 = (x, y) -> x - y;
+        Comparator<Integer> c2 = c1.reversed();
+        System.out.println("Smallest = " + list.stream().min(c1).get());
+        System.out.println("Largest = " + list.stream().min(c2).get());
     }
 
     //page 58 Functional Programming in Java
