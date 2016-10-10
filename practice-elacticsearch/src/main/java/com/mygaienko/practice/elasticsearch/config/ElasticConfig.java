@@ -8,9 +8,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
-/**
- * Created by enda1n on 24.01.2016.
- */
+
+
 @Configuration
 @EnableElasticsearchRepositories("com.mygaienko.practice.elasticsearch")
 public class ElasticConfig {
