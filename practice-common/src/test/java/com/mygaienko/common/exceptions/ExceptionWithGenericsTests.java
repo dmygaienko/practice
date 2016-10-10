@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by dmygaenko on 06/10/2016.
  */
-public class ExceptionTests {
+public class ExceptionWithGenericsTests {
 
     static class IOE1 extends IOException {
     }
