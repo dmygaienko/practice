@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <bean_b id="1" code="beanAName1"/>
+    <bean_b id="2" code="beanAName2"/>
+    <bean_b id="3" code="beanAName3"/>
+
+    <bean_a id="1" name="beanAName1"/>
+    <bean_a id="2" name="beanAName2"/>
+    <bean_a id="3" name="beanAName3"/>
+
+</dataset>

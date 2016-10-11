@@ -1,6 +1,7 @@
 package com.mygaienko.practice.jpa.dao.interfaces;
 
 import com.mygaienko.practice.jpa.model.Author;
+import com.mygaienko.practice.jpa.model.BeanA;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface AuthorDao {
     Author get(Long id);
 
     Author getByBeanANameAndBeanBCode(String name, String beanAName, String beanBCode);
+
+    List<BeanA> getJoinOnNonPrimaryColumn(String name);
 
     List<Author> getByBeanANameLike(String name);
 

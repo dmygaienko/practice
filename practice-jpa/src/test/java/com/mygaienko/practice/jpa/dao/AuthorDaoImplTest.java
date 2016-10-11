@@ -1,6 +1,7 @@
 package com.mygaienko.practice.jpa.dao;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.mygaienko.practice.jpa.Application;
 import com.mygaienko.practice.jpa.dao.interfaces.AuthorDao;
@@ -35,7 +36,9 @@ import static org.junit.Assert.assertEquals;
         TransactionalTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class})
 @Transactional(transactionManager = "jpaTransactionManager")
-@DatabaseSetup("/com/mygaienko/practice/jpa/dao/AuthorDaoImplTest.xml")
+/*@DatabaseSetup(value = "/com/mygaienko/practice/jpa/dao/AuthorDaoImplTest.xml", type = DatabaseOperation.CLEAN_INSERT)*/
+@DatabaseSetup(value = "/com/mygaienko/practice/jpa/dao/AuthorDaoImplTest.testJoinNonPrimaryKey.xml",
+        type = DatabaseOperation.CLEAN_INSERT)
 public class AuthorDaoImplTest {
 
     @Autowired
@@ -79,6 +82,13 @@ public class AuthorDaoImplTest {
     @Test
     public void testGetByBeanANameAndBeanBCode() {
         dao.getByBeanANameAndBeanBCode("Author1", "beanAName1", "beanBName1");
+    }
+
+    @Test
+   /* @DatabaseSetup(value = "/com/mygaienko/practice/jpa/dao/AuthorDaoImplTest.testJoinNonPrimaryKey.xml",
+            type = DatabaseOperation.CLEAN_INSERT)*/
+    public void getJoinOnNonPrimaryColumn() {
+        dao.getJoinOnNonPrimaryColumn("beanAName1");
     }
 
     @Test
