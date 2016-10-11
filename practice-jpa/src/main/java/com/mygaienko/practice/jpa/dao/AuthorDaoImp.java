@@ -45,6 +45,22 @@ public class AuthorDaoImp implements AuthorDao {
     }
 
     @Override
+    public List<BeanA> getJoinOnNonPrimaryColumn(String name) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<BeanA> criteriaQuery = builder.createQuery(BeanA.class);
+
+        Root<BeanA> root = criteriaQuery.from(BeanA.class);
+        Join<BeanA, BeanB> beanAJoin = root.join(BeanA_.beanB);
+
+        /*criteriaQuery.where(builder.equal(authorRoot.get(Author_.name), name),
+                builder.equal(beanAJoin.get(BeanA_.name), beanAName),
+                builder.equal(beanBJoin.get(BeanB_.code), beanBCode));*/
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+       // return null;
+    }
+
+    @Override
     public List<Author> getByBeanANameLike(String name) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
@@ -64,6 +80,7 @@ public class AuthorDaoImp implements AuthorDao {
 
         return entityManager.createQuery(cq).getResultList();
     }
+
 
     @Override
     public List<Author> getByBeanAId(long l) {

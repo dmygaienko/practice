@@ -4,12 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Created by enda1n on 16.01.2016.
  */
 @Entity(name = "bean_b")
-public class BeanB {
+public class BeanB implements Serializable{
 
     @Id
     @GeneratedValue
