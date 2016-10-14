@@ -16,12 +16,17 @@ import static java.util.stream.Collectors.toList;
 public class FunctionalTest {
 
     public List<String> findHeadings(Reader input) {
-        return withLinesOf(
+        return filterInputReader(
                 input,
-                lines -> lines.filter(line -> line.endsWith(":"))
-                        .map(line -> line.substring(0, line.length() - 1))
-                        .collect(toList()),
+                filterLines(),
                 HeadingLookupException::new);
+    }
+
+    private Function<Stream<String>, List<String>> filterLines() {
+        return lines -> lines
+                .filter(line -> line.endsWith(":"))
+                .map(line -> line.substring(0, line.length() - 1))
+                .collect(toList());
     }
 
     static class HeadingLookupException extends RuntimeException {
@@ -29,13 +34,13 @@ public class FunctionalTest {
         }
     }
 
-    private <T> T withLinesOf(
+    private <T> T filterInputReader(
             Reader input,
-            Function<Stream<String>, T> handler,
+            Function<Stream<String>, T> filterLines,
             Function<IOException, RuntimeException> error) {
 
         try (BufferedReader reader = new BufferedReader(input)) {
-            return handler.apply(reader.lines());
+            return filterLines.apply(reader.lines());
         } catch (IOException e) {
             throw error.apply(e);
         }
