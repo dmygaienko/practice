@@ -24,7 +24,7 @@ public class MemoizerTest {
 
         final RodCutterBasic rodCutter = new RodCutterBasic(priceValues);
 
-        System.out.println(rodCutter.maxProfit(22));
+        System.out.println(rodCutter.maxProfit(40));
 
     }
 
