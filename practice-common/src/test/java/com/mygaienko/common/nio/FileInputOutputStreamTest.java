@@ -19,15 +19,15 @@ public class FileInputOutputStreamTest {
         file.createNewFile();
         file.deleteOnExit();
 
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(1);
-        fileOutputStream.write(2);
-        fileOutputStream.flush();
-        fileOutputStream.close();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(1);
+            fileOutputStream.write(2);
+            fileOutputStream.flush();
+        }
 
-        FileInputStream fileInputStream = new FileInputStream(file);
-        assertEquals(1, fileInputStream.read());
-        assertEquals(2, fileInputStream.read());
-        fileInputStream.close();
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            assertEquals(1, fileInputStream.read());
+            assertEquals(2, fileInputStream.read());
+        }
     }
 }
