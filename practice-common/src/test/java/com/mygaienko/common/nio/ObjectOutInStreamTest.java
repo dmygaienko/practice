@@ -26,11 +26,11 @@ public class ObjectOutInStreamTest {
     @Test
     public void test() throws Exception {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file))) {
-            outputStream.writeObject(getBean(1, '2', "3"));
+            outputStream.writeObject(getBean(1, '2', "3", "optional"));
         }
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
-            assertThat(inputStream.readObject(), is(getBean(1, '2', "3")));
+            assertThat(inputStream.readObject(), is(getBean(1, '2', "3", "optional")));
         }
     }
 
@@ -45,8 +45,8 @@ public class ObjectOutInStreamTest {
         }
     }
 
-    private Bean getBean(int i, char c, String s) {
-        return new Bean(i, c, s);
+    private Bean getBean(int i, char c, String s, String optional) {
+        return new Bean(i, c, s, optional);
     }
 
     private BeanExternalizable getBeanExternalizable(int i, char c, String s) {
@@ -58,11 +58,13 @@ public class ObjectOutInStreamTest {
         private int i;
         private char c;
         private String s;
+        private transient String optional;
 
-        public Bean(int i, char c, String s) {
+        public Bean(int i, char c, String s, String optional) {
             this.i = i;
             this.c = c;
             this.s = s;
+            this.optional = optional;
         }
 
         public int getI() {
@@ -75,6 +77,10 @@ public class ObjectOutInStreamTest {
 
         public String getS() {
             return s;
+        }
+
+        public String getOptional() {
+            return optional;
         }
 
         @Override
