@@ -1,4 +1,4 @@
-package com.mygaienko.common.io_nio.reader_writer;
+package com.mygaienko.common.io.reader_writer;
 
 import org.junit.Before;
 import org.junit.Test;
