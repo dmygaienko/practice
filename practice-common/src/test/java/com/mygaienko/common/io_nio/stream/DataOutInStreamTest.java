@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io_nio.stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +17,7 @@ public class DataOutInStreamTest {
     @Before
     public void setUp() throws Exception {
         file = new File("DataOutInStreamTest.dat");
+        file.delete();
         file.createNewFile();
         file.deleteOnExit();
     }

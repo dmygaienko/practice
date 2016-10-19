@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io_nio.stream;
 
 import org.junit.After;
 import org.junit.Before;
