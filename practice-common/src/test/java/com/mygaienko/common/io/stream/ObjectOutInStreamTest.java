@@ -1,4 +1,4 @@
-package com.mygaienko.common.io_nio.stream;
+package com.mygaienko.common.io.stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Before;

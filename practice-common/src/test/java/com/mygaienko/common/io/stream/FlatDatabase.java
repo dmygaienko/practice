@@ -1,4 +1,4 @@
-package com.mygaienko.common.io_nio.stream;
+package com.mygaienko.common.io.stream;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
