@@ -4,6 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -24,13 +28,42 @@ public class StreamReaderWriterTest {
     @Test
     public void test() throws Exception {
         try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file))) {
-            outputStream.write("string");
+            outputStream.write("中文");
             outputStream.write(new char[]{'c', 'h', 'a', 'r'});
         }
 
-       /* try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
-            assertEquals(1, inputStream.read());
-            assertEquals(255, inputStream.read());
-        }*/
+        try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(file))) {
+            char[] chars = new char[100];
+            assertEquals(6, inputStream.read(chars));
+            System.out.println(Arrays.toString(chars));
+        }
+    }
+
+    @Test
+    public void testWitUtfEncoding() throws Exception {
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_16)) {
+            outputStream.write("строкатый");
+            outputStream.write(new char[]{'ъ', 'ё', 'a', 'r'});
+        }
+
+        try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16)) {
+            char[] chars = new char[100];
+            assertEquals(13, inputStream.read(chars));
+            System.out.println(Arrays.toString(chars));
+        }
+    }
+
+    @Test
+    public void testWithAsciiEncoding() throws Exception {
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.US_ASCII)) {
+            outputStream.write("中文");
+            outputStream.write(new char[]{'ъ', 'ё', 'a', 'r'});
+        }
+
+        try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(file), StandardCharsets.US_ASCII)) {
+            char[] chars = new char[100];
+            assertEquals(6, inputStream.read(chars));
+            System.out.println(Arrays.toString(chars));
+        }
     }
 }
