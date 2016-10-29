@@ -1,0 +1,24 @@
+<customer>
+    <person>
+        <addresses>
+            <address>
+                <street>12345 Happy Lane</street>
+                <city>Plunk</city>
+                <state>WA</state>
+            </address>
+            <address>
+                <street>Melnykova</street>
+                <city>Kyiv</city>
+                <state>Ukraine</state>
+            </address>
+        </addresses>
+        <cust-num>123456789</cust-num>
+        <first-name>John</first-name>
+        <last-name>Smith</last-name>
+    </person>
+    <street>12345 Happy Lane</street>
+    <city>Plunk</city>
+    <state>WA</state>
+    <zip>98059</zip>
+    <phone>888.555.1234</phone>
+</customer>
