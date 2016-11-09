@@ -1,10 +1,9 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io.stream;
 
 import org.junit.Test;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 /**

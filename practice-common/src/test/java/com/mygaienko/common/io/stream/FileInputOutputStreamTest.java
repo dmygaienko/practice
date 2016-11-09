@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io.stream;
 
 import org.junit.Test;
 
@@ -16,12 +16,13 @@ public class FileInputOutputStreamTest {
     @Test
     public void testStream() throws Exception {
         File file = new File("FileInputOutputStreamTest.dat");
+        file.delete();
         file.createNewFile();
         file.deleteOnExit();
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(1);
-            fileOutputStream.write(2);
+            fileOutputStream.write(222);
             fileOutputStream.flush();
         }
 

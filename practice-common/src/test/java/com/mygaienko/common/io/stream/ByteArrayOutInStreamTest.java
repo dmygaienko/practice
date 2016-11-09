@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io.stream;
 
 import org.junit.Test;
 
@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by enda1n on 18.10.2016.

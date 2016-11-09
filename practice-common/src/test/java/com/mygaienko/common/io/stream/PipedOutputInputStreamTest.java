@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io.stream;
 
 import org.junit.Test;
 

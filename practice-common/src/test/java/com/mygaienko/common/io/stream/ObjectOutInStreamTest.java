@@ -1,4 +1,4 @@
-package com.mygaienko.common.nio;
+package com.mygaienko.common.io.stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Before;
@@ -19,6 +19,7 @@ public class ObjectOutInStreamTest {
     @Before
     public void setUp() throws Exception {
         file = new File("ObjectOutInStreamTest.dat");
+        file.delete();
         file.createNewFile();
         file.deleteOnExit();
     }

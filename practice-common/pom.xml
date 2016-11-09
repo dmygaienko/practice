@@ -52,6 +52,33 @@
                     <argLine>-javaagent:target/${project.build.finalName}.jar</argLine>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.jibx</groupId>
+                <artifactId>jibx-maven-plugin</artifactId>
+                <version>1.2.6</version>
+                <configuration>
+                    <schemaBindingDirectory>src/main/resource/jibx</schemaBindingDirectory>
+                    <includeSchemaBindings>
+                        <includeSchemaBindings>*-binding.xml</includeSchemaBindings>
+                    </includeSchemaBindings>
+                    <verbose>true</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bind</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.bcel</groupId>
+                        <artifactId>bcel</artifactId>
+                        <version>6.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
@@ -86,6 +113,16 @@
             <version>0.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jibx</groupId>
+            <artifactId>jibx-run</artifactId>
+            <version>1.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jibx</groupId>
+            <artifactId>jibx-extras</artifactId>
+            <version>1.2.6</version>
+        </dependency>
 
     </dependencies>
 
