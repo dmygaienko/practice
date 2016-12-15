@@ -14,7 +14,7 @@ public class ExecutorServiceTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @Test
-    public void testExecutors() throws Exception {
+    public void testExecutorsWaitForAllTasksToComplete() throws Exception {
         List<Callable<Integer>> callables = getCallables();
 
         List<Future<Integer>> futures = executor.invokeAll(callables);
@@ -27,6 +27,12 @@ public class ExecutorServiceTest {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Test
+    public void testExecutorsWaitForOneTaskToComplete() throws Exception {
+        List<Callable<Integer>> callables = getCallables();
+        System.out.println(executor.invokeAny(callables));
     }
 
     @Test
@@ -45,7 +51,7 @@ public class ExecutorServiceTest {
     private List<Callable<Integer>> getCallables() {
         List<Callable<Integer>> callables = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 4; i > 0 ; i--) {
             int finalI = i;
             callables.add(() -> {
                 Thread.sleep(finalI * 300);
