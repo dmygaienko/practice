@@ -13,9 +13,6 @@ public class DynamicCutRod {
         long sum = 0;
 
         for (int i = 1; i <= length && i < prices.length; i++) {
-        /*    if (results.get(prices.length)) {
-
-            }*/
             sum = Math.max(sum, prices[i] + execute(prices, length - i));
         }
 
@@ -30,8 +27,9 @@ public class DynamicCutRod {
 
         if (length == 0) return 0;
 
+        sum = 0L;
         for (int i = 1; i <= length && i < prices.length; i++) {
-            sum =  prices[i] + dynamicExecute(results, prices, length - i);
+            sum =  Math.max(sum, prices[i] + dynamicExecute(results, prices, length - i));
         }
 
         results.put(length, sum);
