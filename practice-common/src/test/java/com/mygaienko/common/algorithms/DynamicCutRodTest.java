@@ -85,11 +85,31 @@ public class DynamicCutRodTest {
         measureTime(() -> assertEquals(60, DynamicCutRod.dynamicExecute(new HashMap<>(), prices, 20)));
     }
 
+
     @Test
-    public void testDynamicExecute30() {
-        measureTime(() -> assertEquals(90, DynamicCutRod.dynamicExecute(new HashMap<>(), prices, 30)));
+    public void testMemoizedExecute10() {
+        measureTime(() -> assertEquals(30, DynamicCutRod.memoizedCutRod(prices, 10)));
     }
 
+    @Test
+    public void testMemoizedExecute11() {
+        measureTime(() -> assertEquals(31, DynamicCutRod.memoizedCutRod(prices, 11)));
+    }
+
+    @Test
+    public void testMemoizedExecute20() {
+        measureTime(() -> assertEquals(60, DynamicCutRod.memoizedCutRod(prices, 20)));
+    }
+
+    @Test
+    public void testMemoizedExecute40() {
+        measureTime(() -> assertEquals(120, DynamicCutRod.memoizedCutRod(prices, 40)));
+    }
+
+    @Test
+    public void testMemoizedExecute80() {
+        measureTime(() -> assertEquals(240, DynamicCutRod.memoizedCutRod(prices, 80)));
+    }
 
     private void measureTime(Runnable r) {
         long start = System.nanoTime();
