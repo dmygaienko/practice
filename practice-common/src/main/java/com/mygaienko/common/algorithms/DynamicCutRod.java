@@ -23,25 +23,18 @@ public class DynamicCutRod {
     }
 
     public static long dynamicExecute(Map<Long, Long> results, long[] prices, long length) {
+        Long sum = results.get(length);
+        if (sum != null) {
+            return sum;
+        }
+
         if (length == 0) return 0;
 
-        long sum = 0;
-
-        for (int i = 1; i <= length; i++) {
-            Long sumForCurrentLength;
-
-            if (i < prices.length) {
-                sumForCurrentLength = prices[i] + dynamicExecute(results, prices, length - i);
-            } else {
-                sumForCurrentLength = results.get(i);
-                if (sumForCurrentLength == null) {
-                    sumForCurrentLength = 0L;
-                }
-            }
-
-            sum = Math.max(sum, sumForCurrentLength);
-            results.put(length, sum);
+        for (int i = 1; i <= length && i < prices.length; i++) {
+            sum =  prices[i] + dynamicExecute(results, prices, length - i);
         }
+
+        results.put(length, sum);
 
         return sum;
     }

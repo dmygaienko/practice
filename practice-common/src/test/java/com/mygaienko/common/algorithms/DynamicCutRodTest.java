@@ -85,6 +85,15 @@ public class DynamicCutRodTest {
         measureTime(() -> assertEquals(60, DynamicCutRod.dynamicExecute(new HashMap<>(), prices, 20)));
     }
 
+    @Test
+    public void testDynamicExecute40() {
+        measureTime(() -> assertEquals(120, DynamicCutRod.dynamicExecute(new HashMap<>(), prices, 40)));
+    }
+
+    @Test
+    public void testDynamicExecute80() {
+        measureTime(() -> assertEquals(240, DynamicCutRod.dynamicExecute(new HashMap<>(), prices, 80)));
+    }
 
     @Test
     public void testMemoizedExecute10() {
