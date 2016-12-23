@@ -42,4 +42,24 @@ public class DynamicCutRod {
 
         return sum;
     }
+
+    public static long memoizedCutRod(long[] prices, int length) {
+        long[] memoized = new long[length];
+
+        return memoizedCutRod(memoized, prices, length);
+
+    }
+
+    private  static long memoizedCutRod(long[] memoized, long[] prices, int length) {
+        if (memoized[length] >= 0) return memoized[length];
+
+        if (length ==0) return 0;
+
+        long sum = 0;
+        for (int i = 1; i <= length; i ++) {
+            sum = Math.max()
+        }
+    }
+
+
 }
