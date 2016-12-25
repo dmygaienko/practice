@@ -1,5 +1,6 @@
 package com.mygaienko.common.algorithms;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -30,4 +31,6 @@ public class ForkJoinDynamicCutRodTest {
     public void execute40() throws Exception {
         assertEquals(120, ForkJoinDynamicCutRod.execute(prices, 40));
     }
+
+
 }

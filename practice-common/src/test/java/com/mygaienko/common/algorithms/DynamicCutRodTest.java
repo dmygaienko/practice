@@ -120,6 +120,12 @@ public class DynamicCutRodTest {
         measureTime(() -> assertEquals(240, DynamicCutRod.memoizedCutRod(prices, 80)));
     }
 
+    @Test
+    public void execute80and80() throws Exception {
+        measureTime(() -> assertEquals(4800, ForkJoinDynamicCutRod.execute(prices, 1600)));
+        measureTime(() -> assertEquals(4800, DynamicCutRod.dynamicExecute(new HashedMap(),prices, 1600)));
+    }
+
     private void measureTime(Runnable r) {
         long start = System.nanoTime();
         r.run();
