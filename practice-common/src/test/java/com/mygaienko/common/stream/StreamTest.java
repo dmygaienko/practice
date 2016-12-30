@@ -58,6 +58,13 @@ public class StreamTest {
     }
 
     @Test
+    public void testFlatMap() {
+        Stream<String> mappedStream = stringStream.flatMap(x -> Arrays.stream(x.split(" ")));
+
+        System.out.println(Arrays.toString(mappedStream.toArray()));
+    }
+
+    @Test
     public void testFilter() {
         Stream<String> mappedStream = stringStream.filter(x -> x.matches("string [1|2|3|4|5]"));
 
