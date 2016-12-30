@@ -15,7 +15,9 @@ public class QuickSort {
         }
     }
 
-    /*  Partition (А, р, г)
+    /*
+     p.199 Кормен
+     Partition (А, р, г)
      1 х = А[г]
      2 i = р — 1
      3 for j = р to г — 1
