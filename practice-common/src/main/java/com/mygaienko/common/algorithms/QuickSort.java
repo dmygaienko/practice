@@ -5,28 +5,50 @@ package com.mygaienko.common.algorithms;
  */
 public class QuickSort {
 
-    public void sort(int[] array, int p, int r) {
+    public static void sort(int[] array) {
+        sort(array, 0, array.length - 1);
+    }
 
+    private static void sort(int[] a, int p, int r) {
         if (p < r) {
-            int q = partition(array, p, r);
+            int q = partition(a, p, r);
 
-            sort(array, p, q - 1);
-            sort(array, p, q + 1);
+            sort(a, p, q - 1);
+            sort(a, q + 1, r);
         }
     }
 
     /*
      p.199 Кормен
-     Partition (А, р, г)
-     1 х = А[г]
-     2 i = р — 1
-     3 for j = р to г — 1
-     4 if A[j] < х
-     5 i = i + 1
-     6 Обменять А [г] и A[j]
-     7 Обменять А [г + 1] и А [г]
-     8 return г + 1*/
-    private int partition(int[] array, int p, int r) {
-        return 0;
-    };
+
+     a[p.. i] < x (pivot)
+
+     a[j.. r] >= x (pivot)
+
+   */
+    private static int partition(int[] a, int p, int r) {
+
+        int x = a[r];
+        int i = p - 1;
+
+        for (int j = p; j < r; j++) {
+            if (a[j] <= x) {
+                i = i + 1;
+
+                int tempI = a[i];
+                a[i] = a[j];
+                a[j] = tempI;
+            }
+        }
+
+        //ставим опорный елемент посредине массива и возвращаем его индекс
+        int pivotI = i + 1;
+
+        int temp = a[pivotI];
+        a[pivotI] = a[r];
+        a[r] = temp;
+
+        return pivotI;
+    }
+
 }
