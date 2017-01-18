@@ -12,6 +12,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 /**
+ *           List<CompletableFuture<Double>> relevanceFutures = topSites.stream().
+             map(site -> CompletableFuture.supplyAsync(() -> downloadSite(site), executor)).
+             map(contentFuture -> contentFuture.thenApply(this::parse)).
+             map(docFuture -> docFuture.thenCompose(this::calculateRelevance)).
+             collect(Collectors.<CompletableFuture<Double>>toList());
+ *
  * Created by dmygaenko on 18/01/2017.
  */
 @RunWith(MockitoJUnitRunner.class)
