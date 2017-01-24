@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <bean_parent_child id="1"  name="beanAName1" />
+    <bean_parent_child id="11" name="beanAName11" parent_id="1"/>
+    <bean_parent_child id="12" name="beanAName12" parent_id="1"/>
+    <bean_parent_child id="13" name="beanAName13" parent_id="1"/>
+
+    <bean_parent_child id="2"  name="beanAName2" />
+    <bean_parent_child id="21" name="beanAName21" parent_id="2"/>
+    <bean_parent_child id="22" name="beanAName22" parent_id="2"/>
+    <bean_parent_child id="23" name="beanAName23" parent_id="2"/>
+
+</dataset>
