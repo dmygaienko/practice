@@ -36,12 +36,37 @@ public class Main {
     private static int collect(int[] xyz, int n, int current, int matches) {
         if (current == n || n == 0) return matches;
 
-        if (++xyz[0] * ++xyz[1] * ++xyz[2] < n) {
-            collectGreaterCub(xyz);
+        if (n == 1) {
+            return 4 * 3;
+        }
+
+        int potentialN = (xyz[0] + 1) * (xyz[1] + 1) * (xyz[2] + 1);
+        if (potentialN <= n) {
+            collectGreaterCub(xyz, matches);
         } else {
-            increasePanels();
+            //increasePanels(xyz);
         }
         return collect(xyz, n, current, matches);
     }
+
+    public static int collectGreaterCub(int[] xyz, int matches) {
+        int buildByY = xyz[0] * 1 * xyz[2] * 4;
+        int glueByY = xyz[0] * xyz[2] * 4 - ((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1));
+
+        ++xyz[1];
+
+        int buildByZ = xyz[0] * xyz[1] * 1 * 4;
+        int glueByZ = xyz[0] * xyz[1] * 4 - ((xyz[0]-1) * xyz[1]) - (xyz[0] * (xyz[1]-1));
+
+        ++xyz[2];
+
+        int buildByX = 1 * xyz[1] * xyz[2] * 4;
+        int glueByX = xyz[1] * xyz[2] * 4 - ((xyz[1]-1) * xyz[2]) - (xyz[1] * (xyz[2]-1));
+
+        ++xyz[0];
+
+        return (matches + buildByY + buildByZ + buildByX - glueByY - glueByZ - glueByX);
+    }
+
 
 }

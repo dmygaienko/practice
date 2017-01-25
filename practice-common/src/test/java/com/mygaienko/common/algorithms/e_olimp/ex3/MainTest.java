@@ -38,5 +38,19 @@ public class MainTest {
     @Test
     public void testExecute() throws Exception {
         assertEquals(0, Main.execute(0));
+        assertEquals(12, Main.execute(1));
+    }
+
+    @Test
+    public void testGlue() throws Exception {
+        int[] xyz = new int[] {1, 1, 2};
+        System.out.println(((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1)));
+        assertEquals(7, xyz[0] * xyz[2] * 4 - ((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1)));
+    }
+
+    @Test
+    public void testCollectGreaterCub() throws Exception {
+        int[] xyz = new int[] {2, 2, 2};
+        System.out.println(Main.collectGreaterCub(xyz, 0));
     }
 }
