@@ -36,6 +36,11 @@ public class WildCardUtilTest {
         //List<Integer> list = new ArrayList<Number>(); //error contravariance impossible
 
         List<? extends Number> producer = new ArrayList<Integer>(); //джокер символ
+        for (Number number : producer) {
+            System.out.println(number);
+        }
+
         List<? super Integer> consumer = new ArrayList<Integer>();
+        consumer.add(new Integer("1"));
     }
 }
