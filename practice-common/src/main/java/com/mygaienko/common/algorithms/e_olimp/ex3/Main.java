@@ -38,11 +38,13 @@ public class Main {
 
         if (n == 1) {
             return 4 * 3;
+        } else if (n > 0 && matches == 0) {
+            matches = 4 * 3;
         }
 
         int potentialN = (xyz[0] + 1) * (xyz[1] + 1) * (xyz[2] + 1);
         if (potentialN <= n) {
-            matches += collectGreaterCub(xyz, matches);
+            matches += collectGreaterCub(xyz);
         } else {
             return matches + increasePanels(xyz, n - current);
         }
@@ -61,23 +63,29 @@ public class Main {
         return 0;
     }
 
-    public static int collectGreaterCub(int[] xyz, int matches) {
-        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3; // - glues between them
-        int glueByY = xyz[0] * xyz[2] * 4 - (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
+    public static int collectGreaterCub(int[] xyz) {
+        int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
+        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4; // - glues between them
+        int gluesFacesByY = xyz[0] * xyz[2] * 4 - gluesBetweenByY;
+        int byY = buildByY - gluesFacesByY;
 
         ++xyz[1];
 
-        int buildByZ = xyz[0] * xyz[1] * 1 * 4 * 3; // - glues between them
-        int glueByZ = xyz[0] * xyz[1] * 4 - (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
+        int gluesBetweenByX = (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
+        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4; // - glues between them
+        int gluesFacesByX = xyz[0] * xyz[1] * 4 - gluesBetweenByX;
+        int byX = buildByX - gluesFacesByX;
 
         ++xyz[2];
 
-        int buildByX = 1 * xyz[1] * xyz[2] * 4 * 3; // - glues between them
-        int glueByX = xyz[1] * xyz[2] * 4 - (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) - (xyz[1] * (xyz[2]-1)));
+        int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
+        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4; // - glues between them
+        int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
+        int byZ = buildByZ - gluesFacesByZ;
 
         ++xyz[0];
 
-        return (matches + buildByY + buildByZ + buildByX - glueByY - glueByZ - glueByX);
+        return byY + byX + byZ;
     }
 
 
