@@ -41,6 +41,7 @@ public class MainTest {
         assertEquals(12, Main.execute(1));
         assertEquals(54, Main.execute(8));
         assertEquals(144, Main.execute(27));
+        assertEquals(300, Main.execute(64));
     }
 
     @Test
