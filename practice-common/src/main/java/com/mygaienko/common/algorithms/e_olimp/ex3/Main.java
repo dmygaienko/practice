@@ -44,9 +44,20 @@ public class Main {
         if (potentialN <= n) {
             collectGreaterCub(xyz, matches);
         } else {
-            //increasePanels(xyz);
+            increasePanels(xyz, n - current);
         }
         return collect(xyz, n, current, matches);
+    }
+
+    private static void increasePanels(int[] xyz, int delta) {
+        int potentialPanel = xyz[0] * 1 * xyz[2];
+        if (potentialPanel == delta) {
+            //build and glue
+        } else if (potentialPanel > delta)  {
+            //бинарно попытаться подобрать
+        } else if (potentialPanel < delta) {
+            //нарастить с другой стороны
+        }
     }
 
     public static int collectGreaterCub(int[] xyz, int matches) {
