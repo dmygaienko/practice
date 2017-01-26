@@ -53,6 +53,6 @@ public class MainTest {
     @Test
     public void testCollectGreaterCub() throws Exception {
         int[] xyz = new int[] {2, 2, 2};
-        System.out.println(Main.collectGreaterCub(xyz, 0));
+        System.out.println(Main.collectGreaterCub(xyz));
     }
 }
