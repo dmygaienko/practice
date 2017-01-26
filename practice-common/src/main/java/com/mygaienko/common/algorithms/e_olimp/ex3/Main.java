@@ -16,6 +16,13 @@ import java.util.Scanner;
  ??(2 на 2 на 2)
  ??(3 на 3 на 3)
 
+            Z
+            |
+            |
+            |
+           / \
+         /    \
+       X       Y
  */
 public class Main {
 
