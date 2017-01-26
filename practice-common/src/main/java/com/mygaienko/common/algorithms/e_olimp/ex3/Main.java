@@ -42,14 +42,14 @@ public class Main {
 
         int potentialN = (xyz[0] + 1) * (xyz[1] + 1) * (xyz[2] + 1);
         if (potentialN <= n) {
-            collectGreaterCub(xyz, matches);
+            matches += collectGreaterCub(xyz, matches);
         } else {
-            increasePanels(xyz, n - current);
+            return matches + increasePanels(xyz, n - current);
         }
-        return collect(xyz, n, current, matches);
+        return collect(xyz, n, potentialN, matches);
     }
 
-    private static void increasePanels(int[] xyz, int delta) {
+    private static int increasePanels(int[] xyz, int delta) {
         int potentialPanel = xyz[0] * 1 * xyz[2];
         if (potentialPanel == delta) {
             //build and glue
@@ -58,21 +58,22 @@ public class Main {
         } else if (potentialPanel < delta) {
             //нарастить с другой стороны
         }
+        return 0;
     }
 
     public static int collectGreaterCub(int[] xyz, int matches) {
-        int buildByY = xyz[0] * 1 * xyz[2] * 4;
-        int glueByY = xyz[0] * xyz[2] * 4 - ((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1));
+        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3; // - glues between them
+        int glueByY = xyz[0] * xyz[2] * 4 - (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
 
         ++xyz[1];
 
-        int buildByZ = xyz[0] * xyz[1] * 1 * 4;
-        int glueByZ = xyz[0] * xyz[1] * 4 - ((xyz[0]-1) * xyz[1]) - (xyz[0] * (xyz[1]-1));
+        int buildByZ = xyz[0] * xyz[1] * 1 * 4 * 3; // - glues between them
+        int glueByZ = xyz[0] * xyz[1] * 4 - (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
 
         ++xyz[2];
 
-        int buildByX = 1 * xyz[1] * xyz[2] * 4;
-        int glueByX = xyz[1] * xyz[2] * 4 - ((xyz[1]-1) * xyz[2]) - (xyz[1] * (xyz[2]-1));
+        int buildByX = 1 * xyz[1] * xyz[2] * 4 * 3; // - glues between them
+        int glueByX = xyz[1] * xyz[2] * 4 - (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) - (xyz[1] * (xyz[2]-1)));
 
         ++xyz[0];
 

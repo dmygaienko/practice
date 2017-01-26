@@ -39,6 +39,7 @@ public class MainTest {
     public void testExecute() throws Exception {
         assertEquals(0, Main.execute(0));
         assertEquals(12, Main.execute(1));
+        assertEquals(12, Main.execute(8));
     }
 
     @Test
@@ -47,6 +48,7 @@ public class MainTest {
         System.out.println(((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1)));
         assertEquals(7, xyz[0] * xyz[2] * 4 - ((xyz[0]-1) * xyz[2]) - (xyz[0] * (xyz[2]-1)));
     }
+
 
     @Test
     public void testCollectGreaterCub() throws Exception {
