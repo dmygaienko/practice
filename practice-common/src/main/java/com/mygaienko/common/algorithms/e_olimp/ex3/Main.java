@@ -72,21 +72,24 @@ public class Main {
 
     public static int collectGreaterCub(int[] xyz) {
         int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
-        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4; // - glues between them
+        int pivotsY = (xyz[0] > 1 && xyz[2] > 1) ? (xyz[0]-1) * (xyz[2]-1) : 0;
+        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
         int gluesFacesByY = xyz[0] * xyz[2] * 4 - gluesBetweenByY;
         int byY = buildByY - gluesFacesByY;
 
         ++xyz[1];
 
         int gluesBetweenByX = (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
-        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4; // - glues between them
+        int pivotsX = (xyz[0] > 1 && xyz[1] > 1) ? (xyz[0]-1) * (xyz[1]-1) : 0;
+        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4 + pivotsX; // - glues between them
         int gluesFacesByX = xyz[0] * xyz[1] * 4 - gluesBetweenByX;
         int byX = buildByX - gluesFacesByX;
 
         ++xyz[2];
 
         int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
-        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
+        int pivotsZ = (xyz[1] > 1 && xyz[2] > 1) ? (xyz[1]-1) * (xyz[2]-1) : 0;
+        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4 + pivotsZ; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
         int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
         int byZ = buildByZ - gluesFacesByZ;
 
