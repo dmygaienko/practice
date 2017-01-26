@@ -39,7 +39,8 @@ public class MainTest {
     public void testExecute() throws Exception {
         assertEquals(0, Main.execute(0));
         assertEquals(12, Main.execute(1));
-        assertEquals(12, Main.execute(8));
+        assertEquals(53, Main.execute(8));
+        assertEquals(136, Main.execute(27));
     }
 
     @Test
