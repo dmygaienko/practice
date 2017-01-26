@@ -79,7 +79,7 @@ public class Main {
         ++xyz[2];
 
         int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
-        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4; // - glues between them
+        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
         int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
         int byZ = buildByZ - gluesFacesByZ;
 
