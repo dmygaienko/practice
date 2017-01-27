@@ -47,70 +47,96 @@ public class Main {
             return 4 * 3;
         } else if (n > 0 && matches == 0) {
             matches = 4 * 3;
+            current++;
         }
 
         int potentialN = (xyz[0] + 1) * (xyz[1] + 1) * (xyz[2] + 1);
         if (potentialN <= n) {
             matches += collectGreaterCub(xyz);
         } else {
-            return matches + increasePanels(xyz, n - current);
+            return matches + increasePanels(xyz, n - current, 0);
         }
         return collect(xyz, n, potentialN, matches);
     }
 
-    private static int increasePanels(int[] xyz, int delta) {
+    private static int increasePanels(int[] xyz, int delta, int direction) {
         int matches = 0;
+        if (delta == 0) return matches;
 
-        int potentialPanel = xyz[0] * 1 * xyz[2];
-        if (potentialPanel == delta) {
-            //build and glue
-            matches +=  buildPanelByY(xyz);
+        int potentialPanel = getPotentialPanel(xyz, direction);
+        if (potentialPanel <= delta) {
+
+            if (direction == 0) {
+                //build and glue
+                matches += buildPanelByY(xyz);
+            } else if (direction == 1) {
+                matches += buildPanelByX(xyz);
+            } else {
+                return matches + buildPanelByZ(xyz);
+            }
+
+            matches +=  increasePanels(xyz, delta - potentialPanel, direction == 0 ? 1 : 2);
+
         } else if (potentialPanel > delta)  {
-            int side = new Double(Math.pow(delta, 1 / 2)).intValue();
+            int side = new Double(Math.pow(delta, 1 / 2d)).intValue();
             matches += buildSidedPanelWithRemaining(side, new Double(delta - Math.pow(side, 2)).intValue());
-        } else if (potentialPanel < delta) {
-
-            // нарастить панельки до упора
-            matches +=  buildPanelByY(xyz);
         }
         return matches;
     }
 
+    private static int getPotentialPanel(int[] xyz, int direction) {
+        int potentialPanel;
+        if (direction == 0) {
+            potentialPanel = cubesByY(xyz);
+        } else if (direction == 1) {
+            potentialPanel = cubesByX(xyz);
+        } else {
+            potentialPanel = cubesByZ(xyz);
+        }
+        return potentialPanel;
+    }
+
     public static int collectGreaterCub(int[] xyz) {
-        int byY = buildPanelByY(xyz);
-        ++xyz[1];
-
-        int byX = buildPanelByX(xyz);
-        ++xyz[2];
-
-        int byZ = buildPanelByZ(xyz);
-        ++xyz[0];
-
-        return byY + byX + byZ;
+        return buildPanelByY(xyz) + buildPanelByX(xyz) + buildPanelByZ(xyz);
     }
 
     private static int buildPanelByZ(int[] xyz) {
         int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
         int pivotsZ = (xyz[1] > 1 && xyz[2] > 1) ? (xyz[1]-1) * (xyz[2]-1) : 0;
-        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4 + pivotsZ; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
+        int buildByZ = 1 * cubesByZ(xyz) * 4 * 3 - gluesBetweenByZ * 4 + pivotsZ; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
         int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
+        ++xyz[0];
         return buildByZ - gluesFacesByZ;
+    }
+
+    private static int cubesByZ(int[] xyz) {
+        return xyz[1] * xyz[2];
     }
 
     private static int buildPanelByX(int[] xyz) {
         int gluesBetweenByX = (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
         int pivotsX = (xyz[0] > 1 && xyz[1] > 1) ? (xyz[0]-1) * (xyz[1]-1) : 0;
-        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4 + pivotsX; // - glues between them
+        int buildByX = cubesByX(xyz) * 1 * 4 * 3 - gluesBetweenByX * 4 + pivotsX; // - glues between them
         int gluesFacesByX = xyz[0] * xyz[1] * 4 - gluesBetweenByX;
+        ++xyz[2];
         return buildByX - gluesFacesByX;
+    }
+
+    private static int cubesByX(int[] xyz) {
+        return xyz[0] * xyz[1];
     }
 
     private static int buildPanelByY(int[] xyz) {
         int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
         int pivotsY = (xyz[0] > 1 && xyz[2] > 1) ? (xyz[0]-1) * (xyz[2]-1) : 0;
-        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
+        int buildByY = cubesByY(xyz) * 1 * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
         int gluesFacesByY = xyz[0] * xyz[2] * 4 - gluesBetweenByY;
+        ++xyz[1];
         return buildByY - gluesFacesByY;
+    }
+
+    private static int cubesByY(int[] xyz) {
+        return xyz[0] * xyz[2];
     }
 
     private static int buildSidedPanelWithRemaining(int side, int remaining) {
