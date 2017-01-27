@@ -64,43 +64,48 @@ public class Main {
         int potentialPanel = xyz[0] * 1 * xyz[2];
         if (potentialPanel == delta) {
             //build and glue
-            matches +=  buildPanelByX(xyz);
+            matches +=  buildPanelByY(xyz);
         } else if (potentialPanel > delta)  {
             int side = new Double(Math.pow(delta, 1 / 2)).intValue();
-            matches += buildSidedPanelByX(xyz, side, new Double(delta - Math.pow(side, 2)).intValue());
+            matches += buildSidedPanelWithRemaining(side, new Double(delta - Math.pow(side, 2)).intValue());
         } else if (potentialPanel < delta) {
 
             // нарастить панельки до упора
-            matches +=  buildPanelByX(xyz);
+            matches +=  buildPanelByY(xyz);
         }
         return matches;
     }
 
     public static int collectGreaterCub(int[] xyz) {
-        int byY = buildPanelByX(xyz);
-
+        int byY = buildPanelByY(xyz);
         ++xyz[1];
 
-        int gluesBetweenByX = (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
-        int pivotsX = (xyz[0] > 1 && xyz[1] > 1) ? (xyz[0]-1) * (xyz[1]-1) : 0;
-        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4 + pivotsX; // - glues between them
-        int gluesFacesByX = xyz[0] * xyz[1] * 4 - gluesBetweenByX;
-        int byX = buildByX - gluesFacesByX;
-
+        int byX = buildPanelByX(xyz);
         ++xyz[2];
 
-        int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
-        int pivotsZ = (xyz[1] > 1 && xyz[2] > 1) ? (xyz[1]-1) * (xyz[2]-1) : 0;
-        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4 + pivotsZ; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
-        int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
-        int byZ = buildByZ - gluesFacesByZ;
-
+        int byZ = buildPanelByZ(xyz);
         ++xyz[0];
 
         return byY + byX + byZ;
     }
 
+    private static int buildPanelByZ(int[] xyz) {
+        int gluesBetweenByZ = (xyz[1] == 1 && xyz[2]== 1 ? 0 : ((xyz[1]-1) * xyz[2]) + (xyz[1] * (xyz[2]-1)));
+        int pivotsZ = (xyz[1] > 1 && xyz[2] > 1) ? (xyz[1]-1) * (xyz[2]-1) : 0;
+        int buildByZ = 1 * xyz[1] * xyz[2] * 4 * 3 - gluesBetweenByZ * 4 + pivotsZ; // - glues between them ?? как высчитать что клеим последний кубик, на который требуется не 4, а 5 спичек
+        int gluesFacesByZ = xyz[1] * xyz[2] * 4 - gluesBetweenByZ;
+        return buildByZ - gluesFacesByZ;
+    }
+
     private static int buildPanelByX(int[] xyz) {
+        int gluesBetweenByX = (xyz[0] == 1 && xyz[1]== 1 ? 0 : ((xyz[0]-1) * xyz[1]) + (xyz[0] * (xyz[1]-1)));
+        int pivotsX = (xyz[0] > 1 && xyz[1] > 1) ? (xyz[0]-1) * (xyz[1]-1) : 0;
+        int buildByX = xyz[0] * xyz[1] * 1 * 4 * 3 - gluesBetweenByX * 4 + pivotsX; // - glues between them
+        int gluesFacesByX = xyz[0] * xyz[1] * 4 - gluesBetweenByX;
+        return buildByX - gluesFacesByX;
+    }
+
+    private static int buildPanelByY(int[] xyz) {
         int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
         int pivotsY = (xyz[0] > 1 && xyz[2] > 1) ? (xyz[0]-1) * (xyz[2]-1) : 0;
         int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
@@ -108,12 +113,12 @@ public class Main {
         return buildByY - gluesFacesByY;
     }
 
-    private static int buildSidedPanelByX(int[] xyz, int side, int remaining) {
-        int gluesBetweenByY = (side == 1 ? 0 : ((side-1) * side) + (side * (side-1)));
-        int pivotsY = (side > 1 && side > 1) ? (side-1) * (side-1) : 0;
-        int buildByY = side * 1 * side * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
-        int gluesFacesByY = side * side * 4 - gluesBetweenByY;
-        return buildByY - gluesFacesByY + buildRemaining(side, remaining);
+    private static int buildSidedPanelWithRemaining(int side, int remaining) {
+        int gluesBetween = (side == 1 ? 0 : ((side-1) * side) + (side * (side-1)));
+        int pivots = (side > 1 && side > 1) ? (side-1) * (side-1) : 0;
+        int build = side * 1 * side * 4 * 3 - gluesBetween * 4 + pivots; // - glues between them
+        int gluesFaces = side * side * 4 - gluesBetween;
+        return build - gluesFaces + buildRemaining(side, remaining);
     }
 
     private static int buildRemaining(int side, int remaining) {

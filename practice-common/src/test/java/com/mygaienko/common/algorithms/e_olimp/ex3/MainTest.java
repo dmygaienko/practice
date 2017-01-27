@@ -42,7 +42,9 @@ public class MainTest {
         assertEquals(54, Main.execute(8));
         assertEquals(62, Main.execute(9));
         assertEquals(67, Main.execute(10));
+        assertEquals(72, Main.execute(11));
         assertEquals(144, Main.execute(27));
+        assertEquals(162, Main.execute(30));
         assertEquals(300, Main.execute(64));
     }
 
