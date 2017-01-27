@@ -59,23 +59,25 @@ public class Main {
     }
 
     private static int increasePanels(int[] xyz, int delta) {
+        int matches = 0;
+
         int potentialPanel = xyz[0] * 1 * xyz[2];
         if (potentialPanel == delta) {
             //build and glue
+            matches +=  buildPanelByX(xyz);
         } else if (potentialPanel > delta)  {
-            //бинарно попытаться подобрать
+            int side = new Double(Math.pow(delta, 1 / 2)).intValue();
+            matches += buildSidedPanelByX(xyz, side, new Double(delta - Math.pow(side, 2)).intValue());
         } else if (potentialPanel < delta) {
-            //нарастить с другой стороны
+
+            // нарастить панельки до упора
+            matches +=  buildPanelByX(xyz);
         }
-        return 0;
+        return matches;
     }
 
     public static int collectGreaterCub(int[] xyz) {
-        int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
-        int pivotsY = (xyz[0] > 1 && xyz[2] > 1) ? (xyz[0]-1) * (xyz[2]-1) : 0;
-        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
-        int gluesFacesByY = xyz[0] * xyz[2] * 4 - gluesBetweenByY;
-        int byY = buildByY - gluesFacesByY;
+        int byY = buildPanelByX(xyz);
 
         ++xyz[1];
 
@@ -98,5 +100,28 @@ public class Main {
         return byY + byX + byZ;
     }
 
+    private static int buildPanelByX(int[] xyz) {
+        int gluesBetweenByY = (xyz[0] == 1 && xyz[2]== 1 ? 0 : ((xyz[0]-1) * xyz[2]) + (xyz[0] * (xyz[2]-1)));
+        int pivotsY = (xyz[0] > 1 && xyz[2] > 1) ? (xyz[0]-1) * (xyz[2]-1) : 0;
+        int buildByY = xyz[0] * 1 * xyz[2] * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
+        int gluesFacesByY = xyz[0] * xyz[2] * 4 - gluesBetweenByY;
+        return buildByY - gluesFacesByY;
+    }
 
+    private static int buildSidedPanelByX(int[] xyz, int side, int remaining) {
+        int gluesBetweenByY = (side == 1 ? 0 : ((side-1) * side) + (side * (side-1)));
+        int pivotsY = (side > 1 && side > 1) ? (side-1) * (side-1) : 0;
+        int buildByY = side * 1 * side * 4 * 3 - gluesBetweenByY * 4 + pivotsY; // - glues between them
+        int gluesFacesByY = side * side * 4 - gluesBetweenByY;
+        return buildByY - gluesFacesByY + buildRemaining(side, remaining);
+    }
+
+    private static int buildRemaining(int side, int remaining) {
+        if (remaining == 0) return 0;
+        else if (remaining - side > 0) {
+            return remaining * 3 + 2 * 2;
+        } else {
+            return remaining * 3 + 2;
+        }
+    }
 }
