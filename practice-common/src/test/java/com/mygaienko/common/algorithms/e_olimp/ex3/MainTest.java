@@ -39,10 +39,14 @@ public class MainTest {
     public void testExecute() throws Exception {
         assertEquals(0, Main.execute(0));
         assertEquals(12, Main.execute(1));
+        assertEquals(20, Main.execute(2));
+        assertEquals(28, Main.execute(3));
         assertEquals(54, Main.execute(8));
         assertEquals(62, Main.execute(9));
         assertEquals(67, Main.execute(10));
         assertEquals(72, Main.execute(11));
+        assertEquals(138, Main.execute(25));
+        assertEquals(141, Main.execute(26));
         assertEquals(144, Main.execute(27));
         assertEquals(162, Main.execute(30));
         assertEquals(300, Main.execute(64));
@@ -57,6 +61,18 @@ public class MainTest {
     @Test
     public void test30Execute() throws Exception {
         assertEquals(162, Main.execute(30));
+    }
+
+    @Test
+    public void test3Execute() throws Exception {
+        assertEquals(28, Main.execute(3));
+    }
+
+    @Test
+    public void test26Execute() throws Exception {
+        assertEquals(133, Main.execute(24));
+        assertEquals(138, Main.execute(25));
+        assertEquals(141, Main.execute(26));
     }
 
     @Test
@@ -75,7 +91,7 @@ public class MainTest {
 
     @Test
     public void testMath() throws Exception {
-        double side = Math.pow(8, 1 / 2);
+        double side = new Double(Math.pow(8, 1 / 2d)).intValue();
         System.out.println(side);
     }
 }
