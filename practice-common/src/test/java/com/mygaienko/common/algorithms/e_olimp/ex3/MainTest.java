@@ -40,8 +40,21 @@ public class MainTest {
         assertEquals(0, Main.execute(0));
         assertEquals(12, Main.execute(1));
         assertEquals(54, Main.execute(8));
+        assertEquals(62, Main.execute(9));
+        assertEquals(67, Main.execute(10));
         assertEquals(144, Main.execute(27));
         assertEquals(300, Main.execute(64));
+    }
+
+    @Test
+    public void test10Execute() throws Exception {
+        assertEquals(67, Main.execute(10));
+        assertEquals(72, Main.execute(11));
+    }
+
+    @Test
+    public void test30Execute() throws Exception {
+        assertEquals(162, Main.execute(30));
     }
 
     @Test
@@ -56,5 +69,11 @@ public class MainTest {
     public void testCollectGreaterCub() throws Exception {
         int[] xyz = new int[] {2, 2, 2};
         System.out.println(Main.collectGreaterCub(xyz));
+    }
+
+    @Test
+    public void testMath() throws Exception {
+        double side = Math.pow(8, 1 / 2);
+        System.out.println(side);
     }
 }
