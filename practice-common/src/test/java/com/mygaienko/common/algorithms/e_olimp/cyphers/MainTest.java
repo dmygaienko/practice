@@ -24,4 +24,14 @@ public class MainTest {
         assertEquals("7 6 5 4 3 2 1", Main.getCyphers(7654321));
     }
 
+    @Test
+    public void getSum() throws Exception {
+        assertEquals(3, Main.getSum(21));
+    }
+
+    @Test
+    public void getSum54321() throws Exception {
+        assertEquals(15, Main.getSum(54321));
+    }
+
 }

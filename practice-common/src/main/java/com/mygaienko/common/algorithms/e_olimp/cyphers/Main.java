@@ -23,5 +23,8 @@ public class Main {
         }
     }
 
+    public static long getSum(long l) {
+        return l == 0 ? 0 : l % 10 + getSum(l/10);
+    }
 
 }
