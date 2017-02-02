@@ -25,11 +25,16 @@ public class FileAnalyzerTest {
                 printWriter.print(StringUtils.pad(userId, 15, " ", true) + ": " + StringUtils.pad(expense, 15, " ", true) + "\n");
             }
         }
+    }
 
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(testFile, "rw")) {
+    @Test
+    public void testAnalyze() throws IOException {
+        FileAnalyzer.analyze("bigFile.dat");
+
+      /*  try (RandomAccessFile randomAccessFile = new RandomAccessFile(testFile, "rw")) {
             randomAccessFile.skipBytes(33);
             System.out.println(randomAccessFile.readLine());
-        }
+        }*/
     }
 
 }
