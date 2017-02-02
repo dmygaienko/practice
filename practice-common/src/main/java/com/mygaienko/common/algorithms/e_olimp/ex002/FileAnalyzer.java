@@ -43,11 +43,11 @@ public class FileAnalyzer {
         int batch = 1000;
 
         RandomAccessFile raf = new RandomAccessFile(new File(fileName), "r");
-        raf.skipBytes(batch*bytesPerLine);
-        raf.readLine();
+      /*  raf.skipBytes(batch*bytesPerLine);
+        raf.readLine();*/
         FileChannel channel = raf.getChannel();
 
-        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, 1000*33);
+        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, batch*bytesPerLine);
 
         TreeMap<String, BigDecimal> collect = IntStream
                 .range(0, batch)
@@ -61,7 +61,6 @@ public class FileAnalyzer {
                         (array) -> array[0].trim(), (array) -> new BigDecimal(array[1].trim()), BigDecimal::add, TreeMap::new));
 
         System.out.println(collect);
-
 
                 /*.collect(
                         Collectors.groupingBy(
@@ -83,12 +82,6 @@ public class FileAnalyzer {
         }
 
         * */
-
-
-
-
-
-
         return null;
     }
 
