@@ -49,8 +49,6 @@ public class FileAnalyzer {
         System.out.println(batches);
 
         RandomAccessFile raf = new RandomAccessFile(file, "r");
-      /*  raf.skipBytes(batchSize*bytesPerLine);
-        raf.readLine();*/
         FileChannel channel = raf.getChannel();
 
         IntStream
