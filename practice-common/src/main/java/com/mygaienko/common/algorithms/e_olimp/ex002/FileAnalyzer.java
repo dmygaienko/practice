@@ -12,6 +12,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.toIntExact;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -40,18 +41,39 @@ public class FileAnalyzer {
 
     public static File analyze(String fileName) throws IOException {
         int bytesPerLine = 33;
-        int batch = 1000;
+        int batchSize = 1000;
 
-        RandomAccessFile raf = new RandomAccessFile(new File(fileName), "r");
-      /*  raf.skipBytes(batch*bytesPerLine);
+        File file = new File(fileName);
+        int batches = toIntExact(file.length() / (bytesPerLine * batchSize) + 1);
+
+        System.out.println(batches);
+
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+      /*  raf.skipBytes(batchSize*bytesPerLine);
         raf.readLine();*/
         FileChannel channel = raf.getChannel();
 
-        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, batch*bytesPerLine);
+        IntStream
+                .range(0, batches)
+                .forEach(i -> {
+                    try {
+                        analyzeBatch(channel, i, bytesPerLine, batchSize);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        return null;
+    }
+
+    private static void analyzeBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
+        int bytesPerBatch = batchSize * bytesPerLine;
+
+        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch*i, bytesPerBatch);
 
         TreeMap<String, BigDecimal> collect = IntStream
-                .range(0, batch)
-                .mapToObj((i) -> {
+                .range(0, batchSize)
+                .mapToObj((line) -> {
                     byte[] bytes = new byte[bytesPerLine];
                     buffer.get(bytes, 0, 33);
                     return new String(bytes, Charset.defaultCharset());
@@ -61,28 +83,6 @@ public class FileAnalyzer {
                         (array) -> array[0].trim(), (array) -> new BigDecimal(array[1].trim()), BigDecimal::add, TreeMap::new));
 
         System.out.println(collect);
-
-                /*.collect(
-                        Collectors.groupingBy(
-                                (array) -> array[0],
-                                );*/
-
-        /*
-
-        (array) -> array[0],
-                        (array) -> array[1],
-                        () -> new TreeMap<String, String>(),
-                        (v1, v2) -> {v1 + v2})
-
-
-        for (int i = 0; i < batch; i++) {
-            byte[] bytes = new byte[bytesPerLine];
-            buffer.get(bytes, 0, 33);
-            System.out.println(new String(bytes, Charset.defaultCharset()));
-        }
-
-        * */
-        return null;
     }
 
 }
