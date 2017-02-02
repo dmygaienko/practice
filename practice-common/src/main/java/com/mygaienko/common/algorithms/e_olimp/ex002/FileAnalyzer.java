@@ -1,11 +1,18 @@
 package com.mygaienko.common.algorithms.e_olimp.ex002;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.TreeMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by enda1n on 01.02.2017.
@@ -42,11 +49,45 @@ public class FileAnalyzer {
 
         MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, 1000*33);
 
+        TreeMap<String, BigDecimal> collect = IntStream
+                .range(0, batch)
+                .mapToObj((i) -> {
+                    byte[] bytes = new byte[bytesPerLine];
+                    buffer.get(bytes, 0, 33);
+                    return new String(bytes, Charset.defaultCharset());
+                })
+                .map((str) -> str.split(":"))
+                .collect(Collectors.toMap(
+                        (array) -> array[0].trim(), (array) -> new BigDecimal(array[1].trim()), BigDecimal::add, TreeMap::new));
+
+        System.out.println(collect);
+
+
+                /*.collect(
+                        Collectors.groupingBy(
+                                (array) -> array[0],
+                                );*/
+
+        /*
+
+        (array) -> array[0],
+                        (array) -> array[1],
+                        () -> new TreeMap<String, String>(),
+                        (v1, v2) -> {v1 + v2})
+
+
         for (int i = 0; i < batch; i++) {
             byte[] bytes = new byte[bytesPerLine];
             buffer.get(bytes, 0, 33);
             System.out.println(new String(bytes, Charset.defaultCharset()));
         }
+
+        * */
+
+
+
+
+
 
         return null;
     }
