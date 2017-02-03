@@ -7,6 +7,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
 import java.util.Random;
 
 
@@ -35,6 +36,11 @@ public class FileAnalyzerTest {
             randomAccessFile.skipBytes(33);
             System.out.println(randomAccessFile.readLine());
         }*/
+    }
+
+    @Test
+    public void testCurrentPath() throws IOException {
+        System.out.println(Paths.get("").toAbsolutePath());
     }
 
 }
