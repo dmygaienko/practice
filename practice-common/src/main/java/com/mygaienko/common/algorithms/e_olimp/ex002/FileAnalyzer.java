@@ -1,19 +1,19 @@
 package com.mygaienko.common.algorithms.e_olimp.ex002;
 
+import org.h2.util.StringUtils;
+
 import java.io.*;
 import java.math.BigDecimal;
-import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.TreeMap;
-import java.util.stream.Collector;
+import java.util.*;
+import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.Math.toIntExact;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by enda1n on 01.02.2017.
@@ -42,34 +42,117 @@ public class FileAnalyzer {
     public static File analyze(String fileName) throws IOException {
         int bytesPerLine = 33;
         int batchSize = 1000;
+        int bytesPerBatch = bytesPerLine * batchSize;
 
-        File file = new File(fileName);
-        int batches = toIntExact(file.length() / (bytesPerLine * batchSize) + 1);
+        File bulkFile = new File(fileName);
+        int batches = countBatches(bytesPerBatch, bulkFile);
 
         System.out.println(batches);
 
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        FileChannel channel = raf.getChannel();
+        FileChannel bulkChannel = new RandomAccessFile(bulkFile, "r").getChannel();
 
+        batchProcessing(batches, i -> {
+            try {
+                processBatch(bulkChannel, i, bytesPerLine, batchSize);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+
+        return null;
+    }
+
+    private static int countBatches(int bytesPerBatch, File file) {
+        int batches = toIntExact(file.length() / bytesPerBatch) ;
+        if (file.length() % bytesPerBatch > 0) batches++;
+        return batches;
+    }
+
+    private static void batchProcessing(int batches, IntConsumer consumer) {
         IntStream
                 .range(0, batches)
-                .forEach(i -> {
+                .forEach(consumer);
+    }
+
+    private static void processBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
+        TreeMap<String, BigDecimal> groupedBatch = groupBatch(channel, i, bytesPerLine, batchSize);
+
+        String previousFileName = "analyzed/groupedBatch" + (i - 1) + ".dat";
+        String newFileName = "analyzed/groupedBatch" + i + ".dat";
+
+        File prevFile = new File(previousFileName);
+        if (prevFile.exists()) {
+            FileChannel previousFileChannel = new RandomAccessFile(prevFile, "r").getChannel();
+            mergeGroupedBatchWithFile(groupedBatch, previousFileChannel, bytesPerLine, batchSize, prevFile, newFileName);
+        } else {
+            dumpToFile(groupedBatch, newFileName);
+        }
+    }
+
+    private static void mergeGroupedBatchWithFile(TreeMap<String, BigDecimal> groupedBatch, FileChannel channel, int bytesPerLine,
+                                                  int batchSize, File prevFile, String newFileName) throws IOException {
+
+        int bytesPerBatch = bytesPerLine * batchSize;
+        int batches = countBatches(bytesPerBatch, prevFile);
+
+        batchProcessing(batches,
+                i -> {
                     try {
-                        analyzeBatch(channel, i, bytesPerLine, batchSize);
+                        int currentPosition = bytesPerBatch * i;
+                        long bufferSize = getBufferSize(channel.size(), currentPosition, bytesPerBatch);
+                        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch * i, bufferSize);
+
+                        TreeMap<String, BigDecimal> fileMap = readBufferToMap(buffer, bytesPerLine, toIntExact(bufferSize / bytesPerLine));
+
+                        SortedMap<String, BigDecimal> headGroupedBatch = groupedBatch.headMap(fileMap.lastEntry().getKey());
+                        TreeMap<String, BigDecimal> mergedMap = mergeMaps(headGroupedBatch, fileMap);
+
+                        dumpToFile(mergedMap, newFileName);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
 
-        return null;
+        prevFile.delete();
     }
 
-    private static void analyzeBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
-        int bytesPerBatch = batchSize * bytesPerLine;
+    private static TreeMap<String, BigDecimal> mergeMaps(SortedMap<String, BigDecimal> headGroupedBatch, TreeMap<String, BigDecimal> fileMap) {
+        return Stream.of(headGroupedBatch, fileMap)
+                .map(Map::entrySet)
+                .flatMap(Collection::stream)
+                .collect(
+                        Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                BigDecimal::add,
+                                TreeMap::new
+                        ));
+    }
 
-        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch*i, bytesPerBatch);
+    private static void dumpToFile(TreeMap<String, BigDecimal> groupedBatch, String fileName) throws IOException {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
 
-        TreeMap<String, BigDecimal> collect = IntStream
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true))) {
+            groupedBatch.forEach((key, value) -> {
+                try {
+                    bw.write(getPaddedString(key, value));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+    }
+
+    private static String getPaddedString(String key, BigDecimal value) {
+        return StringUtils.pad(key, 15, " ", true) + ": " + StringUtils.pad(value.toString(), 15, " ", true) + "\n";
+    }
+
+    private static TreeMap<String, BigDecimal> readBufferToMap(MappedByteBuffer buffer, int bytesPerLine, int batchSize) {
+        TreeMap<String, BigDecimal> result = IntStream
                 .range(0, batchSize)
                 .mapToObj((line) -> {
                     byte[] bytes = new byte[bytesPerLine];
@@ -79,8 +162,40 @@ public class FileAnalyzer {
                 .map((str) -> str.split(":"))
                 .collect(Collectors.toMap(
                         (array) -> array[0].trim(), (array) -> new BigDecimal(array[1].trim()), BigDecimal::add, TreeMap::new));
+        buffer.clear();
+        return result;
+    }
 
-        System.out.println(collect);
+    private static TreeMap<String, BigDecimal> groupBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
+        int bytesPerBatch = batchSize * bytesPerLine;
+
+        int currentPosition = bytesPerBatch * i;
+        long bufferSize = getBufferSize(channel.size(), currentPosition, bytesPerBatch);
+
+        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, currentPosition, bufferSize);
+
+        TreeMap<String, BigDecimal> result = IntStream
+                .range(0, toIntExact(bufferSize/bytesPerLine))
+                .mapToObj((line) -> {
+                    byte[] bytes = new byte[bytesPerLine];
+                    buffer.get(bytes, 0, 33);
+                    return new String(bytes, Charset.defaultCharset());
+                })
+                .map((str) -> str.split(":"))
+                .collect(Collectors.toMap(
+                        (array) -> array[0].trim(), (array) -> new BigDecimal(array[1].trim()), BigDecimal::add, TreeMap::new));
+
+        System.out.println(result);
+        return result;
+    }
+
+    private static long getBufferSize(long fileSize, int currentPosition, int bytesPerBatch) throws IOException {
+        long bufferSize = bytesPerBatch;
+
+        if (fileSize < currentPosition + bytesPerBatch) {
+            bufferSize =  fileSize - currentPosition;
+        }
+        return bufferSize;
     }
 
 }
