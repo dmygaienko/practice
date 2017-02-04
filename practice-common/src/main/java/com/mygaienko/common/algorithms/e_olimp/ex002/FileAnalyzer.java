@@ -53,7 +53,7 @@ public class FileAnalyzer {
 
         batchProcessing(batches, i -> {
             try {
-                processBatch(bulkChannel, i, bytesPerLine, batchSize);
+                processBulkBatch(bulkChannel, i, bytesPerLine, batchSize);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -74,7 +74,7 @@ public class FileAnalyzer {
                 .forEach(consumer);
     }
 
-    private static void processBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
+    private static void processBulkBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
         TreeMap<String, BigDecimal> groupedBatch = groupBatch(channel, i, bytesPerLine, batchSize);
 
         String previousFileName = "analyzed/groupedBatch" + (i - 1) + ".dat";
@@ -82,8 +82,12 @@ public class FileAnalyzer {
 
         File prevFile = new File(previousFileName);
         if (prevFile.exists()) {
-            FileChannel previousFileChannel = new RandomAccessFile(prevFile, "r").getChannel();
-            mergeGroupedBatchWithFile(groupedBatch, previousFileChannel, bytesPerLine, batchSize, prevFile, newFileName);
+
+            try (RandomAccessFile raf = new RandomAccessFile(prevFile, "r");
+                 FileChannel previousFileChannel = raf.getChannel()) {
+                mergeGroupedBatchWithFile(groupedBatch, previousFileChannel, bytesPerLine, batchSize, prevFile, newFileName);
+            }
+            prevFile.deleteOnExit();
         } else {
             dumpToFile(groupedBatch, newFileName);
         }
@@ -100,6 +104,7 @@ public class FileAnalyzer {
                     try {
                         int currentPosition = bytesPerBatch * i;
                         long bufferSize = getBufferSize(channel.size(), currentPosition, bytesPerBatch);
+
                         MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch * i, bufferSize);
 
                         TreeMap<String, BigDecimal> fileMap = readBufferToMap(buffer, bytesPerLine, toIntExact(bufferSize / bytesPerLine));
@@ -112,8 +117,6 @@ public class FileAnalyzer {
                         e.printStackTrace();
                     }
                 });
-
-        prevFile.delete();
     }
 
     private static TreeMap<String, BigDecimal> mergeMaps(SortedMap<String, BigDecimal> headGroupedBatch, TreeMap<String, BigDecimal> fileMap) {
@@ -135,7 +138,8 @@ public class FileAnalyzer {
             file.createNewFile();
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true))) {
+        try (FileWriter out = new FileWriter(fileName, true);
+             BufferedWriter bw = new BufferedWriter(out)) {
             groupedBatch.forEach((key, value) -> {
                 try {
                     bw.write(getPaddedString(key, value));
@@ -144,7 +148,6 @@ public class FileAnalyzer {
                 }
             });
         }
-
     }
 
     private static String getPaddedString(String key, BigDecimal value) {
