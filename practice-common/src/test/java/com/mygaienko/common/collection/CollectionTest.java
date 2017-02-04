@@ -6,9 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.mygaienko.common.util.TestUtils.getArrayList;
-import static com.mygaienko.common.util.TestUtils.getHashMap;
-import static com.mygaienko.common.util.TestUtils.getTreeMap;
+import static com.mygaienko.common.util.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -122,7 +120,14 @@ public class CollectionTest {
     }
 
     @Test
-    public void testGetHashMapAndComputeIfPresentOrAbasent() {
+    public void testGetLinkedHashMap() {
+        LinkedHashMap<String, String> hashMap = getLinkedHashMap(0, 5);
+        System.out.println("keySet() :" + hashMap.keySet());
+        System.out.println("values() :" + hashMap.values());
+    }
+
+    @Test
+    public void testGetHashMapAndComputeIfPresentOrAbsent() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.computeIfPresent("1", (key, value) -> value + value);
         hashMap.computeIfAbsent("6", (key) -> "default");
