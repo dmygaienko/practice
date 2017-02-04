@@ -1,13 +1,12 @@
 package com.mygaienko.common.algorithms.e_olimp.ex002;
 
-import antlr.collections.impl.IntRange;
 import org.h2.util.StringUtils;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
@@ -16,6 +15,8 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -37,7 +38,7 @@ public class FileAnalyzerTest {
 
     @Test
     public void testAnalyze() throws IOException {
-        FileAnalyzer.analyze("bigFile.dat");
+        assertEquals("analyzed/groupedBatch99.dat", FileAnalyzer.analyze("bigFile.dat"));
 
       /*  try (RandomAccessFile randomAccessFile = new RandomAccessFile(testFile, "rw")) {
             randomAccessFile.skipBytes(33);
