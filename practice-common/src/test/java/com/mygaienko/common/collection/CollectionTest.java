@@ -109,6 +109,7 @@ public class CollectionTest {
     @Test
     public void testGetTreeMap() {
         TreeMap<String, String> treeMap = getTreeMap(0, 5);
+        treeMap.put("1", "111");
         System.out.println(treeMap);
     }
 
@@ -116,6 +117,7 @@ public class CollectionTest {
     public void testGetHashMapAndCompute() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.compute("6", (key, value) -> value == null ? "default" : value + value);
+        hashMap.put("1", "111");
         System.out.println(hashMap);
     }
 
@@ -124,6 +126,9 @@ public class CollectionTest {
         LinkedHashMap<String, String> hashMap = getLinkedHashMap(0, 5);
         System.out.println("keySet() :" + hashMap.keySet());
         System.out.println("values() :" + hashMap.values());
+
+        hashMap.put("1", "111");
+        System.out.println(hashMap);
     }
 
     @Test
