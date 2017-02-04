@@ -2,13 +2,19 @@ package com.mygaienko.common.algorithms.e_olimp.ex002;
 
 import org.h2.util.StringUtils;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.*;
-import java.util.function.IntConsumer;
+import java.util.Collection;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -39,7 +45,7 @@ public class FileAnalyzer {
            return the last merged file
     */
 
-    public static File analyze(String fileName) throws IOException {
+    public static String analyze(String fileName) throws IOException {
         int bytesPerLine = 33;
         int batchSize = 1000;
         int bytesPerBatch = bytesPerLine * batchSize;
@@ -51,15 +57,18 @@ public class FileAnalyzer {
 
         FileChannel bulkChannel = new RandomAccessFile(bulkFile, "r").getChannel();
 
-        batchProcessing(batches, i -> {
-            try {
-                processBulkBatch(bulkChannel, i, bytesPerLine, batchSize);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        });
-
-        return null;
+        return IntStream
+                .range(0, batches)
+                .mapToObj(i -> {
+                    String file = null;
+                    try {
+                        file = processBulkBatch(bulkChannel, i, bytesPerLine, batchSize);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return file;
+                })
+                .reduce((prev, next) -> next).orElse("");
     }
 
     private static int countBatches(int bytesPerBatch, File file) {
@@ -68,13 +77,7 @@ public class FileAnalyzer {
         return batches;
     }
 
-    private static void batchProcessing(int batches, IntConsumer consumer) {
-        IntStream
-                .range(0, batches)
-                .forEach(consumer);
-    }
-
-    private static void processBulkBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
+    private static String processBulkBatch(FileChannel channel, int i, int bytesPerLine, int batchSize) throws IOException {
         TreeMap<String, BigDecimal> groupedBatch = groupBatch(channel, i, bytesPerLine, batchSize);
 
         String previousFileName = "analyzed/groupedBatch" + (i - 1) + ".dat";
@@ -92,6 +95,7 @@ public class FileAnalyzer {
         } else {
             dumpToFile(groupedBatch, newFileName);
         }
+        return newFileName;
     }
 
     private static void mergeGroupedBatchWithFile(TreeMap<String, BigDecimal> groupedBatch, FileChannel channel, int bytesPerLine,
