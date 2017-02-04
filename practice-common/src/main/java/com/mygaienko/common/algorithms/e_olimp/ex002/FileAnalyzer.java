@@ -85,6 +85,7 @@ public class FileAnalyzer {
 
             try (RandomAccessFile raf = new RandomAccessFile(prevFile, "r");
                  FileChannel previousFileChannel = raf.getChannel()) {
+
                 mergeGroupedBatchWithFile(groupedBatch, previousFileChannel, bytesPerLine, batchSize, prevFile, newFileName);
             }
             prevFile.deleteOnExit();
@@ -99,24 +100,33 @@ public class FileAnalyzer {
         int bytesPerBatch = bytesPerLine * batchSize;
         int batches = countBatches(bytesPerBatch, prevFile);
 
-        batchProcessing(batches,
-                i -> {
-                    try {
-                        int currentPosition = bytesPerBatch * i;
-                        long bufferSize = getBufferSize(channel.size(), currentPosition, bytesPerBatch);
+        String prevFileMapKey = null;
 
-                        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch * i, bufferSize);
+        for (int i = 0; i < batches; i++) {
+            try {
+                int currentPosition = bytesPerBatch * i;
+                long bufferSize = getBufferSize(channel.size(), currentPosition, bytesPerBatch);
 
-                        TreeMap<String, BigDecimal> fileMap = readBufferToMap(buffer, bytesPerLine, toIntExact(bufferSize / bytesPerLine));
+                MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, bytesPerBatch * i, bufferSize);
 
-                        SortedMap<String, BigDecimal> headGroupedBatch = groupedBatch.headMap(fileMap.lastEntry().getKey());
-                        TreeMap<String, BigDecimal> mergedMap = mergeMaps(headGroupedBatch, fileMap);
+                TreeMap<String, BigDecimal> fileMap = readBufferToMap(buffer, bytesPerLine, toIntExact(bufferSize / bytesPerLine));
 
-                        dumpToFile(mergedMap, newFileName);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                SortedMap<String, BigDecimal> headGroupedBatch;
+                String fileMapKey = fileMap.lastEntry( ).getKey();
+                if (prevFileMapKey != null) {
+                    headGroupedBatch = fileMap.subMap(prevFileMapKey, fileMapKey);
+                } else {
+                    headGroupedBatch = groupedBatch.headMap(fileMapKey);
+                }
+                prevFileMapKey = fileMapKey;
+
+                TreeMap<String, BigDecimal> mergedMap = mergeMaps(headGroupedBatch, fileMap);
+
+                dumpToFile(mergedMap, newFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static TreeMap<String, BigDecimal> mergeMaps(SortedMap<String, BigDecimal> headGroupedBatch, TreeMap<String, BigDecimal> fileMap) {
