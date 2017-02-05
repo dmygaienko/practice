@@ -21,7 +21,15 @@ import java.util.stream.Stream;
 
 import static java.lang.Math.toIntExact;
 
+
+//TODO try java8 foreach
+
+/*try (Stream<String> lines = Files.lines(file, Charset.defaultCharset())) {
+        lines.forEachOrdered(System.out::println);
+        }*/
+
 /**
+ *
  * Created by enda1n on 01.02.2017.
  */
 public class FileAnalyzer {
