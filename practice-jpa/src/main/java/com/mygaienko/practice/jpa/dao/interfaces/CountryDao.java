@@ -12,5 +12,11 @@ public interface CountryDao {
 
     Country get(CountryId id);
 
+    void remove(Country country);
+
     List<Country> getCountries();
+
+    void merge(Country country);
+
+    void persist(Country country);
 }

@@ -27,8 +27,9 @@ public class Country implements Serializable{
     @Embedded
     private ZipCode code;
 
+    // when remove from collection and persist city also will be deleted on database
     @JsonManagedReference
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<City> cities;
 
     public Country() {

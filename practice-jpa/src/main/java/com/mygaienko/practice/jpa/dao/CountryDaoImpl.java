@@ -20,7 +20,7 @@ import java.util.List;
 public class CountryDaoImpl implements CountryDao {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    public EntityManager entityManager;
 
     @Override
     public Country get(CountryId id) {
@@ -33,8 +33,25 @@ public class CountryDaoImpl implements CountryDao {
     }
 
     @Override
+    public void remove(Country country) {
+        entityManager.remove(country);
+    }
+
+    @Override
     public List<Country> getCountries() {
         List<Country> countries = entityManager.createNamedQuery("getAllCountriesNamedQuery", Country.class).getResultList();
         return countries;
     }
+
+    @Override
+    public void merge(Country country) {
+        entityManager.merge(country);
+    }
+
+    @Override
+    public void persist(Country country) {
+        entityManager.persist(country);
+    }
+
+
 }
