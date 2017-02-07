@@ -10,10 +10,10 @@ import java.io.Serializable;
 @Embeddable
 public class CountryId implements Serializable{
 
-    @Column
+    @Column(name = "id1")
     private String id1;
 
-    @Column
+    @Column(name = "id2")
     private String id2;
 
     public CountryId() {
