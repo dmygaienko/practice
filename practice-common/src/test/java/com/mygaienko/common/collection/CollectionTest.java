@@ -132,6 +132,14 @@ public class CollectionTest {
     }
 
     @Test
+    public void testLinkedHashSetRetain() {
+        LinkedHashSet<String> hashSet1 = getLinkedHashSet(0, 5);
+        LinkedHashSet<String> hashSet2 = getLinkedHashSet(1, 3);
+        System.out.println(hashSet1.retainAll(hashSet2));
+        System.out.println(hashSet1);
+    }
+
+    @Test
     public void testGetHashMapAndComputeIfPresentOrAbsent() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.computeIfPresent("1", (key, value) -> value + value);

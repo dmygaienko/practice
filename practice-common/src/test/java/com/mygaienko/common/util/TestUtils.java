@@ -47,6 +47,17 @@ public class TestUtils {
         return getMap(i, i1, LinkedHashMap::new);
     }
 
+    public static LinkedHashSet<String> getLinkedHashSet(int i, int i1) {
+        return getSet(i, i1, LinkedHashSet::new);
+    }
+
+    private static <T extends Set<String>> T getSet(int i, int i1, Supplier<T> mapSupplier) {
+        return IntStream
+                .range(i, ++i1)
+                .boxed()
+                .map(Object::toString)
+                .collect(mapSupplier, Set::add, Set::addAll);
+    }
 
     private static <T extends Map<String, String>> T getMap(int i, int i1, Supplier<T> mapSupplier) {
         return IntStream
