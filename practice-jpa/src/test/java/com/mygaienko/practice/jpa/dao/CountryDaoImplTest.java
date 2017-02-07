@@ -53,9 +53,10 @@ public class CountryDaoImplTest {
     public void testRemoveWithOrphanRemoval() throws Exception {
         List<Country> countries = countryDao.getCountries();
         Country country = countries.get(0);
-        country.getCities().remove(0);
-        countryDao.persist(country);
-        List<City> all = cityRepository.findAll();
+        country.getCities();
+        country.getCities().get(0);
+        //countryDao.persist(country);
+        //List<City> all = cityRepository.findAll();
     }
 
 }
