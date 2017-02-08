@@ -20,6 +20,7 @@ public class Main {
 
     public static int execute(int k) {
         if (k < 1 || k > 50) return 0;
+        if (k == 1) return 1;
 
         int n = k;
 
@@ -28,17 +29,17 @@ public class Main {
     }
 
     private static int process(int k, int n, Map<Integer, Set<Pair>> presentation) {
-        int finalN = n;
 
-        IntStream.range(1, n+1)
-                .forEach(i -> {
-                    computePairs(presentation, finalN, i);
-                });
+        while (presentation.get(n-1) == null || presentation.get(n-1).size() != k) {
+            int finalN = ++n;
 
-        if (presentation.get(n).size() == k) {
-            return n;
-        } else
-            return process(k, ++n, presentation);
+            IntStream.range(1, n + 1)
+                    .forEach(i -> {
+                        computePairs(presentation, finalN, i);
+                    });
+        }
+
+        return n-1;
     }
 
     private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int i) {
