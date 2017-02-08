@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.*;
@@ -137,6 +138,24 @@ public class CollectionTest {
         LinkedHashSet<String> hashSet2 = getLinkedHashSet(1, 3);
         System.out.println(hashSet1.retainAll(hashSet2));
         System.out.println(hashSet1);
+    }
+
+    @Test
+    public void testLinkedHashMapWithNewValues() {
+        LinkedHashMap<String, String> map = getLinkedHashMap(0, 100);
+        for (int i = 0; i < 100; i++) {
+            map.put(Integer.toString(new Random().nextInt(100)), "NEW");
+        }
+        System.out.println(map);
+    }
+
+    @Test
+    public void testTreeMapWithNewValues() {
+        TreeMap<String, String> map = getTreeMap(0, 100);
+        for (int i = 0; i < 100; i++) {
+            map.put(Integer.toString(new Random().nextInt(100)), "NEW");
+        }
+        System.out.println(map);
     }
 
     @Test
