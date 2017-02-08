@@ -38,17 +38,17 @@ public class Main {
                         computePairs(presentation, finalN, i);
                     });
         }
-
+        System.out.println(presentation.get(n-1));
         return n-1;
     }
 
     private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int a) {
-        int fraction = finalN / a;
         if (finalN % a == 0) {
 
+            int fraction = finalN / a;
             presentation.compute(finalN, (key, set) -> {
                 if (set == null) {
-                    set = new HashSet<>();
+                    set = new TreeSet<>();
                 }
 
                 int pairA;
@@ -68,7 +68,7 @@ public class Main {
         }
     }
 
-    static class Pair {
+    static class Pair implements Comparable{
 
         private Integer a;
         private Integer b;
@@ -84,6 +84,11 @@ public class Main {
 
         public Integer getB() {
             return b;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            return a.compareTo(((Pair)o).a);
         }
 
         @Override
@@ -103,6 +108,14 @@ public class Main {
             int result = a != null ? a.hashCode() : 0;
             result = 31 * result + (b != null ? b.hashCode() : 0);
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Pair{" +
+                    "a=" + a +
+                    ", b=" + b +
+                    '}';
         }
     }
 }
