@@ -38,7 +38,7 @@ public class Main {
                         computePairs(presentation, finalN, i);
                     });
         }
-        System.out.println(presentation.get(n-1));
+ //       System.out.println(presentation.get(n-1));
         return n-1;
     }
 
