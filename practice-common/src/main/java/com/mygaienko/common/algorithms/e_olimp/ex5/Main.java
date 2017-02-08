@@ -42,8 +42,7 @@ public class Main {
         return n-1;
     }
 
-    private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int i) {
-        int a = i;
+    private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int a) {
         int fraction = finalN / a;
         if (finalN % a == 0) {
 
