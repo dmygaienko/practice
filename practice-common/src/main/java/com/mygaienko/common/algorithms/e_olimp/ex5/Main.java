@@ -1,9 +1,8 @@
 package com.mygaienko.common.algorithms.e_olimp.ex5;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Created by dmygaenko on 07/02/2017.
@@ -19,21 +18,91 @@ public class Main {
         out.flush();
     }
 
-    public static int execute(int n) {
-        if (n < 1 || n > 50) {
-            return -1;
+    public static int execute(int k) {
+        if (k < 1 || k > 50) return 0;
+
+        int n = k;
+
+        Map<Integer, Set<Pair>> presentation = new HashMap<>();
+        return process(k, n, presentation);
+    }
+
+    private static int process(int k, int n, Map<Integer, Set<Pair>> presentation) {
+        int finalN = n;
+
+        IntStream.range(1, n+1)
+                .forEach(i -> {
+                    computePairs(presentation, finalN, i);
+                });
+
+        if (presentation.get(n).size() == k) {
+            return n;
+        } else
+            return process(k, ++n, presentation);
+    }
+
+    private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int i) {
+        int a = i;
+        int fraction = finalN / a;
+        if (finalN % a == 0) {
+
+            presentation.compute(finalN, (key, set) -> {
+                if (set == null) {
+                    set = new HashSet<>();
+                }
+
+                int pairA;
+                int pairB;
+
+                if (fraction > a) {
+                    pairA = a;
+                    pairB = fraction;
+                } else {
+                    pairA = fraction;
+                    pairB = a;
+                }
+
+                set.add(new Pair(pairA, pairB));
+                return set;
+            });
+        }
+    }
+
+    static class Pair {
+
+        private Integer a;
+        private Integer b;
+
+        public Pair(Integer a, Integer b) {
+            this.a = a;
+            this.b = b;
         }
 
-        Map<Integer, Integer> ways = new HashMap<>();
-
-        int k = n;
-        int a = 1;
-        int b = 1;
-
-        if (k / a == b && k % a == 0) {
-            ways.putIfAbsent(a < b ? a : b, a > b ? b : a);
+        public Integer getA() {
+            return a;
         }
 
-        return 0;
+        public Integer getB() {
+            return b;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Pair pair = (Pair) o;
+
+            if (a != null ? !a.equals(pair.a) : pair.a != null) return false;
+            return b != null ? b.equals(pair.b) : pair.b == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = a != null ? a.hashCode() : 0;
+            result = 31 * result + (b != null ? b.hashCode() : 0);
+            return result;
+        }
     }
 }
