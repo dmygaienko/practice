@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 
@@ -54,10 +55,9 @@ public class MainTest {
 
     @Test
     public void computePairs() throws Exception {
-        LinkedHashMap<Long, Set<Main.Pair>> presentation = new LinkedHashMap<>();
-        Main.computePairs(206158430208l, presentation);
-        Main.computePairs(9663676416l, presentation);
-        System.out.println(presentation);
+        TreeSet<Main.Pair> pairs = new TreeSet<>();
+        Main.computePairs(206158430208l, pairs);
+        System.out.println(pairs);
     }
 
     @Test
@@ -91,6 +91,12 @@ public class MainTest {
     }
 
     @Test
+    public void executeDivied() throws Exception {
+        System.out.println(206158430208l/37);
+        System.out.println(206158430208l%37);
+    }
+
+    @Test
     public void execute37() throws Exception {
         System.out.println(Main.execute(37));
     }
@@ -104,7 +110,6 @@ public class MainTest {
     @Test
     public void execute19() throws Exception {
         System.out.println(Main.execute(19));
-        System.out.println(Main.execute(29));
         System.out.println(Main.execute(29));
         System.out.println(Main.execute(49));
     }

@@ -25,48 +25,42 @@ public class Main {
 
         long n = 0;
 
-        Map<Long, Set<Pair>> presentation = new HashMap<>();
-        return process(k, n, presentation);
+        Set<Pair> pairs = new TreeSet<>();
+        return process(k, n, pairs);
     }
 
-    private static long process(int k, long n, Map<Long, Set<Pair>> presentation) {
+    private static long process(int k, long n, Set<Pair> pairs) {
 
        do {
-            n += 12;
-           computePairs(n, presentation);
-       } while (presentation.get(n) == null || presentation.get(n).size() != k);
+           pairs.clear();
+           n += 12;
+           computePairs(n, pairs);
+       } while (pairs.size() != k);
 
         //System.out.println(presentation.get(n));
         return n;
     }
 
-    public static void computePairs(long n, Map<Long, Set<Pair>> presentation) {
-        LongStream.range(1, new Double(Math.pow(n, 0.5)).longValue() + 2).forEach(i -> computePair(presentation, n, i));
+    public static void computePairs(long n, Set<Pair> pairs) {
+        LongStream.range(1, new Double(Math.pow(n, 0.5)).longValue() + 2).forEach(i -> computePair(pairs, n, i));
     }
 
-    public static void computePair(Map<Long, Set<Pair>> presentation, long n, long a) {
+    public static void computePair(Set<Pair> pairs, long n, long a) {
         if (n % a == 0) {
 
             long fraction = n / a;
-            presentation.compute(n, (key, set) -> {
-                if (set == null) {
-                    set = new TreeSet<>();
-                }
 
-                long pairA;
-                long pairB;
+            long pairA;
+            long pairB;
 
-                if (fraction > a) {
-                    pairA = a;
-                    pairB = fraction;
-                } else {
-                    pairA = fraction;
-                    pairB = a;
-                }
-
-                set.add(new Pair(pairA, pairB));
-                return set;
-            });
+            if (fraction > a) {
+                pairA = a;
+                pairB = fraction;
+            } else {
+                pairA = fraction;
+                pairB = a;
+            }
+            pairs.add(new Pair(pairA, pairB));
         }
     }
 
