@@ -2,9 +2,9 @@ package com.mygaienko.common.algorithms.e_olimp.ex5;
 
 import org.junit.Test;
 
+import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.stream.IntStream;
-
-import static org.junit.Assert.*;
 
 
 /*
@@ -53,8 +53,16 @@ import static org.junit.Assert.*;
 public class MainTest {
 
     @Test
+    public void computePairs() throws Exception {
+        LinkedHashMap<Long, Set<Main.Pair>> presentation = new LinkedHashMap<>();
+        Main.computePairs(206158430208l, presentation);
+        Main.computePairs(9663676416l, presentation);
+        System.out.println(presentation);
+    }
+
+    @Test
     public void execute1() throws Exception {
-        System.out.println(Main.execute(1));
+        System.out.println(Main.execute(31));
     }
 
     @Test
@@ -79,12 +87,26 @@ public class MainTest {
 
     @Test
     public void execute6() throws Exception {
-        System.out.println(Main.execute(6));
+        System.out.println(Main.execute(17));
+    }
+
+    @Test
+    public void execute37() throws Exception {
+        System.out.println(Main.execute(37));
+    }
+
+    @Test
+    public void floorMod() throws Exception {
+        int i = Math.floorMod(48, 37);
+        System.out.println(i);
     }
 
     @Test
     public void execute19() throws Exception {
         System.out.println(Main.execute(19));
+        System.out.println(Main.execute(29));
+        System.out.println(Main.execute(29));
+        System.out.println(Main.execute(49));
     }
 
     @Test
@@ -99,8 +121,8 @@ public class MainTest {
 
 
     @Test
-    public void execute1_50() throws Exception {
-        IntStream.range(1, 19).forEach(i -> System.out.println("k = " + i + "; " + "n = " + Main.execute(i)));
+    public void execute1_20() throws Exception {
+        IntStream.range(4, 20).forEach(i -> System.out.println("k = " + i + "; " + "n = " + Main.execute(i)));
     }
 
     @Test
@@ -110,7 +132,7 @@ public class MainTest {
 
     @Test
     public void execute30_31() throws Exception {
-        IntStream.range(30, 31).forEach(i -> System.out.println("k = " + i + "; " + "n = " + Main.execute(i)));
+        IntStream.range(31, 32).forEach(i -> System.out.println("k = " + i + "; " + "n = " + Main.execute(i)));
     }
 
     @Test
