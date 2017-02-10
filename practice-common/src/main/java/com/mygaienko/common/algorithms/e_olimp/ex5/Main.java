@@ -2,7 +2,7 @@ package com.mygaienko.common.algorithms.e_olimp.ex5;
 
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  * Created by dmygaenko on 07/02/2017.
@@ -18,41 +18,43 @@ public class Main {
         out.flush();
     }
 
-    public static int execute(int k) {
+    public static long execute(int k) {
         if (k < 1 || k > 50) return 0;
         if (k == 1) return 1;
+        if (k == 2) return 4;
 
-        int n = k;
+        long n = 0;
 
-        Map<Integer, Set<Pair>> presentation = new HashMap<>();
+        Map<Long, Set<Pair>> presentation = new HashMap<>();
         return process(k, n, presentation);
     }
 
-    private static int process(int k, int n, Map<Integer, Set<Pair>> presentation) {
+    private static long process(int k, long n, Map<Long, Set<Pair>> presentation) {
 
-        while (presentation.get(n-1) == null || presentation.get(n-1).size() != k) {
-            int finalN = ++n;
+       do {
+            n += 12;
+           computePairs(n, presentation);
+       } while (presentation.get(n) == null || presentation.get(n).size() != k);
 
-            IntStream.range(1, n + 1)
-                    .forEach(i -> {
-                        computePairs(presentation, finalN, i);
-                    });
-        }
- //       System.out.println(presentation.get(n-1));
-        return n-1;
+        //System.out.println(presentation.get(n));
+        return n;
     }
 
-    private static void computePairs(Map<Integer, Set<Pair>> presentation, int finalN, int a) {
-        if (finalN % a == 0) {
+    public static void computePairs(long n, Map<Long, Set<Pair>> presentation) {
+        LongStream.range(1, new Double(Math.pow(n, 0.5)).longValue() + 2).forEach(i -> computePair(presentation, n, i));
+    }
 
-            int fraction = finalN / a;
-            presentation.compute(finalN, (key, set) -> {
+    public static void computePair(Map<Long, Set<Pair>> presentation, long n, long a) {
+        if (n % a == 0) {
+
+            long fraction = n / a;
+            presentation.compute(n, (key, set) -> {
                 if (set == null) {
                     set = new TreeSet<>();
                 }
 
-                int pairA;
-                int pairB;
+                long pairA;
+                long pairB;
 
                 if (fraction > a) {
                     pairA = a;
@@ -70,19 +72,19 @@ public class Main {
 
     static class Pair implements Comparable{
 
-        private Integer a;
-        private Integer b;
+        private Long a;
+        private Long b;
 
-        public Pair(Integer a, Integer b) {
+        public Pair(Long a, Long b) {
             this.a = a;
             this.b = b;
         }
 
-        public Integer getA() {
+        public Long getA() {
             return a;
         }
 
-        public Integer getB() {
+        public Long getB() {
             return b;
         }
 
@@ -115,7 +117,7 @@ public class Main {
             return "Pair{" +
                     "a=" + a +
                     ", b=" + b +
-                    '}';
+                    "}\n";
         }
     }
 }
