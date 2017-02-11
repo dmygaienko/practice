@@ -1,7 +1,6 @@
 package com.mygaienko.common.algorithms.e_olimp.ex431;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
@@ -62,6 +61,7 @@ public class Main {
             if (interimSums[v] == k) {
                 context.sets +=1;
             }
+
             surveyVertex(tree, v, weights, n, k, interimSums[v], context);
         }
     }
