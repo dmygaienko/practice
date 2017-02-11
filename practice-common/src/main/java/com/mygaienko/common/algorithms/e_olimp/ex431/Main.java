@@ -34,31 +34,43 @@ public class Main {
     }
 
     private static long countSets(int[][] tree, int[] weights, int n, int k) {
-        long sets = 0;
-
+        Context context = new Context(0);
         //check all vertices as possible root for set
         for (int i = 1; i <= n; i++) {
 
             int currentU = i;
             int sum = weights[i];
             if (sum == k) {
-                sets += 1;
+                context.sets += 1;
             }
 
-            while (sum <= k) {
-
-                for (int v = 1; v <= n; v++) {
-                    int nextV = tree[currentU][v];
-                    sum += weights[nextV];
-                    if (sum == k) {
-                        sets +=1;
-                    }
-                }
-            }
-
+            surveyVertex(tree, currentU, weights, n, k, sum, context);
         }
 
-        return sets;
+        return context.sets;
+    }
+
+    private static void surveyVertex(int[][] tree, int currentU, int[] weights, int n, int k, int sum, Context context) {
+        if (sum > k) return;
+
+        int[] interimSums = new int[n+1];
+        for (int v = 1; v <= n; v++) {
+            int vExists = tree[currentU][v];
+            if (vExists == 0) continue;
+
+            interimSums[v] = sum + weights[v];
+            if (interimSums[v] == k) {
+                context.sets +=1;
+            }
+            surveyVertex(tree, v, weights, n, k, interimSums[v], context);
+        }
+    }
+
+    private static class Context {
+        long sets;
+        public Context(long sets) {
+            this.sets = sets;
+        }
     }
 
 }
