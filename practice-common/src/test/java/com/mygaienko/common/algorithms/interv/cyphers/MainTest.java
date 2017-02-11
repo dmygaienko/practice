@@ -1,4 +1,4 @@
-package com.mygaienko.common.algorithms.e_olimp.cyphers;
+package com.mygaienko.common.algorithms.interv.cyphers;
 
 import org.junit.Test;
 

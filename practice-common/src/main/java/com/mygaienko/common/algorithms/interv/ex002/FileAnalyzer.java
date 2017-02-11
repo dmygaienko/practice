@@ -1,4 +1,4 @@
-package com.mygaienko.common.algorithms.e_olimp.ex002;
+package com.mygaienko.common.algorithms.interv.ex002;
 
 import org.h2.util.StringUtils;
 
