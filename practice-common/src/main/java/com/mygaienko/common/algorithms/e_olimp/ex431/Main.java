@@ -39,20 +39,22 @@ public class Main {
         //check all vertices as possible root for set
         for (int i = 1; i <= n; i++) {
 
+            int currentU = i;
             int sum = weights[i];
             if (sum == k) {
                 sets += 1;
             }
 
-            for (int v = 1; v <= n ; v++) {
-                int nextV = tree[i][v];
+            while (sum <= k) {
 
-                if (v == 1) {
-
+                for (int v = 1; v <= n; v++) {
+                    int nextV = tree[currentU][v];
+                    sum += weights[nextV];
+                    if (sum == k) {
+                        sets +=1;
+                    }
                 }
             }
-
-
 
         }
 
