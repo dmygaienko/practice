@@ -19,12 +19,16 @@ public class Combinations {
 
         if (k <= input.length) {
             // first index sequence: 0, 1, 2, ...
-            for (int i = 0; (subsetIndices[i] = i) < k - 1; i++);
+            for (int i = 0; (subsetIndices[i] = i) < k - 1; i++) {
+                System.out.println("i");
+            }
             subsets.add(getSubset(input, subsetIndices));
             for(;;) {
                 int i;
                 // find position of item that can be incremented
-                for (i = k - 1; i >= 0 && subsetIndices[i] == input.length - k + i; i--);
+                for (i = k - 1; i >= 0 && isMaxIndex(k, input, subsetIndices, i); i--) {
+                    System.out.println("i");
+                }
                 if (i < 0) {
                     break;
                 } else {
@@ -40,6 +44,10 @@ public class Combinations {
         return subsets;
     }
 
+    private static boolean isMaxIndex(int k, int[] input, int[] subsetIndices, int i) {
+        return subsetIndices[i] == input.length - k + i;
+    }
+
     // generate actual subset by index sequence
     static int[] getSubset(int[] input, int[] subset) {
         int[] result = new int[subset.length];
@@ -51,7 +59,6 @@ public class Combinations {
     @Test
     public void testCountSubsets() {
         int[] input = {10, 20, 30, 40, 50};    // input array
-
         countSubsets(3, input);
     }
 
