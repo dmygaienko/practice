@@ -1,6 +1,11 @@
 package com.mygaienko.common.algorithms.e_olimp.ex431;
 
+import com.mygaienko.common.algorithms.PathCombinations;
+
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
@@ -17,60 +22,53 @@ public class Main {
             int k = in.nextInt();
 
             int[] weights = new int[n + 1];
-            int[][] tree = new int[n + 1][n + 1];
 
-            IntStream.range(1, n + 1).forEach(j -> weights[j] = in.nextInt());
+            List<List<Integer>> tree = new ArrayList<>(n + 1);
+            List<List<List<Integer>>> paths = new ArrayList<>(n + 1);
+
+            IntStream.range(1, n + 1).forEach(j -> {
+                weights[j] = in.nextInt();
+                tree.add(j, new ArrayList<>());
+                paths.add(j, new ArrayList<>());
+            });
 
             IntStream.range(1, n).forEach(j -> {
                 int u = in.nextInt();
                 int v = in.nextInt();
-                tree[u][v] = 1;
+                
+                tree.get(u).add(v);
+
             });
 
-            out.println(countSets(tree, weights, n, k));
+            out.println(countTree(tree, weights, n, k, paths));
             out.flush();
         });
     }
 
-    private static long countSets(int[][] tree, int[] weights, int n, int k) {
-        Context context = new Context(0);
-        //check all vertices as possible root for set
-        for (int i = 1; i <= n; i++) {
-
-            int currentU = i;
-            int sum = weights[i];
-            if (sum == k) {
-                context.sets += 1;
-            }
-
-            surveyVertex(tree, currentU, weights, n, k, sum, context);
-        }
-
+    private static long countTree(List<List<Integer>> tree, int[] weights, int n, int k, List<List<List<Integer>>> paths) {
+        countPathsInSubtree(tree, 0, paths);
         return context.sets;
     }
 
-    private static void surveyVertex(int[][] tree, int currentU, int[] weights, int n, int k, int sum, Context context) {
-        if (sum > k) return;
+    private static void countPathsInSubtree(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
 
-        int[] interimSums = new int[n+1];
-        for (int v = 1; v <= n; v++) {
-            int vExists = tree[currentU][v];
-            if (vExists == 0) continue;
+        paths.get(currentVertex).add(Arrays.asList(currentVertex));
 
-            interimSums[v] = sum + weights[v];
-            if (interimSums[v] == k) {
-                context.sets +=1;
-            }
+        for (Integer vertex : tree.get(currentVertex)) {
+            countPathsInSubtree(tree, vertex, paths);
+        }
 
-            surveyVertex(tree, v, weights, n, k, interimSums[v], context);
+        splice(tree, currentVertex, paths);
+    }
+
+    private static void splice(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
+        List<Integer> adjacent = tree.get(currentVertex);
+        int size = adjacent.size();
+
+        for (int i = 0; i < size; i++) {
+            PathCombinations.countSubsets(i, adjacent, paths);
         }
     }
 
-    private static class Context {
-        long sets;
-        public Context(long sets) {
-            this.sets = sets;
-        }
-    }
 
 }
