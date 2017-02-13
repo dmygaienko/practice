@@ -26,6 +26,7 @@ public class Combinations {
             for(;;) {
                 int i;
                 // find position of item that can be incremented
+                // go from last index to first (right to left) if value is already max
                 for (i = k - 1; i >= 0 && isMaxIndex(k, input, subsetIndices, i); i--) {
                     System.out.println("i");
                 }
