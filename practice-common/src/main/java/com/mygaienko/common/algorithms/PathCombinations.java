@@ -24,7 +24,7 @@ public class PathCombinations {
             for (int i = 0; (subsetIndices[i] = i) < k - 1; i++) {
                 System.out.println("i");
             }
-            newSubPaths.addAll(generateSubset(subsetIndices, currentVertex, paths));
+            newSubPaths.addAll(generateSubset(subsetIndices, adjacentVertices, currentVertex, paths));
 
             for(;;) {
                 int i;
@@ -40,7 +40,7 @@ public class PathCombinations {
                     for (++i; i < k; i++) {    // fill up remaining items
                         subsetIndices[i] = subsetIndices[i - 1] + 1;
                     }
-                    newSubPaths.addAll(generateSubset(subsetIndices, currentVertex, paths));
+                    newSubPaths.addAll(generateSubset(subsetIndices, adjacentVertices, currentVertex, paths));
                 }
             }
         }
@@ -48,12 +48,13 @@ public class PathCombinations {
         return newSubPaths;
     }
 
-    private static List<List<Integer>> generateSubset(int[] subsetIndices, int currentVertex,
+    private static List<List<Integer>> generateSubset(int[] subsetIndices, List<Integer> adjacentVertices, int currentVertex,
                                                       List<List<List<Integer>>> paths) {
         List<List<Integer>> result;
 
         if (subsetIndices.length == 1) {
-            List<List<Integer>> pathsToChild = paths.get(subsetIndices[0]+2);
+
+            List<List<Integer>> pathsToChild = paths.get(adjacentVertices.get(subsetIndices[0]));
             result = pathsToChild.stream()
                     .map((path) -> {
                                 List<Integer> newPathFromV = new ArrayList<>(path);
@@ -64,9 +65,9 @@ public class PathCombinations {
                     .collect(toList());
         } else {
 
-            result = paths.get(subsetIndices[0]+2);
+            result = paths.get(adjacentVertices.get(subsetIndices[0]));
             for (int i = 1; i < subsetIndices.length; i++) {
-                List<List<Integer>> nextPaths = paths.get(subsetIndices[i]+2);
+                List<List<Integer>> nextPaths = paths.get(adjacentVertices.get(subsetIndices[i]));
                 result = splicePairWise(result, nextPaths, i == 1 ? currentVertex : 0);
             }
         }
