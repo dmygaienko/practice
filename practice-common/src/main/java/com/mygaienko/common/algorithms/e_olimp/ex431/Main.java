@@ -44,7 +44,7 @@ public class Main {
 
     private static long countTree(List<List<Integer>> tree, int[] weights, int n, int k, List<List<List<Integer>>> paths) {
         countPathsInSubtree(tree, 0, paths);
-        return 0;
+        return paths.stream().reduce(0, (size, list) -> size += list.size(), (size1, size2) -> size1 + size2);
     }
 
     public static void countPathsInSubtree(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
