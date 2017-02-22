@@ -24,40 +24,29 @@ function addAdjacency(array, firstNode, secondNode){
 
 function dijkstra(graph, startNode){
 
-    var dist = [],
-        prev = [],
-        queue = [],
+    var dist = [],       // shortest known distance from "s"
+        prev = [],       // preceeding node in path
+        visited  = [],   // all false initially
         shortestPaths = [];
 
+    initVisited(visited);
+    initDistances(dist);
 
-
-    for (var node = 0; node < graph.adjacency.length; node++){
-        dist[node] = Infinity;
-        prev[node] = null;
-        queue[node] = clone(graph.adjacency[node]);
-        shortestPaths[node] = [];
-    }
-
-    //should use startNode as first
     dist[startNode] = 0;
+    prev[startNode] = 0;
 
-    var nextQueue;
-    while (!!(nextQueue = queue.pop())) {
+    for (var i = 0; i < dist.length; i++) {
+        var next = minVertex(dist, visited);
+        visited[next] = true;
 
-        var leastNode;
-        while (!!(leastNode = nextQueue.pop())) {
-            if (!dist[leastNode]) {
-                dist[leastNode] = 1;
-            }
+        var neighbors = graph.adjacency[i];
+        for (var n = 0; n < neighbors.length; n ++) {
+            var neighbor = neighbors[n];
+            var neighborDistance = dist[next] + 1; //1 is hardcode
 
-            var neighbor;
-            while (graph.adjacency[leastNode] && (neighbor = graph.adjacency[leastNode].pop())) {
-                var alt = dist[leastNode] + 1;
-                if (alt <= dist[neighbor]) {
-                    dist[neighbor] = alt;
-                    prev[neighbor] = neighbor;
-
-                }
+            if (dist[neighbor] > neighborDistance || dist[neighbor] === undefined) {
+                dist[neighbor] = neighborDistance;
+                prev[neighbor] = next;
             }
         }
     }
@@ -69,14 +58,35 @@ function dijkstra(graph, startNode){
         shortestDistances: dist
     }
 }
+//get startNode with distance of 0 at first call
+function minVertex(dist, visited){
+    var minVertexDistance = Number.MAX_VALUE;
+    var minVertex = -1; // graph not connected, or no unvisited vertices
+
+    for (var i = 0; i < dist.length; i++) {
+        if (notVisited(visited, i) && dist[i] < minVertexDistance) {
+            minVertex = i;
+            minVertexDistance = dist[i];
+        }
+    }
+
+    return minVertex;
+}
+
+function notVisited(visited, i) {
+    return !visited[i];
+}
 
 function fillShortestPaths(previous, shortestPaths, startVertex, dist) {
-    for (var node in shortestPaths) {
-        var path = shortestPaths[node];
+    for (var i = 0; i < previous.length; i++) {
+        var node = i;
+        var path = [];
+        shortestPaths[node] = path;
 
-        while(previous[node]) {
+        while(previous[node] !== undefined) {
             path.push(node);
             node = previous[node];
+            if (node == startVertex) break;
         }
 
         //gets the starting node in there as well if there was a path from it
@@ -87,8 +97,14 @@ function fillShortestPaths(previous, shortestPaths, startVertex, dist) {
     }
 }
 
-function clone(array){
-    var result = []
-    array.forEach(function(value) {result.push(value)});
-    return result;
+function initVisited(visited) {
+    for (var i = 0; i < visited.length; i++) {
+        visited[i] = false;
+    }
+}
+
+function initDistances(dist) {
+    for (var i = 0; i < dist.length; i++) {
+        dist[i] = Number.MAX_VALUE;
+    }
 }
