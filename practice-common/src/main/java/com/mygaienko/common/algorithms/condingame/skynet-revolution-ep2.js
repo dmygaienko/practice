@@ -1,75 +1,94 @@
-/**
- * https://www.youtube.com/watch?v=PMze6o7ME4Y dijkstra visualization
- *
- * http://codereview.stackexchange.com/questions/122115/implementation-of-dijkstras-algorithm-in-javascript-that-returns-both-shortestd
- *
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
+var vertices = [[6,2],[7,3],[6,3],[5,3],[3,4],[7,1],[2,0],[0,1],[0,3],[1,3],[2,3],[7,4],[6,5]];
 
-var inputs = readline().split(' ');
-var N = parseInt(inputs[0]); // the total number of nodes in the level, including the gateways
-var L = parseInt(inputs[1]); // the number of links
-var E = parseInt(inputs[2]); // the number of exit gateways
+var graph = new DirectedGraph();
+vertices.forEach(function (value) {
+    graph.addVertex(value[0], value[1]);
+});
 
+console.log(JSON.stringify(dijkstra(graph, 0)));
 
-var links = [];
-var nodes = [];
-for (var i = 0; i < L; i++) {
-    var inputs = readline().split(' ');
-    links.push(inputs);
-    var N1 = parseInt(inputs[0]);
-    nodes[N1] = 1;// N1 and N2 defines a link between these nodes
-    var N2 = parseInt(inputs[1]);
-    nodes[N2] = 1;
-}
-printErr(JSON.stringify(links));
-printErr(JSON.stringify(nodes));
-
-var gateways = [];
-for (var i = 0; i < E; i++) {
-    var EI = parseInt(readline()); // the index of a gateway node
-    gateways.push(EI.toString());
-}
-//print(gateways);
-
-var linksToGateways = [];
-for (var li = 0; li < links.length; li++) {
-    var link = links[li];
-
-    var zeroNodeAsGtwIndex = gateways.indexOf(link[0].toString());
-    var firstNodeAsGtwIndex = gateways.indexOf(link[1].toString());
-
-    if (zeroNodeAsGtwIndex > -1) {
-        var temp = link[0];
-        link[0] = link[1];
-        link[1] = temp;
-        linksToGateways.push(link);
-    } else if (firstNodeAsGtwIndex > -1) {
-        linksToGateways.push(link);
+function DirectedGraph(){
+    this.adjacency = [];
+    this.addVertex = function(firstNode, secondNode){
+        addAdjacency(this.adjacency, firstNode, secondNode);
+        addAdjacency(this.adjacency, secondNode, firstNode);
     }
 }
-printErr(JSON.stringify(linksToGateways));
-linksToGateways.sort();
-printErr(JSON.stringify(linksToGateways));
 
-// game loop
-while (true) {
-    var SI = parseInt(readline());
+function addAdjacency(array, firstNode, secondNode){
+    if (array[firstNode] === undefined) {
+        array[firstNode] = [];
+    }
+    array[firstNode].push(secondNode);
+}
 
-    var severedLink = undefined;
-    for (var ltgi = 0; ltgi < linksToGateways.length; ltgi++) {
-        if (linksToGateways[ltgi][0] == SI){
-            severedLink = linksToGateways[ltgi];
-            linksToGateways.splice(ltgi, 1);
-            break;
+function dijkstra(graph, startNode){
+
+    var dist = [],
+        prev = [],
+        queue = [],
+        shortestPaths = [];
+
+
+
+    for (var node = 0; node < graph.adjacency.length; node++){
+        dist[node] = Infinity;
+        prev[node] = null;
+        queue[node] = clone(graph.adjacency[node]);
+        shortestPaths[node] = [];
+    }
+
+    //should use startNode as first
+    dist[startNode] = 0;
+
+    var nextQueue;
+    while (!!(nextQueue = queue.pop())) {
+
+        var leastNode;
+        while (!!(leastNode = nextQueue.pop())) {
+            if (!dist[leastNode]) {
+                dist[leastNode] = 1;
+            }
+
+            var neighbor;
+            while (graph.adjacency[leastNode] && (neighbor = graph.adjacency[leastNode].pop())) {
+                var alt = dist[leastNode] + 1;
+                if (alt <= dist[neighbor]) {
+                    dist[neighbor] = alt;
+                    prev[neighbor] = neighbor;
+
+                }
+            }
         }
     }
 
-    if (severedLink == undefined) {
-        severedLink = linksToGateways.shift();
+    fillShortestPaths(prev, shortestPaths, startNode, dist);
+
+    return {
+        shortestPaths: shortestPaths,
+        shortestDistances: dist
     }
-    print(severedLink[0] + ' ' + severedLink[1]);
-}/**
- * Created by enda1n on 21.02.2017.
- */
+}
+
+function fillShortestPaths(previous, shortestPaths, startVertex, dist) {
+    for (var node in shortestPaths) {
+        var path = shortestPaths[node];
+
+        while(previous[node]) {
+            path.push(node);
+            node = previous[node];
+        }
+
+        //gets the starting node in there as well if there was a path from it
+        if (dist[node] === 0) {
+            path.push(node);
+        }
+        path.reverse();
+    }
+}
+
+function clone(array){
+    var result = []
+    array.forEach(function(value) {result.push(value)});
+    return result;
+}
