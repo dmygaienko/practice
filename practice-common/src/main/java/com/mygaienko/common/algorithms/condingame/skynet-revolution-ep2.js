@@ -5,7 +5,9 @@ vertices.forEach(function (value) {
     graph.addVertex(value[0], value[1]);
 });
 
-console.log(JSON.stringify(dijkstra(graph, 0)));
+//console.log(JSON.stringify(dijkstra(graph, 0)));
+console.log(JSON.stringify(dijkstra(graph, 3)));
+console.log(JSON.stringify(dijkstra(graph, 6)));
 
 function DirectedGraph(){
     this.adjacency = [];
@@ -39,7 +41,7 @@ function dijkstra(graph, startNode){
         var next = minVertex(dist, visited);
         visited[next] = true;
 
-        var neighbors = graph.adjacency[i];
+        var neighbors = graph.adjacency[next];
         for (var n = 0; n < neighbors.length; n ++) {
             var neighbor = neighbors[n];
             var neighborDistance = dist[next] + 1; //1 is hardcode
