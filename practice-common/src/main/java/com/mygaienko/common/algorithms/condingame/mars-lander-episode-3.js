@@ -26,6 +26,7 @@ console.log(JSON.stringify(surfaceSegments.length));
 console.log(JSON.stringify(surfaceSegments));
 console.log(JSON.stringify(flatGround));
 
+
 var intersections = 0
 for (var l = 0; l < surfaceSegments.length; l++) {
     var segment = surfaceSegments[l];
@@ -38,8 +39,25 @@ for (var l = 0; l < surfaceSegments.length; l++) {
             + '; segment.end: ' + JSON.stringify(segment.end));
     }
 }
-
 console.log(JSON.stringify(intersections));
+
+
+var prevPointIntersections = 0;
+//var prevPoint = {x:3500, y:450};
+var prevPoint = {x:5000, y:1550};
+for (var l = 0; l < surfaceSegments.length; l++) {
+    var segment = surfaceSegments[l];
+
+    if (intersects(currentPoint, prevPoint, segment.start, segment.end)) {
+        prevPointIntersections++;
+        console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
+            + '; flatGround.prevPoint: ' + JSON.stringify(prevPoint)
+            + '; segment.start: ' + JSON.stringify(segment.start)
+            + '; segment.end: ' + JSON.stringify(segment.end));
+    }
+}
+console.log(JSON.stringify(prevPointIntersections));
+
 
 function intersects(s1, e1, s2, e2) {
 
