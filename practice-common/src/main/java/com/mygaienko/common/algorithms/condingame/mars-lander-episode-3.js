@@ -1,5 +1,5 @@
-//var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
-var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
+var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
+//var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
 
 var surfacePoints = [];
 for (var i = 0; i < surfaces.length; i++) {
@@ -14,7 +14,7 @@ var surfaceSegments = [];
 for (var j = 0; j + 1 < surfacePoints.length; j++) {
     surfaceSegments.push({
         start: surfacePoints[j],
-        end: surfacePoints[j]
+        end: surfacePoints[j+1]
     });
 }
 
@@ -32,10 +32,10 @@ for (var l = 0; l < surfaceSegments.length; l++) {
 
     if (intersects(currentPoint, flatGround.centralPoint, segment.start, segment.end)) {
         intersections++;
-        console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint) +
-            +'; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint) +
-            +'; segment.start: ' + JSON.stringify(segment.start), +
-            +'; segment.end: ' + JSON.stringify(segment.end));
+        console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
+            + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
+            + '; segment.start: ' + JSON.stringify(segment.start)
+            + '; segment.end: ' + JSON.stringify(segment.end));
     }
 }
 
