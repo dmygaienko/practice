@@ -19,45 +19,68 @@ for (var j = 0; j + 1 < surfacePoints.length; j++) {
 }
 
 var flatGround = getFlatGround();
-var currentPoint = {x: 6500, y: 2600};
+
 console.log(JSON.stringify(surfacePoints.length));
 console.log(JSON.stringify(surfacePoints));
 console.log(JSON.stringify(surfaceSegments.length));
 console.log(JSON.stringify(surfaceSegments));
 console.log(JSON.stringify(flatGround));
 
+var path = [];
+var pathComplete = false;
 
-var intersections = 0
-for (var l = 0; l < surfaceSegments.length; l++) {
-    var segment = surfaceSegments[l];
+var currentPoint = {x: 6500, y: 2600};
+var targetPoints = [];
+setFlatCentralPointAsTarget(targetPoints);
+path.push(currentPoint);
 
-    if (intersects(currentPoint, flatGround.centralPoint, segment.start, segment.end)) {
-        intersections++;
-        console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
-            + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
-            + '; segment.start: ' + JSON.stringify(segment.start)
-            + '; segment.end: ' + JSON.stringify(segment.end));
+while (!pathComplete) {
+    var intersectedSegments = [];
+    var targetPoint = targetPoints.shift();
+    for (var l = 0; l < surfaceSegments.length; l++) {
+        var segment = surfaceSegments[l];
+
+        if (intersects(currentPoint, targetPoint, segment.start, segment.end)) {
+            intersectedSegments.push(segment);
+
+            console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
+                + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
+                + '; segment.start: ' + JSON.stringify(segment.start)
+                + '; segment.end: ' + JSON.stringify(segment.end));
+        }
+    }
+
+    if (intersectedSegments.length == 1) {
+        path.push(targetPoint);
+        pathComplete = true;
+    } else if (intersectedSegments.length == 2) {
+        path.push(targetPoint);
+        currentPoint = targetPoint;
+        setFlatCentralPointAsTarget(targetPoints);
+        if (flatGround.contains(targetPoint)) {
+            pathComplete = true;;
+        }
+    } else {
+        intersectedSegments.forEach(function(value) {
+            addUniquePoint(targetPoints, value.start);
+            addUniquePoint(targetPoints, value.end);
+        });
     }
 }
-console.log(JSON.stringify(intersections));
+
+console.log('targetPoints: ' + JSON.stringify(targetPoints));
+console.log(JSON.stringify(path));
 
 
-var prevPointIntersections = 0;
-//var prevPoint = {x:3500, y:450};
-var prevPoint = {x:5000, y:1550};
-for (var l = 0; l < surfaceSegments.length; l++) {
-    var segment = surfaceSegments[l];
 
-    if (intersects(currentPoint, prevPoint, segment.start, segment.end)) {
-        prevPointIntersections++;
-        console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
-            + '; flatGround.prevPoint: ' + JSON.stringify(prevPoint)
-            + '; segment.start: ' + JSON.stringify(segment.start)
-            + '; segment.end: ' + JSON.stringify(segment.end));
-    }
+function addUniquePoint(targetPoints, point) {
+    if (targetPoints.indexOf(point) < 0) targetPoints.push(point);
 }
-console.log(JSON.stringify(prevPointIntersections));
 
+function setFlatCentralPointAsTarget(targetPoints) {
+    targetPoints.length = 0;
+    targetPoints.push(flatGround.centralPoint);
+}
 
 function intersects(s1, e1, s2, e2) {
 
@@ -97,35 +120,6 @@ function onSegment(p, q, r){
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function getFlatGround(){
     flatGround = {};
 
@@ -152,6 +146,10 @@ function getFlatGround(){
         x: (flatGround.x1 + flatGround.x0)/2,
         y:  flatGround.y1
     };
+
+    flatGround.contains = function (point) {
+        return point.y == flatGround.y0 && point.x >= flatGround.x0 && point.x <= flatGround.x1;
+    }
 
     return flatGround;
 }
