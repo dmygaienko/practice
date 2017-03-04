@@ -1,5 +1,5 @@
-//var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
-var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
+var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
+//var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
 
 var surfacePoints = [];
 for (var i = 0; i < surfaces.length; i++) {
@@ -31,47 +31,130 @@ var pathComplete = false;
 
 var currentPoint = {x: 6500, y: 2600};
 var targetPoints = [];
+var fliedTargetPoints = [];
 setFlatCentralPointAsTarget(targetPoints);
 path.push(currentPoint);
 
+var roundaboutPointIndex;
+var direction = currentPoint.x - flatGround.centralPoint.x > 0 ? 0 : 1;
+
+var targetPoint = targetPoints.shift();
 while (!pathComplete) {
-    var intersectedSegments = [];
-    var targetPoint = targetPoints.shift();
-    for (var l = 0; l < surfaceSegments.length; l++) {
-        var segment = surfaceSegments[l];
 
-        if (intersects(currentPoint, targetPoint, segment.start, segment.end)) {
-            intersectedSegments.push(segment);
-
-            console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint)
-                + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
-                + '; segment.start: ' + JSON.stringify(segment.start)
-                + '; segment.end: ' + JSON.stringify(segment.end));
-        }
-    }
+    var intersectedSegments = countIntersectedSegments(currentPoint, targetPoint);
 
     if (intersectedSegments.length == 1) {
         path.push(targetPoint);
         pathComplete = true;
-    } else if (intersectedSegments.length == 2) {
-        path.push(targetPoint);
-        currentPoint = targetPoint;
+    } else if (intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
+        var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
+        fliedTargetPoints.push(targetPoint);
+        path.push(shiftedTargetPoint);
+        currentPoint = shiftedTargetPoint;
         setFlatCentralPointAsTarget(targetPoints);
         if (flatGround.contains(targetPoint)) {
-            pathComplete = true;;
+            pathComplete = true;
+            path.push(targetPoint);
         }
     } else {
-        intersectedSegments.forEach(function(value) {
-            addUniquePoint(targetPoints, value.start);
-            addUniquePoint(targetPoints, value.end);
-        });
+        if (!roundaboutPointIndex) {
+            roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments);
+        }
+        targetPoint = surfacePoints[roundaboutPointIndex];
+        roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
     }
 }
 
 console.log('targetPoints: ' + JSON.stringify(targetPoints));
 console.log(JSON.stringify(path));
 
+function countIntersectedSegments(currentPoint, targetPoint) {
+    var intersectedSegments = [];
+    for (var l = 0; l < surfaceSegments.length; l++) {
+        var segment = surfaceSegments[l];
 
+        if (intersects(currentPoint, targetPoint, segment.start, segment.end)) {
+            intersectedSegments.push(segment);
+
+            console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint) + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
+                + '; segment.start: ' + JSON.stringify(segment.start) + '; segment.end: ' + JSON.stringify(segment.end));
+        }
+    }
+    return intersectedSegments;
+}
+
+function findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments) {
+    var uniquePoints = [];
+    intersectedSegments.forEach(function(value) {
+        addUniquePoint(uniquePoints, value.start);
+        addUniquePoint(uniquePoints, value.end);
+    });
+
+    var distances = uniquePoints.map(function(value, index) {
+        var result = {};
+        result.point = value;
+        result.distance = Math.sqrt(Math.pow(currentPoint.x - value.x,2) + Math.pow(currentPoint.y - value.y ,2));
+        return result;
+    });
+    
+    distances.sort(function (a, b) {
+        return a.distance - b.distance;
+    });
+
+    return surfacePoints.indexOf(distances[0].point);
+}
+
+function shiftTargetPoint(currentPoint, targetPoint, changeMark) {
+    var shifterTargetPoint = {};
+
+    if (!changeMark) {
+        if (targetPoint.x - currentPoint.x > 0) {
+            //right
+            shifterTargetPoint.x = targetPoint.x + 100;
+            if (targetPoint.y - currentPoint.y > 0) {
+                shifterTargetPoint.y = targetPoint.y + 100;
+                changeMark = {rightTop: true};
+                //top
+            } else {
+                shifterTargetPoint.y = targetPoint.y - 100;
+                changeMark = {rightBottom: true};
+            }
+        } else {
+            //left
+            shifterTargetPoint.x = targetPoint.x - 100;
+            if (targetPoint.y - currentPoint.y > 0) {
+                //top
+                shifterTargetPoint.y = targetPoint.y + 100;
+                changeMark = {leftTop: true};
+            } else {
+                shifterTargetPoint.y = targetPoint.y - 100;
+                changeMark = {leftBottom: true};
+            }
+        }
+    } else if (changeMark.rightBottom && !changeMark.rightTop || (changeMark.leftTop && changeMark.leftBottom)) {
+        changeMark.rightTop = true;
+        shifterTargetPoint.x = targetPoint.x + 100;
+        shifterTargetPoint.y = targetPoint.y + 100;
+    } else if (changeMark.leftBottom && !changeMark.leftTop || (changeMark.rightBottom && changeMark.rightTop)) {
+        changeMark.leftTop = true;
+        shifterTargetPoint.x = targetPoint.x - 100;
+        shifterTargetPoint.y = targetPoint.y + 100;
+    } else if (changeMark.leftTop && !changeMark.leftBottom || (changeMark.rightBottom && changeMark.rightTop)) {
+        changeMark.leftBottom = true;
+        shifterTargetPoint.x = targetPoint.x - 100;
+        shifterTargetPoint.y = targetPoint.y - 100;
+    } else if (changeMark.rightTop && !changeMark.rightBottom || (changeMark.leftTop && changeMark.leftBottom)) {
+        changeMark.rightBottom = true;
+        shifterTargetPoint.x = targetPoint.x + 100;
+        shifterTargetPoint.y = targetPoint.y - 100;
+    }
+
+    var intersectedSegments = countIntersectedSegments(currentPoint, shifterTargetPoint);
+    if (intersectedSegments.length > 0) {
+        return shiftTargetPoint(currentPoint, targetPoint, changeMark);
+    }
+    return shifterTargetPoint;
+}
 
 function addUniquePoint(targetPoints, point) {
     if (targetPoints.indexOf(point) < 0) targetPoints.push(point);
