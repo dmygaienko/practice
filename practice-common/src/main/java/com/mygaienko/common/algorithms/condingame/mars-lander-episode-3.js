@@ -70,56 +70,106 @@ var bestHSpeed = 40;
 var bestVSpeed = 20;
 function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
     var desiredSpeed = getDesiredSpeed(x, y, hSpeed, vSpeed);
+    printErr('desiredSpeed: ' + JSON.stringify(desiredSpeed));
 
     if (hSpeed != desiredSpeed.h && vSpeed != desiredSpeed.v) {
+        /*if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) {
+         if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
+         if (desiredSpeed.h > 0 && desiredSpeed.v > 0) {
+         rotate = -10;
+         } else if (desiredSpeed.h > 0 && desiredSpeed.v < 0) {
+         rotate = -30;
+         } else if (desiredSpeed.h < 0 && desiredSpeed.v > 0) {
+         rotate = 10;
+         } else if (desiredSpeed.h < 0 && desiredSpeed.v < 0) {
+         rotate = 30;
+         }
+         }
+         }*/
+
+        if (hSpeed < desiredSpeed.h) {
+            if (vSpeed < desiredSpeed.v) {
+                rotate = -10;
+                power = 4;
+            } else {
+                rotate = -30;
+                power = 4;
+            }
+        }  else {
+            if (vSpeed < desiredSpeed.v) {
+                rotate = 10;
+                power = 4;
+            } else {
+                rotate = 30;
+                power = 4;
+            }
+        }
 
     } else if (hSpeed != desiredSpeed.h) {
-
-
-
+        power = 4;
+        if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) { //speedup
+            rotate = desiredSpeed.h > 0 ? -22 : 22;
+        } else { //slowdown
+            rotate = desiredSpeed.h < 0 ? -22 : 22;
+        }
     } else if (vSpeed != desiredSpeed.v) {
-
-
-
+        rotate = 0;
+        if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
+            power = desiredSpeed.v > 0 ? 4 : 2;
+        } else {
+            power = desiredSpeed.v > 0 ? 2 : 4;
+        }
     }
+
+    print(rotate + ' ' + power);
 }
 
 function getDesiredSpeed(x, y, hSpeed, vSpeed) {
     var desiredSpeed = {};
 
     var nextTarget = path[flyTargetIndex];
+    printErr('nextTarget: ' + JSON.stringify(nextTarget));
     var hDistance = nextTarget.x - x;
     var vDistance = nextTarget.y - y;
-    if (hDistance < 30 && vDistance < 30) {
+    if (Math.abs(hDistance) < 30 && Math.abs(vDistance) < 30) {
         nextTarget = path[++flyTargetIndex];
         hDistance = nextTarget.x - x;
         vDistance = nextTarget.y - y;
     }
 
     var hTime = hDistance / hSpeed;
+    printErr('hTime: ' + hTime);
     if (hTime < 0) { //need to change H direction
         desiredSpeed.h = bestHSpeed * (hSpeed > 0 ? -1 : 1);
+    } else if (hTime > 50 && Math.abs(hSpeed * 1.2) < bestHSpeed) {
+        printErr('entered')
+        desiredSpeed.h = hSpeed * 1.2;
     } else {
         desiredSpeed.h = hSpeed;
     }
 
     var vTime = vDistance / vSpeed;
+    printErr('vTime: ' + vTime);
     if (vTime < 0) { //need to change V direction
         desiredSpeed.v = bestVSpeed * (vSpeed > 0 ? -1 : 1);
+    } else if (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed) {
+        desiredSpeed.v = vSpeed * 1.2;
     } else {
         desiredSpeed.v = vSpeed;
     }
+    printErr('vTime > 50' + (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed));
 
     var avgTime;
     if (vTime == hTime) {
         avgTime = vTime;
     } else {
-        avgTime = (vTime + hTime) / 2;
+        avgTime = (hDistance/desiredSpeed.h + vDistance/desiredSpeed.v) / 2;
 
         desiredSpeed.h = hDistance / avgTime;
         desiredSpeed.v = vDistance / avgTime;
     }
 
+    printErr('avgTime: ' + avgTime);
     return desiredSpeed;
 }
 
