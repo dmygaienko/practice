@@ -1,5 +1,5 @@
-var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
-//var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
+//var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
+var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
 
 var surfacePoints = [];
 for (var i = 0; i < surfaces.length; i++) {
@@ -63,6 +63,64 @@ while (!pathComplete) {
         targetPoint = surfacePoints[roundaboutPointIndex];
         roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
     }
+}
+
+var flyTargetIndex = 0;
+var bestHSpeed = 40;
+var bestVSpeed = 20;
+function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
+    var desiredSpeed = getDesiredSpeed(x, y, hSpeed, vSpeed);
+
+    if (hSpeed != desiredSpeed.h && vSpeed != desiredSpeed.v) {
+
+    } else if (hSpeed != desiredSpeed.h) {
+
+
+
+    } else if (vSpeed != desiredSpeed.v) {
+
+
+
+    }
+}
+
+function getDesiredSpeed(x, y, hSpeed, vSpeed) {
+    var desiredSpeed = {};
+
+    var nextTarget = path[flyTargetIndex];
+    var hDistance = nextTarget.x - x;
+    var vDistance = nextTarget.y - y;
+    if (hDistance < 30 && vDistance < 30) {
+        nextTarget = path[++flyTargetIndex];
+        hDistance = nextTarget.x - x;
+        vDistance = nextTarget.y - y;
+    }
+
+    var hTime = hDistance / hSpeed;
+    if (hTime < 0) { //need to change H direction
+        desiredSpeed.h = bestHSpeed * (hSpeed > 0 ? -1 : 1);
+    } else {
+        desiredSpeed.h = hSpeed;
+    }
+
+    var vTime = vDistance / vSpeed;
+    if (vTime < 0) { //need to change V direction
+        desiredSpeed.v = bestVSpeed * (vSpeed > 0 ? -1 : 1);
+    } else {
+        desiredSpeed.v = vSpeed;
+    }
+
+    var avgTime;
+    if (vTime == hTime) {
+        avgTime = vTime;
+    } else {
+        avgTime = (vTime + hTime) / 2;
+
+        desiredSpeed.h = hDistance / avgTime;
+        desiredSpeed.v = vDistance / avgTime;
+    }
+
+    return desiredSpeed;
 }
 
 console.log('targetPoints: ' + JSON.stringify(targetPoints));
@@ -232,7 +290,7 @@ function getFlatGround(){
 
     flatGround.contains = function (point) {
         return point.y == flatGround.y0 && point.x >= flatGround.x0 && point.x <= flatGround.x1;
-    }
+    };
 
     return flatGround;
 }
