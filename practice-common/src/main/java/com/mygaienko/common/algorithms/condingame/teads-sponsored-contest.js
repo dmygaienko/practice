@@ -3,6 +3,7 @@
  */
 
 var inputsStrings = ['0 1', '1 2', '2 3', '2 4'];
+//var inputsStrings = ['0 1', '1 2', '1 4', '2 3', '4 5', '4 6'];
 
 var n = inputsStrings.length; // the number of adjacency relations
 
@@ -92,7 +93,6 @@ function Network() {
         var inverseAdjacent = currentPerson.inverseAdjacent;
 
         var inverseBroadcast;
-
         if (currentPerson.inverseBroadcast !== undefined) {
             inverseBroadcast = currentPerson.inverseBroadcast;
         } else {
@@ -107,11 +107,11 @@ function Network() {
 
                 var children = parent.directAdjacent.filter(function(id){
                     return id != index;
-                })
+                });
 
                 for (var j = 0; j < children.length; j++) {
                     var child = this.content[children[i]];
-                    var toChildrenDirectBroadcast = child.directBroadcast + 1
+                    var toChildrenDirectBroadcast = child.directBroadcast + 1;
 
                     if (inverseBroadcast <= toChildrenDirectBroadcast) {
                         inverseBroadcast = toChildrenDirectBroadcast;
@@ -119,7 +119,7 @@ function Network() {
                 }
             }
 
-            if (inverseBroadcast > 0) {
+            if (inverseAdjacent.length > 0) {
                 inverseBroadcast++;
             }
             currentPerson.inverseBroadcast = inverseBroadcast;
@@ -130,19 +130,19 @@ function Network() {
     };
 
     this.findMinBroadcast = function() {
-        var minBroadcastIndex;
         var minBroadcast = Number.MAX_VALUE;
         for (var i = 0; i < this.content.length; i++) {
             var person = this.content[i];
-            var broadcast = person.directBroadcast + person.inverseBroadcast;
+            if (person !== undefined) {
+                var broadcastCompletedTime = Math.max(person.directBroadcast, person.inverseBroadcast);
 
-            if (broadcast <= minBroadcast) {
-                minBroadcast = broadcast;
-                minBroadcastIndex = person.index;
+                if (broadcastCompletedTime <= minBroadcast) {
+                    minBroadcast = broadcastCompletedTime;
+                }
             }
         }
 
-        return minBroadcastIndex;
+        return minBroadcast;
     }
 }
 
