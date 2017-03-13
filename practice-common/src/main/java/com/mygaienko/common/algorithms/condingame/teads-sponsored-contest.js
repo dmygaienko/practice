@@ -2,8 +2,11 @@
  * Created by enda1n on 12.03.2017.
  */
 
-var inputsStrings = ['0 1', '1 2', '2 3', '2 4'];
+//var inputsStrings = ['0 1', '1 2', '2 3', '2 4'];
 //var inputsStrings = ['0 1', '1 2', '1 4', '2 3', '4 5', '4 6'];
+
+var inputsStrings = [];
+inputsStrings.push();
 
 var n = inputsStrings.length; // the number of adjacency relations
 
