@@ -1320,7 +1320,13 @@ function Network() {
     };
 
     this.countAllDirectBroadcast = function() {
-        this.countDirectBroadcast(0);
+        //this.countDirectBroadcast(0);
+        for (var i = 0; i < this.content.length; i++) {
+            var person = this.content[i];
+            if (person !== undefined) {
+                this.countDirectBroadcast(person.index);
+            }
+        }
     };
 
     this.countDirectBroadcast = function(index) {
