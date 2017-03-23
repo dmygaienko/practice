@@ -211,7 +211,7 @@ function dijkstra(graph, startNode){
     previous[startNode] = 0;
 
     for (var i = 0; i < distance.length; i++) {
-        var next = minVertex(graph, distance, visited);
+        var next = minDistanceVertex(graph, distance, visited);
         visited[next] = true;
 
         var neighbors = graph.adjacency[next];
@@ -272,7 +272,7 @@ function fillShortestPaths(previous, shortestPaths, startVertex, distance, dange
     }
 }
 
-function minVertex(graph, distance, visited){
+function minDistanceVertex(graph, distance, visited){
     var minVertexDistance = Number.MAX_VALUE;
     var minVertex = -1; // graph not connected, or no unvisited vertices
 
