@@ -7,7 +7,7 @@ function printErr(msg) { testUtils.printErr(msg); }
 
 
 var inputs = readline().split(' ');
-printErr('input ' + inputs);
+//printErr('input ' + inputs);
 var N = parseInt(inputs[0]); // the total number of nodes in the level, including the gateways
 var L = parseInt(inputs[1]); // the number of links
 var E = parseInt(inputs[2]); // the number of exit gateways
@@ -17,7 +17,7 @@ var graph = new DirectedGraph(N);
 
 for (var i = 0; i < L; i++) {
     var inputs = readline();
-    printErr('input ' + inputs);
+    //printErr('input ' + inputs);
     inputs = inputs.split(' ');
     //printErr(JSON.stringify(inputs));
     var N1 = parseInt(inputs[0]);
@@ -31,36 +31,33 @@ for (var i = 0; i < L; i++) {
 
 var gateways = initGateways();
 graph.addGateways(gateways);
-printErr('graph: ' + JSON.stringify(graph));
+//printErr('graph: ' + JSON.stringify(graph));
 
 //printErr(JSON.stringify(graph));
 
 
-var reverse = false;
 // game loop
 while (true) {
     //printErr(JSON.stringify(graph));
-    printErr('graph.dangers ' + JSON.stringify(graph.dangers));
-    
-    reverse = !reverse;
+    //printErr('graph.dangers ' + JSON.stringify(graph.dangers));
     //initGateways();
     
     var step = readline();
-    printErr('input ' + step);
+   // printErr('input ' + step);
     var SI = parseInt(step);
-    printErr('SI: ' + SI);
+    //printErr('SI: ' + SI);
 
     var start = undefined;
     var end = undefined;
 
     var adjGateway = graph.getAdjacentGateway(SI);
     if (adjGateway !== undefined) {
-        printErr('adjGateway !== undefined');
+        //printErr('adjGateway !== undefined');
         start = SI;
         end = adjGateway;
     } else {
         var result = dijkstra(graph, SI);
-        printErr('result: ' + JSON.stringify(result));
+        //printErr('result: ' + JSON.stringify(result));
         var linkToCut = getMostDangerousLink(result);
         start = linkToCut.start;
         end = linkToCut.end;
@@ -114,7 +111,7 @@ function initGateways(){
     for (var i = 0; i < E; i++) {
         var EI = parseInt(readline()); // the index of a gateway node
         result.push(EI);
-        printErr("gateway: " + EI);
+        //printErr("gateway: " + EI);
     }
     return result;
 }
@@ -204,15 +201,27 @@ function dijkstra(graph, startNode){
 
     var distance = [],       // shortest known distance from "s"
         previous = [],       // preceeding node in path
-        visited  = [],       // all false initially
+        queue  = {},       // all false initially
         shortestPaths = [];
+
+    for (var vertex in graph.adjacency) {
+        if (graph.isGateway(vertex)){
+            continue;
+        }
+        distance[vertex] = {value: Infinity};
+        previous[vertex] = null;
+        queue[vertex] = graph.adjacency[vertex].slice()
+            .filter(function (node) {
+                return !graph.isGateway(node);
+            });
+        shortestPaths[vertex] = [];
+    }
 
     distance[startNode] = {value: 0, danger: 0};
     previous[startNode] = 0;
 
-    for (var i = 0; i < distance.length; i++) {
-        var next = minDistanceVertex(graph, distance, visited);
-        visited[next] = true;
+    while (Object.keys(queue).length !== 0) {
+        var next = minDistanceVertex(distance, queue);
 
         var neighbors = graph.adjacency[next];
         for (var n = 0; neighbors !== undefined && n < neighbors.length; n++) {
@@ -239,7 +248,8 @@ function dijkstra(graph, startNode){
 
     fillShortestPaths(previous, shortestPaths, startNode, distance, graph.dangers);
     
-    distance[startNode] = Number.MAX_VALUE;
+   // distance[startNode] = Number.MAX_VALUE;
+    distance[startNode] = Infinity;
     return {
         shortestPaths: shortestPaths,
         shortestDistances: distance
@@ -272,20 +282,21 @@ function fillShortestPaths(previous, shortestPaths, startVertex, distance, dange
     }
 }
 
-function minDistanceVertex(graph, distance, visited){
-    var minVertexDistance = Number.MAX_VALUE;
+//find the minimal distance vertex to prevent from hooks
+function minDistanceVertex(distance, queue){
+    var minVertexDistance = Infinity;
     var minVertex = -1; // graph not connected, or no unvisited vertices
 
-    for (var i = 0; i < distance.length; i++) {
-        if (notVisited(visited, i) && !!distance[i] && distance[i].value < minVertexDistance && !graph.isGateway(distance[i])) {
+    //for (var i = 0; i < query.length; i++) {
+    for (var i in queue) {
+        var nodeDistance = distance[i];
+
+        if (nodeDistance.value < minVertexDistance) {
             minVertex = i;
-            minVertexDistance = distance[i];
+            minVertexDistance = distance[i].value;
         }
     }
 
+    delete queue[minVertex];
     return minVertex;
-}
-
-function notVisited(visited, i) {
-    return !visited[i];
 }
