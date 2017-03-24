@@ -73,8 +73,24 @@ this.skynetCoreNetwork = function() {
     this.lines.push('0', '13', '14', '15');
 };
 
+this.skynetCoreNetworkV2 = function() {
+    this.lines.push('49 62 17');
+    //links
+    this.lines.push('41 10','41 2','41 26','2 19','19 28','19 4','26 32','32 10','26 29','29 10','29 38','38 40');
+    this.lines.push('48 11','29 47','47 30','47 43','43 30','30 34','43 34','34 24','34 11','11 15');
+    this.lines.push('11 45','45 36','36 46','46 23','46 42','33 15','33 40','40 4','40 20');
+    this.lines.push('4 13','13 20','13 28','28 27','28 8','8 31','31 35','31 12','12 6','6 18');
+    this.lines.push('12 44','44 6','31 0','0 22','22 9','9 21','21 20','21 14','14 37','15 37');
+    this.lines.push('37 1','1 16','1 39','5 39','5 22','22 17','39 17','39 3','44 25','25 17', '6 7');
+    //gateways
+    this.lines.push('32','27','13','38','30','24','23','33','42','7','3','5','16','14','0','35','18');
+    //agent turns
+    this.lines.push('41', '26', '29', '47');
+};
+
 // this.complexMesh();
-this.skynetCoreNetwork();
+//this.skynetCoreNetwork();
+this.skynetCoreNetworkV2();
 
 
 
