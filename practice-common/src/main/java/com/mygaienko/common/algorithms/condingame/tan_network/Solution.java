@@ -3,9 +3,7 @@ package com.mygaienko.common.algorithms.condingame.tan_network;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -186,8 +184,8 @@ class Solution {
             this.id = id;
             this.description = description;
             this.fullName = fullName;
-            this.latitude = Double.parseDouble(latitude);
-            this.longitude = Double.parseDouble(longitude);
+            this.latitude = toRadians(Double.parseDouble(latitude));
+            this.longitude = toRadians(Double.parseDouble(longitude));
             this.zoneId = zoneId;
             this.url = url;
             this.type = type;
