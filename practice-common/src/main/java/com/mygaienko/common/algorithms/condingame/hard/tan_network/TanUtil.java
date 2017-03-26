@@ -1,4 +1,4 @@
-package com.mygaienko.common.algorithms.condingame.tan_network;
+package com.mygaienko.common.algorithms.condingame.hard.tan_network;
 
 import java.util.Arrays;
 import java.util.List;
