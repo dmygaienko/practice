@@ -72,9 +72,8 @@ public class Player {
 
     private static List<List<Action>> generateAllPossibleActions() {
         List<List<Action>> actions = new ArrayList<>();
-        Action[] values = Action.values();
-        permute(values, 0, 5, new ArrayList<>(), actions);
-        return Collections.EMPTY_LIST;
+        permute(Action.values(), 0, stepsForward, new ArrayList<>(), actions);
+        return actions;
     }
 
     private static void permute(Player.Action[] values, int nextValue, int maxLength,
