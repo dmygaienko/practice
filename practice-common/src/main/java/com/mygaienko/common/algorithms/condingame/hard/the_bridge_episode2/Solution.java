@@ -1,8 +1,8 @@
 package com.mygaienko.common.algorithms.condingame.hard.the_bridge_episode2;
 
 import java.util.*;
-import java.io.*;
-import java.math.*;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -13,6 +13,7 @@ class Player {
     private static Point[][] bridge = new Point[4][];
 
     private static Map<Integer, List<List<Action>>> bikeActions = new HashMap<>();
+    private static List<List<Action>> allActions = generateAllPossibleActions();
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -30,11 +31,11 @@ class Player {
                 int a = in.nextInt(); // indicates whether the motorbike is activated "1" or destroyed "0"
 
                 if (a != 0) {
-                    checkWay(bikeId, speed, x, y);
+                    filterSafeActionForBike(bikeId, speed, x, y);
                 }
             }
 
-            findCommonActions();
+            findCommonActionsBetweenBikes();
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
@@ -44,10 +45,34 @@ class Player {
         }
     }
 
-    private static void checkWay(int bikeId, int speed, int x, int y) {
-        checkHoleInFront();
-        checkIncreaseSpeed();
-        checkDecreaseSpeed();
+    private static void findCommonActionsBetweenBikes() {
+        //TODO
+    }
+
+    private static void filterSafeActionForBike(int bikeId, int speed, int x, int y) {
+        List<List<Action>> safeActions = allActions.stream()
+                .filter(actions -> isSafe(actions, speed, x, y))
+                .collect(toList());
+        bikeActions.put(bikeId, safeActions);
+    }
+
+    private static boolean isSafe(List<Action> actions, int speed, int x, int y) {
+        ActionContext currentActionContext = new ActionContext(speed, x, y); 
+        
+        for (Action action : actions) {
+            currentActionContext = action.doAction(currentActionContext);
+            if (!currentActionContext.result) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static List<List<Action>> generateAllPossibleActions() {
+        Action[] values = Action.values();
+        //TODO
+        return Collections.EMPTY_LIST;
     }
 
     private static void initBridge(Scanner in) {
@@ -75,7 +100,98 @@ class Player {
         }
     }
 
-    private static class Action {
+    //SPEED, SLOW, JUMP, WAIT, UP, DOWN
+    private enum Action {
+        SPEED {
+            ActionContext doAction(ActionContext context) {
+                context.speed++;
+                context.countNextX();
+                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);        
+                return context;
+            }
+        },
+        SLOW {
+            ActionContext doAction(ActionContext context) {
+                context.speed = context.speed > 0 ? context.speed - 1 : 0;
+                context.countNextX();
+                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);
+                return context;
+            }
+        },
+        JUMP {
+            ActionContext doAction(ActionContext context) {
+                context.countNextX();
+                context.result = checkNextPoint(bridge[context.y], context.x, context.speed);
+                return context;
+            }
+        },
+        WAIT {
+            ActionContext doAction(ActionContext context) {
+                context.countNextX();
+                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);
+                return context;
+            }
+        },
+        UP {
+            ActionContext doAction(ActionContext context) {
+                context.y--;
+                context.countNextX();
+                context.result = checkVerticalMoving(context);
+                return context;
+            }
+
+
+        },
+        DOWN {
+            ActionContext doAction(ActionContext context) {
+                context.y++;
+                context.countNextX();
+                context.result = checkVerticalMoving(context);
+                return context;
+            }
+        };
+
+        private static boolean checkVerticalMoving(ActionContext context) {
+            return checkVerticalBounds(context.y)
+                    && checkNextPoint(bridge[context.y], context.x, context.speed);
+        }
+
+        private static boolean checkVerticalBounds(int y) {
+            return y > -1 && y < bridge.length;
+        }
+
+        private static boolean checkNextPoint(Point[] points, int x, int speed) {
+            return points[x + speed].safe;
+        }
+
+        private static boolean checkStraightLine(Point[] points, int x, int speed) {
+            for (int i = x; i < x + speed; i++) {
+                if (!points[x].safe) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        abstract ActionContext doAction(ActionContext context);
 
     }
+
+    private static class ActionContext {
+        private int speed;
+        private int x;
+        private int y;
+        private boolean result;
+
+        public ActionContext(int speed, int x, int y) {
+            this.speed = speed;
+            this.x = x;
+            this.y = y;
+        }
+
+        void countNextX() {
+            this.x += this.speed;
+        }
+    }
+
 }
