@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.toList;
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
  **/
-class Player {
+public class Player {
 
     private static Point[][] bridge = new Point[4][];
 
@@ -73,8 +73,21 @@ class Player {
     private static List<List<Action>> generateAllPossibleActions() {
         List<List<Action>> actions = new ArrayList<>();
         Action[] values = Action.values();
-
+        permute(values, 0, 5, new ArrayList<>(), actions);
         return Collections.EMPTY_LIST;
+    }
+
+    private static void permute(Player.Action[] values, int nextValue, int maxLength,
+                               List<Player.Action> currentActions, List<List<Player.Action>> allActions) {
+
+        currentActions.add(values[nextValue]);
+        if (currentActions.size() < maxLength) {
+            for (int i = 0; i < maxLength; i++) {
+                permute(values, i, maxLength, new ArrayList<>(currentActions), allActions);
+            }
+        } else {
+            allActions.add(currentActions);
+        }
     }
 
     private static void initBridge(Scanner in) {
@@ -103,7 +116,7 @@ class Player {
     }
 
     //SPEED, SLOW, JUMP, WAIT, UP, DOWN
-    private enum Action {
+    public enum Action {
         SPEED {
             ActionContext doAction(ActionContext context) {
                 context.speed++;
