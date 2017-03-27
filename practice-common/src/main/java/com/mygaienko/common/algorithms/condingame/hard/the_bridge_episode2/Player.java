@@ -82,7 +82,7 @@ public class Player {
 
         currentActions.add(values[nextValue]);
         if (currentActions.size() < maxLength) {
-            for (int i = 0; i < maxLength; i++) {
+            for (int i = 0; i < values.length; i++) {
                 permute(values, i, maxLength, new ArrayList<>(currentActions), allActions);
             }
         } else {
