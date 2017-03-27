@@ -13,6 +13,7 @@ class Player {
     private static Point[][] bridge = new Point[4][];
 
     private static Map<Integer, List<List<Action>>> bikeActions = new HashMap<>();
+    private static int stepsForward = 5;
     private static List<List<Action>> allActions = generateAllPossibleActions();
 
     public static void main(String args[]) {
@@ -70,8 +71,9 @@ class Player {
     }
 
     private static List<List<Action>> generateAllPossibleActions() {
+        List<List<Action>> actions = new ArrayList<>();
         Action[] values = Action.values();
-        //TODO
+
         return Collections.EMPTY_LIST;
     }
 
