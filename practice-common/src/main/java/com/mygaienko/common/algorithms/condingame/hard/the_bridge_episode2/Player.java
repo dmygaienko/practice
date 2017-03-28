@@ -56,28 +56,34 @@ public class Player {
 
     private static List<List<Action>> generateSafeActions(int speed, int x, int y) {
         List<List<Action>> actions = new ArrayList<>();
-        permuteSafeActions(Action.values(), 0, stepsForward, new ArrayList<>(), actions, new ActionContext(speed, x, y));
+        permuteActions(Action.values(), stepsForward, new ArrayList<>(), actions, new ActionContext(speed, x, y));
         return actions;
     }
 
-    private static void permuteSafeActions(Player.Action[] actionValues, int nextAction, int maxActionLength,
-                                           List<Player.Action> currentActions, List<List<Player.Action>> allSafeActions, 
-                                           ActionContext actionContext) {
-        
+    private static void permuteActions(Player.Action[] actionValues, int maxActionLength,
+                                       List<Player.Action> currentActions, List<List<Player.Action>> allSafeActions,
+                                       ActionContext actionContext) {
+
+        if (currentActions.size() < maxActionLength) {
+            for (int i = 0; i < actionValues.length; i++) {
+                checkAndPermute(actionValues, i, maxActionLength, new ArrayList<>(currentActions), allSafeActions, actionContext);
+            }
+        } else {
+            allSafeActions.add(currentActions);
+        }
+    }
+
+    private static void checkAndPermute(Player.Action[] actionValues, int nextAction, int maxActionLength,
+                                       List<Player.Action> currentActions, List<List<Player.Action>> allSafeActions,
+                                       ActionContext actionContext) {
         Action action = actionValues[nextAction];
         ActionContext nextActionContext = action.doAction(actionContext);
         if (!nextActionContext.result) {
             return;
         }
-        
         currentActions.add(action);
-        if (currentActions.size() < maxActionLength) {
-            for (int i = 0; i < actionValues.length; i++) {
-                permuteSafeActions(actionValues, i, maxActionLength, new ArrayList<>(currentActions), allSafeActions, nextActionContext);
-            }
-        } else {
-            allSafeActions.add(currentActions);
-        }
+
+        permuteActions(actionValues, maxActionLength, currentActions, allSafeActions, nextActionContext);
     }
 
     private static void initBridge(Scanner in) {
