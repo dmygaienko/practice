@@ -125,7 +125,7 @@ public class Player {
         SLOW {
             ActionContext doAction(ActionContext context) {
                 int nextSpeed = context.speed > 0 ? context.speed - 1 : 0;
-                boolean result = checkStraightLine(bridge[context.y], context.x, nextSpeed);
+                boolean result = nextSpeed > 0 && checkStraightLine(bridge[context.y], context.x, nextSpeed);
                 int nextX = context.x + nextSpeed;
                 return new ActionContext(nextSpeed, nextX, context.y, result);
             }
@@ -162,7 +162,8 @@ public class Player {
         };
 
         private static boolean checkVerticalMoving(int x, int y, int speed) {
-            return checkVerticalBounds(y) && checkNextPoint(bridge[y], x, speed);
+            return checkVerticalBounds(y) && checkNextPoint(bridge[y], x, speed)
+                    && checkStraightLine(bridge[y], x, speed);
         }
 
         private static boolean checkVerticalBounds(int y) {
