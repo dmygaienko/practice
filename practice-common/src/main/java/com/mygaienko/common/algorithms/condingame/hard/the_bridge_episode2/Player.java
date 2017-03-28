@@ -2,7 +2,7 @@ package com.mygaienko.common.algorithms.condingame.hard.the_bridge_episode2;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -12,93 +12,85 @@ public class Player {
 
     private static Point[][] bridge = new Point[4][];
 
-    private static Map<Integer, List<List<Action>>> bikeActions = new HashMap<>();
     private static int stepsForward = 5;
-    private static List<List<Action>> allActions = generateAllPossibleActions();
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        int M = in.nextInt(); // the amount of motorbikes to control
+        int M = 1;
+        PlayerUtil.initBridge();
+        /*int M = in.nextInt(); // the amount of motorbikes to control
         int V = in.nextInt(); // the minimum amount of motorbikes that must survive
 
-        initBridge(in);
+        initBridge(in);*/
 
         // game loop
         while (true) {
-            int speed = in.nextInt(); // the motorbikes' speed
+            Map<Integer, List<List<Action>>> bikeActions = new HashMap<>();
+
+            int speed = 4; // the motorbikes' speed
             for (int bikeId = 0; bikeId < M; bikeId++) {
-                int x = in.nextInt(); // x coordinate of the motorbike
-                int y = in.nextInt(); // y coordinate of the motorbike
-                int a = in.nextInt(); // indicates whether the motorbike is activated "1" or destroyed "0"
+                int x = 10; // x coordinate of the motorbike
+                int y = 2; // y coordinate of the motorbike
+                int a = 1; // indicates whether the motorbike is activated "1" or destroyed "0"
 
                 if (a != 0) {
-                    filterSafeActionForBike(bikeId, speed, x, y);
+                    bikeActions.put(bikeId, generateSafeActions(speed, x, y));
                 }
             }
 
-            findCommonActionsBetweenBikes();
-
-            // Write an action using System.out.println()
-            // To debug: System.err.println("Debug messages...");
+            List<Action> commonActions = findCommonActionsBetweenBikes(bikeActions);
 
             // A single line containing one of 6 keywords: SPEED, SLOW, JUMP, WAIT, UP, DOWN.
-            System.out.println("SPEED");
+            System.out.println(commonActions.get(0).name());
         }
     }
 
-    private static void findCommonActionsBetweenBikes() {
-        //TODO
+    private static List<Action> findCommonActionsBetweenBikes(Map<Integer, List<List<Action>>> bikeActions) {
+        Map<List<Action>, List<List<Action>>> collect = bikeActions.values().stream()
+                .flatMap(Collection::stream)
+                .collect(groupingBy(actions -> actions));
+        Optional<Map.Entry<List<Action>, List<List<Action>>>> mostCommon = collect.entrySet().stream()
+                .reduce((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? entry1 : entry2);
+        return mostCommon.get().getKey();
     }
 
-    private static void filterSafeActionForBike(int bikeId, int speed, int x, int y) {
-        List<List<Action>> safeActions = allActions.stream()
-                .filter(actions -> isSafe(actions, speed, x, y))
-                .collect(toList());
-        bikeActions.put(bikeId, safeActions);
-    }
-
-    private static boolean isSafe(List<Action> actions, int speed, int x, int y) {
-        ActionContext currentActionContext = new ActionContext(speed, x, y); 
-        
-        for (Action action : actions) {
-            currentActionContext = action.doAction(currentActionContext);
-            if (!currentActionContext.result) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static List<List<Action>> generateAllPossibleActions() {
+    private static List<List<Action>> generateSafeActions(int speed, int x, int y) {
         List<List<Action>> actions = new ArrayList<>();
-        permute(Action.values(), 0, stepsForward, new ArrayList<>(), actions);
+        permuteSafeActions(Action.values(), 0, stepsForward, new ArrayList<>(), actions, new ActionContext(speed, x, y));
         return actions;
     }
 
-    private static void permute(Player.Action[] values, int nextValue, int maxLength,
-                               List<Player.Action> currentActions, List<List<Player.Action>> allActions) {
-
-        currentActions.add(values[nextValue]);
-        if (currentActions.size() < maxLength) {
-            for (int i = 0; i < values.length; i++) {
-                permute(values, i, maxLength, new ArrayList<>(currentActions), allActions);
+    private static void permuteSafeActions(Player.Action[] actionValues, int nextAction, int maxActionLength,
+                                           List<Player.Action> currentActions, List<List<Player.Action>> allSafeActions, 
+                                           ActionContext actionContext) {
+        
+        Action action = actionValues[nextAction];
+        ActionContext nextActionContext = action.doAction(actionContext);
+        if (!nextActionContext.result) {
+            return;
+        }
+        
+        currentActions.add(action);
+        if (currentActions.size() < maxActionLength) {
+            for (int i = 0; i < actionValues.length; i++) {
+                permuteSafeActions(actionValues, i, maxActionLength, new ArrayList<>(currentActions), allSafeActions, nextActionContext);
             }
         } else {
-            allActions.add(currentActions);
+            allSafeActions.add(currentActions);
         }
     }
 
     private static void initBridge(Scanner in) {
-        String safeWay = "..........";
+        String safeWay = "............................";
         initLine(0, in.next() + safeWay);
         initLine(1, in.next() + safeWay);
         initLine(2, in.next() + safeWay);
         initLine(3, in.next() + safeWay);
     }
 
-    private static void initLine(int y, String s) {
+    public static void initLine(int y, String s) {
         String[] way = s.split("");
+        bridge[y] = new Point[way.length];
         for (int x = 0, wayLength = way.length; x < wayLength; x++) {
             String step = way[x];
             boolean safe = ".".equals(step);
@@ -106,7 +98,7 @@ public class Player {
         }
     }
 
-    private static class Point {
+    public static class Point {
         private final boolean safe;
 
         public Point(boolean safe) {
@@ -118,56 +110,53 @@ public class Player {
     public enum Action {
         SPEED {
             ActionContext doAction(ActionContext context) {
-                context.speed++;
-                context.countNextX();
-                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);        
-                return context;
+                int nextSpeed = context.speed + 1;
+                boolean result = checkStraightLine(bridge[context.y], context.x, nextSpeed);
+                int nextX = context.x + nextSpeed;
+                return new ActionContext(nextSpeed, nextX, context.y, result);
             }
         },
         SLOW {
             ActionContext doAction(ActionContext context) {
-                context.speed = context.speed > 0 ? context.speed - 1 : 0;
-                context.countNextX();
-                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);
-                return context;
+                int nextSpeed = context.speed > 0 ? context.speed - 1 : 0;
+                boolean result = checkStraightLine(bridge[context.y], context.x, nextSpeed);
+                int nextX = context.x + nextSpeed;
+                return new ActionContext(nextSpeed, nextX, context.y, result);
             }
         },
         JUMP {
             ActionContext doAction(ActionContext context) {
-                context.countNextX();
-                context.result = checkNextPoint(bridge[context.y], context.x, context.speed);
-                return context;
+                int nextX = context.x + context.speed;
+                boolean result = checkNextPoint(bridge[context.y], context.x, context.speed);
+                return new ActionContext(context.speed, nextX, context.y, result);
             }
         },
         WAIT {
             ActionContext doAction(ActionContext context) {
-                context.countNextX();
-                context.result = checkStraightLine(bridge[context.y], context.x, context.speed);
-                return context;
+                int nextX = context.x + context.speed;
+                boolean result = checkStraightLine(bridge[context.y], context.x, context.speed);
+                return new ActionContext(context.speed, nextX, context.y, result);
             }
         },
         UP {
             ActionContext doAction(ActionContext context) {
-                context.y--;
-                context.countNextX();
-                context.result = checkVerticalMoving(context);
-                return context;
+                int nextX = context.x + context.speed;
+                int nextY = context.y - 1;
+                boolean result = checkVerticalMoving(nextX, nextY, context.speed);
+                return new ActionContext(context.speed, nextX, nextY, result);
             }
-
-
         },
         DOWN {
             ActionContext doAction(ActionContext context) {
-                context.y++;
-                context.countNextX();
-                context.result = checkVerticalMoving(context);
-                return context;
+                int nextX = context.x + context.speed;
+                int nextY = context.y + 1;
+                boolean result = checkVerticalMoving(nextX, nextY, context.speed);
+                return new ActionContext(context.speed, nextX, nextY, result);
             }
         };
 
-        private static boolean checkVerticalMoving(ActionContext context) {
-            return checkVerticalBounds(context.y)
-                    && checkNextPoint(bridge[context.y], context.x, context.speed);
+        private static boolean checkVerticalMoving(int x, int y, int speed) {
+            return checkVerticalBounds(y) && checkNextPoint(bridge[y], x, speed);
         }
 
         private static boolean checkVerticalBounds(int y) {
@@ -175,12 +164,13 @@ public class Player {
         }
 
         private static boolean checkNextPoint(Point[] points, int x, int speed) {
-            return points[x + speed].safe;
+            int nextX = x + speed;
+            return nextX >= points.length || points[nextX].safe;
         }
 
         private static boolean checkStraightLine(Point[] points, int x, int speed) {
             for (int i = x; i < x + speed; i++) {
-                if (!points[x].safe) {
+                if (!points[i].safe) {
                     return false;
                 }
             }
@@ -188,7 +178,6 @@ public class Player {
         }
 
         abstract ActionContext doAction(ActionContext context);
-
     }
 
     private static class ActionContext {
@@ -203,8 +192,9 @@ public class Player {
             this.y = y;
         }
 
-        void countNextX() {
-            this.x += this.speed;
+        public ActionContext(int speed, int x, int y, boolean result) {
+            this(speed, x, y);
+            this.result = result;
         }
     }
 
