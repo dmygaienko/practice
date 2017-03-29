@@ -15,7 +15,7 @@ public class Player {
 
     private static Point[][] bridge = new Point[4][];
 
-    private static int stepsForward = 5;
+    private static int stepsForward = 7;
     private static int minAvg = 2;
     private static int maxAvg = 5;
 
