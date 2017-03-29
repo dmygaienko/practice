@@ -217,7 +217,7 @@ public class Player {
         }
 
         private static boolean checkStraightLine(Point[] points, int x, int speed) {
-            for (int i = x; i < x + speed && i < points.length; i++) {
+            for (int i = x; i <= x + speed && i < points.length; i++) {
                 if (!points[i].safe) {
                     return false;
                 }
