@@ -16,12 +16,12 @@ public class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        int M = 1;
-        PlayerUtil.initBridge();
-        /*int M = in.nextInt(); // the amount of motorbikes to control
+        /*int M = 1;
+        PlayerUtil.initBridge();*/
+        int M = in.nextInt(); // the amount of motorbikes to control
         int V = in.nextInt(); // the minimum amount of motorbikes that must survive
 
-        initBridge(in);*/
+        initBridge(in);
 
         // game loop
         while (true) {
@@ -29,9 +29,9 @@ public class Player {
 
             int speed = 4; // the motorbikes' speed
             for (int bikeId = 0; bikeId < M; bikeId++) {
-                int x = 10; // x coordinate of the motorbike
-                int y = 2; // y coordinate of the motorbike
-                int a = 1; // indicates whether the motorbike is activated "1" or destroyed "0"
+                int x = in.nextInt(); // x coordinate of the motorbike
+                int y = in.nextInt(); // y coordinate of the motorbike
+                int a = in.nextInt(); // indicates whether the motorbike is activated "1" or destroyed "0"
 
                 if (a != 0) {
                     bikeActions.put(bikeId, generateSafeActions(speed, x, y));
