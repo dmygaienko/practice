@@ -12,7 +12,8 @@ public class PlayerTest {
 
     @Test
     public void test() throws Exception {
-        String inputs = getInputString();
+        //String inputs = getInputString();
+        String inputs = getGameInputString();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
     }
@@ -45,5 +46,23 @@ public class PlayerTest {
                 "2\n" +
                 "1\n"
                 ;
+    }
+
+    private String getGameInputString() {
+        return getBridgeStrings() +
+                //1st iteration
+                "1\n" +
+                "10\n" +
+                "2\n" +
+                "1\n";
+    }
+
+    private String getBridgeStrings() {
+        return "1\n" +
+                "1\n" +
+                "........................................\n" +
+                "........................................\n" +
+                "...........0............................\n" +
+                "........................................\n";
     }
 }
