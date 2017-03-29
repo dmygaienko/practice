@@ -49,20 +49,39 @@ public class PlayerTest {
     }
 
     private String getGameInputString() {
-        return getBridgeStrings() +
+        return getMotoStrings() + getBridgeStrings() +
                 //1st iteration
+                "3\n" +
+                "30\n" +
                 "1\n" +
-                "10\n" +
+                "1\n" +
+
+                "3\n" +
+                "30\n" +
+                "1\n" +
+                "1\n" +
+
+                "3\n" +
+                "30\n" +
                 "2\n" +
+                "1\n" +
+
+                "3\n" +
+                "30\n" +
+                "3\n" +
                 "1\n";
     }
 
     private String getBridgeStrings() {
-        return "1\n" +
-                "1\n" +
+        return
                 "........................................\n" +
                 "........................................\n" +
                 "...........0............................\n" +
                 "........................................\n";
+    }
+
+    private String getMotoStrings() {
+        return "4\n" +
+                "4\n";
     }
 }
