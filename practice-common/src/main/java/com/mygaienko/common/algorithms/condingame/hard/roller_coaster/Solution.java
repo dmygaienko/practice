@@ -48,6 +48,10 @@ class Solution {
                 ridedGroup.groupsAtRide.add(peeked);
                 peeked = queue.peek();
             }
+        } else {
+            for (int i = 0; i < ridedGroup.groupsAtRide.size(); i++) {
+                queue.poll();
+            }
         }
 
         return ridedGroup;
