@@ -15,9 +15,9 @@ public class Player {
 
     private static Point[][] bridge = new Point[4][];
 
-    private static int stepsForward = 7;
-    private static int minAvg = 2;
-    private static int maxAvg = 5;
+    private static int stepsForward = 5;
+    private static int minAvg = 3;
+    private static int maxAvg = 11;
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -115,8 +115,8 @@ public class Player {
     }
 
     private static void checkAndPermute(Player.Action[] actionValues, int nextAction, int maxActionLength,
-                                       Actions currentActions, List<Actions> allSafeActions,
-                                       ActionContext actionContext) {
+                                        Actions currentActions, List<Actions> allSafeActions,
+                                        ActionContext actionContext) {
         Action action = actionValues[nextAction];
         ActionContext nextActionContext = action.doAction(actionContext);
         if (!nextActionContext.result) {
@@ -174,7 +174,7 @@ public class Player {
         JUMP {
             ActionContext doAction(ActionContext context) {
                 int nextX = context.x + context.speed;
-                boolean result = checkNextPoint(bridge[context.y], context.x, context.speed);
+                boolean result = checkNextPoint(bridge[context.y], nextX);
                 return new ActionContext(context.speed, nextX, context.y, result);
             }
         },
@@ -189,7 +189,7 @@ public class Player {
             ActionContext doAction(ActionContext context) {
                 int nextX = context.x + context.speed;
                 int nextY = context.y - 1;
-                boolean result = checkVerticalMoving(nextX, nextY, context.speed);
+                boolean result = checkVerticalMoving(context.x, nextX, context.y, nextY, context.speed);
                 return new ActionContext(context.speed, nextX, nextY, result);
             }
         },
@@ -197,22 +197,21 @@ public class Player {
             ActionContext doAction(ActionContext context) {
                 int nextX = context.x + context.speed;
                 int nextY = context.y + 1;
-                boolean result = checkVerticalMoving(nextX, nextY, context.speed);
+                boolean result = checkVerticalMoving(context.x, nextX, context.y, nextY, context.speed);
                 return new ActionContext(context.speed, nextX, nextY, result);
             }
         };
 
-        private static boolean checkVerticalMoving(int x, int y, int speed) {
-            return checkVerticalBounds(y) && checkNextPoint(bridge[y], x, speed)
-                    && checkStraightLine(bridge[y], x, speed);
+        private static boolean checkVerticalMoving(int prevX, int x, int prevY, int y, int speed) {
+            return checkVerticalBounds(y) && checkNextPoint(bridge[y], x)
+                    && checkStraightLine(bridge[y], prevX, speed) && checkStraightLine(bridge[prevY], prevX, (speed + 1)/2);
         }
 
         private static boolean checkVerticalBounds(int y) {
             return y > -1 && y < bridge.length;
         }
 
-        private static boolean checkNextPoint(Point[] points, int x, int speed) {
-            int nextX = x + speed;
+        private static boolean checkNextPoint(Point[] points, int nextX) {
             return nextX >= points.length || points[nextX].safe;
         }
 
@@ -247,7 +246,7 @@ public class Player {
     }
 
     private static class Actions extends AbstractList<Action> {
-        
+
         private int average = 0;
         private List<Action> value = new ArrayList<>();
         private List<Integer> speeds = new ArrayList<>();
