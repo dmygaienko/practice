@@ -64,7 +64,7 @@ class Solution {
 
     private static class RidedGroup {
         public List<Group> groupsAtRide = new ArrayList<>();
-        public long seated;
+        public long seated = 0;
     }
 
     private static class Group {
