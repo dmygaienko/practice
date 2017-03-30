@@ -13,7 +13,7 @@ class Solution {
         int capacity = in.nextInt();
         int C = in.nextInt();
 
-        int sum = 0;
+        long sum = 0;
 
         Queue<Integer> queue = initQueue(in);
 
