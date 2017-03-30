@@ -8,16 +8,17 @@ import java.util.*;
  **/
 class Solution {
 
+    private static Map<Integer, RidedGroup> interimResults = new HashMap<>();
+
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
         int capacity = in.nextInt();
-        int C = in.nextInt();
+        int times = in.nextInt();
+
+        Queue<Group> queue = initQueue(in);
 
         long sum = 0;
-
-        Queue<Integer> queue = initQueue(in);
-
-        for (int i = 0; i < C; i++) {
+        for (int i = 0; i < times; i++) {
             sum += fillAttraction(capacity, queue);
         }
 
@@ -27,27 +28,52 @@ class Solution {
         System.out.println(sum);
     }
 
-    private static int fillAttraction(int capacity, Queue<Integer> queue) {
-        List<Integer> groupsAtRide = new ArrayList<>();
-        int seated = 0;
+    private static long fillAttraction(int capacity, Queue<Group> queue) {
+        Group peeked = queue.peek();
+        RidedGroup ridedGroup = staffAttraction(capacity, queue, peeked);
 
-        Integer peek = queue.peek();
-        while (peek != null && seated + peek <= capacity) {
-            seated += queue.poll();
-            groupsAtRide.add(peek);
-            peek = queue.peek();
-        }
-
-        queue.addAll(groupsAtRide);
-        return seated;
+        queue.addAll(ridedGroup.groupsAtRide);
+        return ridedGroup.seated;
     }
 
-    private static Queue<Integer> initQueue(Scanner in) {
-        Queue<Integer> queue = new LinkedList<>();
+    private static RidedGroup staffAttraction(int capacity, Queue<Group> queue, Group peeked) {
+        RidedGroup ridedGroup = interimResults.get(peeked.id);
+
+        if (ridedGroup == null) {
+            ridedGroup = new RidedGroup();
+            interimResults.put(peeked.id, ridedGroup);
+
+            while (peeked != null && ridedGroup.seated + peeked.qty <= capacity) {
+                ridedGroup.seated += queue.poll().qty;
+                ridedGroup.groupsAtRide.add(peeked);
+                peeked = queue.peek();
+            }
+        }
+
+        return ridedGroup;
+    }
+
+    private static Queue<Group> initQueue(Scanner in) {
+        Queue<Group> queue = new LinkedList<>();
         int N = in.nextInt();
         for (int i = 0; i < N; i++) {
-            queue.add(in.nextInt());
+            queue.add(new Group(i, in.nextInt()));
         }
         return queue;
+    }
+
+    private static class RidedGroup {
+        public List<Group> groupsAtRide = new ArrayList<>();
+        public long seated;
+    }
+
+    private static class Group {
+        private final int id;
+        private final int qty;
+
+        public Group(int id, int qty) {
+            this.id = id;
+            this.qty = qty;
+        }
     }
 }
