@@ -50,17 +50,7 @@ class Solution {
             ridedGroups.prevSum = sum;
             interimResults.put(peeked.id, ridedGroups);
         } else {
-            if (!wasPrediction) {
-                int iterationsPerCycle = i - ridedGroups.prevI;
-                int iterationsRemains = times - i;
-                int fullCycles = iterationsRemains / iterationsPerCycle;
-                if (fullCycles > 0) {
-                    ridedGroups.cycledIterations = fullCycles * iterationsPerCycle - 1;
-                    ridedGroups.cycledSum = fullCycles * (sum - ridedGroups.prevSum);
-                    ridedGroups.cycled = true;
-                }
-                wasPrediction = true;
-            }
+            predictCycles(sum, i, times, ridedGroups);
 
             if (!ridedGroups.cycled) {
                 for (int i1 = 0; i1 < ridedGroups.groupsAtRide.size(); i1++) {
@@ -74,6 +64,20 @@ class Solution {
         }
 
         return ridedGroups;
+    }
+
+    private static void predictCycles(long sum, int i, int times, RidedGroups ridedGroups) {
+        if (!wasPrediction) {
+            int iterationsPerCycle = i - ridedGroups.prevI;
+            int iterationsRemains = times - i;
+            int fullCycles = iterationsRemains / iterationsPerCycle;
+            if (fullCycles > 0) {
+                ridedGroups.cycledIterations = fullCycles * iterationsPerCycle - 1;
+                ridedGroups.cycledSum = fullCycles * (sum - ridedGroups.prevSum);
+                ridedGroups.cycled = true;
+            }
+            wasPrediction = true;
+        }
     }
 
     private static RidedGroups rideGroups(int capacity, Queue<Group> queue, Group peeked) {
