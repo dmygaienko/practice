@@ -53,7 +53,7 @@ class Solution {
             }
         } else {
             for (int i = 0; i < ridedGroup.groupsAtRide.size(); i++) {
-                queue.poll();
+                queue.remove();
             }
         }
 
@@ -61,7 +61,7 @@ class Solution {
     }
 
     private static Queue<Group> initQueue(Scanner in) {
-        Queue<Group> queue = new LinkedList<>();
+        Queue<Group> queue = new ArrayDeque<>();
         int N = in.nextInt();
         for (int i = 0; i < N; i++) {
             queue.add(new Group(i, in.nextInt()));
