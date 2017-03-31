@@ -23,7 +23,14 @@ class Solution {
 
         long sum = 0;
         for (int i = 0; i < times; i++) {
-            sum += fillAttraction(sum, i, times, capacity, queue);
+            RidedGroup ridedGroup = fillAttraction(sum, i, times, capacity, queue);
+            if (ridedGroup.cycled) {
+                i += ridedGroup.cycledIterations;
+                sum += ridedGroup.cycledSum;
+                ridedGroup.cycled = false;
+            } else {
+                sum += ridedGroup.seated;
+            }
         }
 
         // Write an action using System.out.println()
@@ -32,12 +39,13 @@ class Solution {
         System.out.println(sum);
     }
 
-    private static long fillAttraction(long sum, int i, int times, int capacity, Queue<Group> queue) {
+    private static RidedGroup fillAttraction(long sum, int i, int times, int capacity, Queue<Group> queue) {
         Group peeked = queue.peek();
         RidedGroup ridedGroup = staffAttraction(sum, i, times, capacity, queue, peeked);
-
-        queue.addAll(ridedGroup.groupsAtRide);
-        return ridedGroup.seated;
+        if (!ridedGroup.cycled) {
+            queue.addAll(ridedGroup.groupsAtRide);
+        }
+        return ridedGroup;
     }
 
     private static RidedGroup staffAttraction(long sum, int i, int times, int capacity, Queue<Group> queue, Group peeked) {
@@ -47,23 +55,29 @@ class Solution {
             ridedGroup = new RidedGroup();
             interimResults.put(peeked.id, ridedGroup);
 
+            ridedGroup.prevI = i;
+            ridedGroup.prevSum = sum;
+
             while (peeked != null && ridedGroup.seated + peeked.qty <= capacity) {
                 ridedGroup.seated += queue.poll().qty;
                 ridedGroup.groupsAtRide.add(peeked);
-                ridedGroup.prevI = i;
-                ridedGroup.prevSum = sum;
                 peeked = queue.peek();
             }
+
         } else {
             if (!wasPrediction) {
                 //TODO
                 int iterationsPerCycle = i - ridedGroup.prevI;
                 int iterationsRemains = times - i;
                 int fullCycles = iterationsRemains / iterationsPerCycle;
-
+                if (fullCycles > 0) {
+                    ridedGroup.cycledIterations = fullCycles * iterationsPerCycle - 1;
+                    ridedGroup.cycledSum = fullCycles * (sum - ridedGroup.prevSum);
+                    ridedGroup.cycled = true;
+                }
                 wasPrediction = true;
             } else {
-                for (int i1 = 0; i < ridedGroup.groupsAtRide.size(); i1++) {
+                for (int i1 = 0; i1 < ridedGroup.groupsAtRide.size(); i1++) {
                     queue.remove();
                 }
             }
@@ -86,6 +100,9 @@ class Solution {
         public long seated = 0;
         public int prevI;
         public long prevSum;
+        public boolean cycled = false;
+        public int cycledIterations;
+        public long cycledSum;
     }
 
     private static class Group {
