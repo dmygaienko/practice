@@ -12,6 +12,7 @@ import java.util.*;
 class Solution {
 
     private static Map<Integer, RidedGroup> interimResults = new HashMap<>();
+    private static boolean wasPrediction;
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -22,7 +23,7 @@ class Solution {
 
         long sum = 0;
         for (int i = 0; i < times; i++) {
-            sum += fillAttraction(capacity, queue);
+            sum += fillAttraction(sum, i, times, capacity, queue);
         }
 
         // Write an action using System.out.println()
@@ -31,15 +32,15 @@ class Solution {
         System.out.println(sum);
     }
 
-    private static long fillAttraction(int capacity, Queue<Group> queue) {
+    private static long fillAttraction(long sum, int i, int times, int capacity, Queue<Group> queue) {
         Group peeked = queue.peek();
-        RidedGroup ridedGroup = staffAttraction(capacity, queue, peeked);
+        RidedGroup ridedGroup = staffAttraction(sum, i, times, capacity, queue, peeked);
 
         queue.addAll(ridedGroup.groupsAtRide);
         return ridedGroup.seated;
     }
 
-    private static RidedGroup staffAttraction(int capacity, Queue<Group> queue, Group peeked) {
+    private static RidedGroup staffAttraction(long sum, int i, int times, int capacity, Queue<Group> queue, Group peeked) {
         RidedGroup ridedGroup = interimResults.get(peeked.id);
 
         if (ridedGroup == null) {
@@ -49,11 +50,22 @@ class Solution {
             while (peeked != null && ridedGroup.seated + peeked.qty <= capacity) {
                 ridedGroup.seated += queue.poll().qty;
                 ridedGroup.groupsAtRide.add(peeked);
+                ridedGroup.prevI = i;
+                ridedGroup.prevSum = sum;
                 peeked = queue.peek();
             }
         } else {
-            for (int i = 0; i < ridedGroup.groupsAtRide.size(); i++) {
-                queue.remove();
+            if (!wasPrediction) {
+                //TODO
+                int iterationsPerCycle = i - ridedGroup.prevI;
+                int iterationsRemains = times - i;
+                int fullCycles = iterationsRemains / iterationsPerCycle;
+
+                wasPrediction = true;
+            } else {
+                for (int i1 = 0; i < ridedGroup.groupsAtRide.size(); i1++) {
+                    queue.remove();
+                }
             }
         }
 
@@ -72,6 +84,8 @@ class Solution {
     private static class RidedGroup {
         public List<Group> groupsAtRide = new ArrayList<>();
         public long seated = 0;
+        public int prevI;
+        public long prevSum;
     }
 
     private static class Group {
