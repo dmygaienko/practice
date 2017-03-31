@@ -12,7 +12,6 @@ import java.util.*;
 class Solution {
 
     private static Map<Integer, RidedGroups> interimResults = new HashMap<>();
-    private static boolean wasPrediction;
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -67,7 +66,7 @@ class Solution {
     }
 
     private static void predictCycles(long sum, int i, int times, RidedGroups ridedGroups) {
-        if (!wasPrediction) {
+        if (!ridedGroups.wasPrediction) {
             int iterationsPerCycle = i - ridedGroups.prevI;
             int iterationsRemains = times - i;
             int fullCycles = iterationsRemains / iterationsPerCycle;
@@ -76,7 +75,7 @@ class Solution {
                 ridedGroups.cycledSum = fullCycles * (sum - ridedGroups.prevSum);
                 ridedGroups.cycled = true;
             }
-            wasPrediction = true;
+            ridedGroups.wasPrediction = true;
         }
     }
 
@@ -102,10 +101,11 @@ class Solution {
     private static class RidedGroups {
         public List<Group> groupsAtRide = new ArrayList<>();
         public long seated = 0;
-
         public int prevI;
+
         public long prevSum;
         public boolean cycled = false;
+        public boolean wasPrediction;
         public int cycledIterations;
         public long cycledSum;
     }
