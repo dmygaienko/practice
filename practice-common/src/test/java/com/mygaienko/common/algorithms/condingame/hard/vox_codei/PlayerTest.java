@@ -15,9 +15,27 @@ public class PlayerTest {
 
     @Test
     public void main() throws Exception {
-        String inputs = getGameInputString1();
+        String inputs = getGameInputString3();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
+    }
+
+    private String getGameInputString3() {
+        return "12 9\n" +
+                "@...@.......\n" +
+                ".......@...@\n" +
+                "............\n" +
+                "...@.....@..\n" +
+                "............\n" +
+                ".@..........\n" +
+                "......@.....\n" +
+                ".........@..\n" +
+                "............\n" +
+
+                "15 9" +
+                "14 8" +
+                "13 7" +
+                "12 6";
     }
 
     private String getGameInputString1() {

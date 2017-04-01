@@ -13,6 +13,7 @@ class Player {
 
     private static List<List<Node>> grid;
     private static Set<Node> survNodes = new HashSet<>();
+    private static Map<Integer, Set<Node>> toExplode = new HashMap<>();
     private static int SIDE_EXPLOSION = 3;
 
     public static void main(String args[]) {
@@ -22,19 +23,41 @@ class Player {
 
         Iterator<Node> iterator = survNodes.iterator();
         // game loop
-        while (true) {
+
+        for (int round = 0; true; round++) {
             int rounds = in.nextInt(); // number of rounds left before the end of the game
             int bombs = in.nextInt(); // number of bombs left
 
+            processExplosion(round);
+
             String result;
-            if (bombs > 0) {
-                BombLocationResult bombResult = getMostProductiveBombLocation(iterator.next());
+            if (bombs > 0 && !survNodes.isEmpty()) {
+                BombLocationResult bombResult = getMostProductiveBombLocation(survNodes.iterator().next());
                 result = bombResult.location.width + " " + bombResult.location.height;
+                mineNodes(bombResult.exploded, round + 3);
             } else {
                 result = "WAIT";
             }
             System.out.println(result);
+
         }
+    }
+
+    private static void processExplosion(int round) {
+        Set<Node> nodes = toExplode.get(round);
+        if (nodes != null) {
+            for (Node node : nodes) {
+                node.type = NodeType.EMPTY;
+            }
+        }
+    }
+
+    private static void mineNodes(Set<Node> exploded, int round) {
+        for (Node node : exploded) {
+            node.type = NodeType.MINED;
+        }
+        survNodes.removeAll(exploded);
+        toExplode.put(round, exploded);
     }
 
     private static BombLocationResult getMostProductiveBombLocation(Node next) {
@@ -206,7 +229,7 @@ class Player {
     }
 
     enum  NodeType {
-        EMPTY, SURV, PASSIVE;
+        EMPTY, SURV, PASSIVE, MINED;
 
         static NodeType getNode(String s) {
             NodeType result = null;
