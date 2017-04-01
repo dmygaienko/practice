@@ -16,7 +16,7 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
-        Set<Node> survNodes = new HashSet<>();
+        HashSet<Node> survNodes = new HashSet<>();
         List<List<Node>> grid = initGrid(in, survNodes);
         Map<Integer, Set<Node>> toExplode = new HashMap<>();
 
@@ -31,7 +31,7 @@ class Player {
             String result = "WAIT";
             BombLocationResult bombResult;
             if (bombs > 0 && !survNodes.isEmpty()) {
-                bombResult = getMostProductiveBombLocation(grid);
+                bombResult = getMostProductiveBombLocation(grid, survNodes, bombs);
                 if (NodeType.EMPTY.equals(bombResult.location.type)) {
                     result = bombResult.location.width + " " + bombResult.location.height;
                     mineNodes(survNodes, toExplode, bombResult.exploded, round + 3);
@@ -58,26 +58,49 @@ class Player {
         toExplode.put(round, exploded);
     }
 
-   /* private static BombLocationResult getMostProductiveBombLocation(List<List<Node>> grid) {
-        //List<Node> bombLocations = getNearestBombLocations(next);
+    private static BombLocationResult getMostProductiveBombLocation(List<List<Node>> grid, HashSet<Node> survNodes, int bombs) {
         List<BombLocationResult> steps = grid.stream()
                 .flatMap(line -> line.stream())
                 .map(bombLocation -> explode(bombLocation, grid))
                 .sorted((a, b) -> a.result() < b.result() ? 1 : (a.result() > b.result()) ? -1 : 0)
                 .collect(toList());
 
-        List<BombLocationResult> successSteps = defineStepsToExplodeAll(steps);
+        List<BombLocationResult> successSteps = defineStepsToExplodeAll(steps, (HashSet<Node>) survNodes.clone(), bombs);
         return successSteps.get(0);
-    }*/
+    }
 
+    private static List<BombLocationResult> defineStepsToExplodeAll(List<BombLocationResult> steps, HashSet<Node> survNodes, int bombs) {
+        List<BombLocationResult> successSteps = getNextStepToExplode(0, steps, new ArrayList<>(), survNodes, new HashSet<>(), bombs);
+        return successSteps;
+    }
 
-    private static BombLocationResult getMostProductiveBombLocation(List<List<Node>> grid) {
-        //List<Node> bombLocations = getNearestBombLocations(next);
-        return grid.stream()
-                .flatMap(line -> line.stream())
-                .map(bombLocation -> explode(bombLocation, grid))
-                .reduce((r1, r2) -> r2.result() > r1.result() ? r2 : r1)
-                .get();
+    private static List<BombLocationResult> getNextStepToExplode(int i, List<BombLocationResult> steps, ArrayList<BombLocationResult> currentSteps,
+                                                                 HashSet<Node> survNodes, HashSet<Object> exploded, int bombs) {
+        List<BombLocationResult> bombLocationResults = countExplosions(i, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survNodes.clone(), (HashSet<Object>) exploded.clone(), bombs);
+        if (bombLocationResults != null) {
+            return bombLocationResults;
+        } else if (i + 1 < steps.size() && steps.get(i).result() > 0) {
+            return getNextStepToExplode(i + 1, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survNodes.clone(), (HashSet<Object>) exploded.clone(), bombs);
+        } else {
+            return null;
+        }
+    }
+
+    private static List<BombLocationResult> countExplosions(int i, List<BombLocationResult> steps,
+                                                            ArrayList<BombLocationResult> currentSteps, HashSet<Node> survNodes,
+                                                            HashSet<Object> exploded, int bombs) {
+        BombLocationResult step = steps.get(i);
+
+        currentSteps.add(step);
+        survNodes.removeAll(step.exploded);
+
+        if (survNodes.isEmpty()) {
+            return currentSteps;
+        } else if (bombs == 1) {
+            return null;
+        } else {
+            return getNextStepToExplode(i + 1, steps, currentSteps, survNodes, exploded, bombs - 1);
+        }
     }
 
     private static BombLocationResult explode(Node bombLocation, List<List<Node>> grid) {
