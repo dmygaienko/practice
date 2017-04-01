@@ -223,6 +223,15 @@ class Player {
             result = 31 * result + height;
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "type=" + type +
+                    ", width=" + width +
+                    ", height=" + height +
+                    '}';
+        }
     }
 
     enum  NodeType {
