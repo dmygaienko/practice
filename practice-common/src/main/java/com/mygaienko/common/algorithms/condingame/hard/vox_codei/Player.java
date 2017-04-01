@@ -21,7 +21,6 @@ class Player {
 
         initGrid(in);
 
-        Iterator<Node> iterator = survNodes.iterator();
         // game loop
 
         for (int round = 0; true; round++) {
@@ -30,16 +29,16 @@ class Player {
 
             processExplosion(round);
 
-            String result;
+            String result = "WAIT";
+            BombLocationResult bombResult;
             if (bombs > 0 && !survNodes.isEmpty()) {
-                BombLocationResult bombResult = getMostProductiveBombLocation(survNodes.iterator().next());
-                result = bombResult.location.width + " " + bombResult.location.height;
-                mineNodes(bombResult.exploded, round + 3);
-            } else {
-                result = "WAIT";
+                bombResult = getMostProductiveBombLocation();
+                if (NodeType.EMPTY.equals(bombResult.location.type)) {
+                    result = bombResult.location.width + " " + bombResult.location.height;
+                    mineNodes(bombResult.exploded, round + 3);
+                }
             }
             System.out.println(result);
-
         }
     }
 
@@ -60,9 +59,10 @@ class Player {
         toExplode.put(round, exploded);
     }
 
-    private static BombLocationResult getMostProductiveBombLocation(Node next) {
-        List<Node> bombLocations = getNearestBombLocations(next);
-        return bombLocations.stream()
+    private static BombLocationResult getMostProductiveBombLocation() {
+        //List<Node> bombLocations = getNearestBombLocations(next);
+        return grid.stream()
+                .flatMap(line -> line.stream())
                 .map(bombLocation -> explode(bombLocation))
                 .reduce((r1, r2) -> r2.result() > r1.result() ? r2 : r1)
                 .get();
@@ -70,23 +70,26 @@ class Player {
 
     private static BombLocationResult explode(Node bombLocation) {
         BombLocationResult result = new BombLocationResult(bombLocation);
-        result.exploded.addAll(explodeUp(bombLocation));
-        result.exploded.addAll(explodeDown(bombLocation));
-        result.exploded.addAll(explodeRight(bombLocation));
-        result.exploded.addAll(explodeLeft(bombLocation));
+        NodeType type = bombLocation.type;
+        if (NodeType.EMPTY.equals(type) || NodeType.MINED.equals(type)) {
+            result.exploded.addAll(explodeUp(bombLocation));
+            result.exploded.addAll(explodeDown(bombLocation));
+            result.exploded.addAll(explodeRight(bombLocation));
+            result.exploded.addAll(explodeLeft(bombLocation));
+        }
         return result;
     }
 
     private static List<Node> explodeUp(Node bombLocation) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = bombLocation.height - 1, l = 1; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
+        for (int i = bombLocation.height - 1, l = 0; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
             if (isNotExplosiveNode(result, i, bombLocation.width)) break;
         }
         return result;
     }
     private static List<Node> explodeDown(Node bombLocation) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = bombLocation.height + 1, l = 1; i < grid.size() && l < SIDE_EXPLOSION; i++, l++) {
+        for (int i = bombLocation.height + 1, l = 0; i < grid.size() && l < SIDE_EXPLOSION; i++, l++) {
             if (isNotExplosiveNode(result, i, bombLocation.width)) break;
         }
         return result;
@@ -94,14 +97,14 @@ class Player {
     private static List<Node> explodeRight(Node bombLocation) {
         ArrayList<Node> result = new ArrayList<>();
         List<Node> line = grid.get(bombLocation.height);
-        for (int i = bombLocation.width + 1, l = 1; i < line.size() && l < SIDE_EXPLOSION; i++, l++) {
+        for (int i = bombLocation.width + 1, l = 0; i < line.size() && l < SIDE_EXPLOSION; i++, l++) {
             if (isNotExplosiveNode(result, bombLocation.height, i)) break;
         }
         return result;
     }
     private static List<Node> explodeLeft(Node bombLocation) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = bombLocation.width - 1, l = 1; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
+        for (int i = bombLocation.width - 1, l = 0; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
             if (isNotExplosiveNode(result, bombLocation.height, i)) break;
         }
         return result;
@@ -139,7 +142,7 @@ class Player {
 
     private static List<Node> getUpNeighbours(Node node) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = node.height - 1, l = 1; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
+        for (int i = node.height - 1, l = 0; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
             if (isNotBombLocation(result, i, node.width)) break;
         }
         return result;
@@ -147,14 +150,14 @@ class Player {
 
     private static List<Node> getDownNeighbours(Node node) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = node.height + 1, l = 1; i < grid.size() && l < SIDE_EXPLOSION; i++, l++) {
+        for (int i = node.height + 1, l = 0; i < grid.size() && l < SIDE_EXPLOSION; i++, l++) {
             if (isNotBombLocation(result, i, node.width)) break;
         }
         return result;
     }
     private static List<Node> getLeftNeighbours(Node node) {
         ArrayList<Node> result = new ArrayList<>();
-        for (int i = node.width - 1, l = 1; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
+        for (int i = node.width - 1, l = 0; i > -1 && l < SIDE_EXPLOSION; i--, l++) {
             if (isNotBombLocation(result, node.height, i)) break;
         }
         return result;
@@ -162,7 +165,7 @@ class Player {
     private static List<Node> getRightNeighbours(Node node) {
         ArrayList<Node> result = new ArrayList<>();
         List<Node> line = grid.get(node.height);
-        for (int i = node.width + 1, l = 1; i < line.size() && l < SIDE_EXPLOSION; i++, l++) {
+        for (int i = node.width + 1, l = 0; i < line.size() && l < SIDE_EXPLOSION; i++, l++) {
             if (isNotBombLocation(result, node.height, i)) break;
         }
         return result;
