@@ -66,7 +66,15 @@ class Player {
                 .collect(toList());
 
         List<BombLocationResult> successSteps = defineStepsToExplodeAll(steps, (HashSet<Node>) survNodes.clone(), bombs);
-        return successSteps.get(0);
+
+        BombLocationResult result = null;
+        if (successSteps != null) {
+            result = successSteps.get(0);
+        } else if (bombs > 1) {
+            result = steps.get(0);
+        }
+
+        return result;
     }
 
     private static List<BombLocationResult> defineStepsToExplodeAll(List<BombLocationResult> steps, HashSet<Node> survNodes, int bombs) {
