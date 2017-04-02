@@ -16,9 +16,28 @@ public class SolutionTest {
 
     @Test
     public void main() throws Exception {
-        String inputs = getGameInputString4();
+        String inputs = getSubGameInputStringSuperAbrakadabra();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Solution.main(new String[]{});
+    }
+
+    private String getSubGameInputStringSuperAbrakadabra() {
+        return "2\n" +
+                "ABRAKADABRA\n" +
+                "BRAKADABRAK";
+    }
+
+    private String getSubGameInputStringSuperImposed() {
+        return "3\n" +
+                "AAC\n" +
+                "TC\n" +
+                "TTAACCTT\n";
+    }
+
+    private String getSubGameInputString3() {
+        return "2\n" +
+                "AGATTATA\n" +
+                "AGATTATA\n";
     }
 
     private String getGameInputString4() {
