@@ -13,7 +13,36 @@ class Solution {
 
         ArrayList<String> strings = initStrings(in);
 
-        System.out.println(getShortestSequenceLength(strings));
+        System.out.println(getShortestSequenceLengthShuffled(strings));
+    }
+
+    public static int getShortestSequenceLengthShuffled(ArrayList<String> strings) {
+        ArrayList<List<String>> shuffled = new ArrayList<>();
+
+        addNextString(0, new LinkedHashSet<>(), strings, shuffled);
+
+        return shuffled.stream()
+                .map(strs -> getShortestSequenceLength(strs))
+                .reduce((a, b) -> a < b ? a : b)
+                .get();
+    }
+
+    public static void addNextString(int i, LinkedHashSet<String> currentStrings, ArrayList<String> strings,
+                                      ArrayList<List<String>> shuffled) {
+
+        if (i + 1 < strings.size()) {
+            addNextString(i + 1, (LinkedHashSet<String>) currentStrings.clone(), strings, shuffled);
+        }
+
+        if (!currentStrings.add(strings.get(i))) {
+            return;
+        }
+
+        if (currentStrings.size() == strings.size()) {
+            shuffled.add(new ArrayList<>(currentStrings));
+        } else {
+            addNextString(0, currentStrings, strings, shuffled);
+        }
     }
 
     /**
@@ -27,7 +56,7 @@ class Solution {
      * @param strings
      * @return
      */
-    private static int getShortestSequenceLength(ArrayList<String> strings) {
+    private static int getShortestSequenceLength(List<String> strings) {
         String result = "";
 
         for (String string : strings) {
@@ -35,7 +64,7 @@ class Solution {
 
             if (!substringResults.isEmpty()) {
                 for (SubstringResult substringResult : substringResults) {
-                    if (resultFullyContainsSubstr(substringResult)) {
+                    if (resultFullyContainsString(substringResult)) {
                         //do nothing
                         break;
                     } else if (stringFullyContainsResult(substringResult)) {
@@ -59,12 +88,12 @@ class Solution {
 
     //case 1: bcd abcde => abcde        (bc)
     private static boolean stringFullyContainsResult(SubstringResult res) {
-        return res.stringJ.equals(res.substring);
+        return res.stringI.equals(res.substring);
     }
 
     //case 1: abcde bcd => abcde        (bc)
-    private static boolean resultFullyContainsSubstr(SubstringResult res) {
-        return res.stringI.equals(res.substring);
+    private static boolean resultFullyContainsString(SubstringResult res) {
+        return res.stringJ.equals(res.substring);
     }
 
     //case 1: bcde abc => abcde        (bc)
@@ -114,7 +143,10 @@ class Solution {
     }
 
     private static boolean isLastPartAndStartOfAny(SubstringResult result) {
-        return substrIsAtEndOfResult(result) || substrIsAtStartOfResult(result);
+        return substrIsAtEndOfResult(result)
+                || substrIsAtStartOfResult(result)
+                || stringFullyContainsResult(result)
+                || resultFullyContainsString(result);
     }
 
 
