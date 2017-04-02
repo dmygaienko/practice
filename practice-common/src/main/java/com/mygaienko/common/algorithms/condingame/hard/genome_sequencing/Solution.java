@@ -21,10 +21,11 @@ class Solution {
 
         addNextString(0, new LinkedHashSet<>(), strings, shuffled);
 
-        return shuffled.stream()
-                .map(strs -> getShortestSequenceLength(strs))
-                .reduce((a, b) -> a < b ? a : b)
-                .get();
+        return  shuffled.size() == 0 ? strings.get(0).length() :
+                shuffled.stream()
+                        .map(strs -> getShortestSequenceLength(strs))
+                        .reduce((a, b) -> a < b ? a : b)
+                        .get();
     }
 
     public static void addNextString(int i, LinkedHashSet<String> currentStrings, ArrayList<String> strings,
@@ -111,7 +112,8 @@ class Solution {
     public static Set<SubstringResult> getCommonSubString(String stringI, String stringJ) {
         int[][] lengths = new int[stringI.length()][stringJ.length()];
         int longestLength = 0;
-        Set<SubstringResult> subStrings = new HashSet<>();
+
+        Set<SubstringResult> subStrings = new TreeSet<>((a, b) -> a.substring.length() > b.substring.length() ? -1 : 1);
 
         for (int i = 0; i < stringI.length(); i++) {
             for (int j = 0; j < stringJ.length(); j++) {
@@ -162,7 +164,7 @@ class Solution {
 
 
     private static class SubstringResult {
-        private final String substring;
+        public final String substring;
         private final int lastIndexI;
         private final int lastIndexJ;
         private final String stringI;
