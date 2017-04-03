@@ -91,7 +91,8 @@ class Player {
 
             A += xi * yi_1 - xi_1 * yi;
         }
-        return A/2L;
+        A /= 2L;
+        return A == 0 ? 1 : A;
     }
 
     private static List<Position> initGiants(Scanner in) {
@@ -100,6 +101,7 @@ class Player {
         for (int i = 0; i < N; i++) {
             int x = in.nextInt();
             int y = in.nextInt();
+            System.err.println(new Position(x, y));
             giants.add(new Position(x, y));
         }
         return giants;
