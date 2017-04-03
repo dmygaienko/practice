@@ -11,8 +11,7 @@ import java.util.*;
 // delete by scope with index
 class Solution {
 
-    private static Map<Integer, RidedGroup> interimResults = new HashMap<>();
-    private static boolean wasPrediction;
+    private static Map<Integer, RidedGroups> interimResults = new HashMap<>();
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -23,7 +22,14 @@ class Solution {
 
         long sum = 0;
         for (int i = 0; i < times; i++) {
-            sum += fillAttraction(sum, i, times, capacity, queue);
+            RidedGroups ridedGroups = fillAttraction(sum, i, times, capacity, queue);
+            if (ridedGroups.cycled) {
+                i += ridedGroups.cycledIterations;
+                sum += ridedGroups.cycledSum;
+                ridedGroups.cycled = false;
+            } else {
+                sum += ridedGroups.seated;
+            }
         }
 
         // Write an action using System.out.println()
@@ -32,44 +38,55 @@ class Solution {
         System.out.println(sum);
     }
 
-    private static long fillAttraction(long sum, int i, int times, int capacity, Queue<Group> queue) {
+    private static RidedGroups fillAttraction(long sum, int i, int times, int capacity, Queue<Group> queue) {
         Group peeked = queue.peek();
-        RidedGroup ridedGroup = staffAttraction(sum, i, times, capacity, queue, peeked);
+        RidedGroups ridedGroups = interimResults.get(peeked.id);
 
-        queue.addAll(ridedGroup.groupsAtRide);
-        return ridedGroup.seated;
-    }
+        if (ridedGroups == null) {
+            ridedGroups = rideGroups(capacity, queue, peeked);
 
-    private static RidedGroup staffAttraction(long sum, int i, int times, int capacity, Queue<Group> queue, Group peeked) {
-        RidedGroup ridedGroup = interimResults.get(peeked.id);
-
-        if (ridedGroup == null) {
-            ridedGroup = new RidedGroup();
-            interimResults.put(peeked.id, ridedGroup);
-
-            while (peeked != null && ridedGroup.seated + peeked.qty <= capacity) {
-                ridedGroup.seated += queue.poll().qty;
-                ridedGroup.groupsAtRide.add(peeked);
-                ridedGroup.prevI = i;
-                ridedGroup.prevSum = sum;
-                peeked = queue.peek();
-            }
+            ridedGroups.prevI = i;
+            ridedGroups.prevSum = sum;
+            interimResults.put(peeked.id, ridedGroups);
         } else {
-            if (!wasPrediction) {
-                //TODO
-                int iterationsPerCycle = i - ridedGroup.prevI;
-                int iterationsRemains = times - i;
-                int fullCycles = iterationsRemains / iterationsPerCycle;
+            predictCycles(sum, i, times, ridedGroups);
 
-                wasPrediction = true;
-            } else {
-                for (int i1 = 0; i < ridedGroup.groupsAtRide.size(); i1++) {
+            if (!ridedGroups.cycled) {
+                for (int i1 = 0; i1 < ridedGroups.groupsAtRide.size(); i1++) {
                     queue.remove();
                 }
             }
         }
 
-        return ridedGroup;
+        if (!ridedGroups.cycled) {
+            queue.addAll(ridedGroups.groupsAtRide);
+        }
+
+        return ridedGroups;
+    }
+
+    private static void predictCycles(long sum, int i, int times, RidedGroups ridedGroups) {
+        if (!ridedGroups.wasPrediction) {
+            int iterationsPerCycle = i - ridedGroups.prevI;
+            int iterationsRemains = times - i;
+            int fullCycles = iterationsRemains / iterationsPerCycle;
+            if (fullCycles > 0) {
+                ridedGroups.cycledIterations = fullCycles * iterationsPerCycle - 1;
+                ridedGroups.cycledSum = fullCycles * (sum - ridedGroups.prevSum);
+                ridedGroups.cycled = true;
+            }
+            ridedGroups.wasPrediction = true;
+        }
+    }
+
+    private static RidedGroups rideGroups(int capacity, Queue<Group> queue, Group peeked) {
+        RidedGroups ridedGroups = new RidedGroups();
+        while (peeked != null && ridedGroups.seated + peeked.qty <= capacity) {
+            ridedGroups.seated += queue.poll().qty;
+            ridedGroups.groupsAtRide.add(peeked);
+            peeked = queue.peek();
+        }
+        return ridedGroups;
     }
 
     private static Queue<Group> initQueue(Scanner in) {
@@ -81,11 +98,16 @@ class Solution {
         return queue;
     }
 
-    private static class RidedGroup {
+    private static class RidedGroups {
         public List<Group> groupsAtRide = new ArrayList<>();
         public long seated = 0;
         public int prevI;
+
         public long prevSum;
+        public boolean cycled = false;
+        public boolean wasPrediction;
+        public int cycledIterations;
+        public long cycledSum;
     }
 
     private static class Group {
