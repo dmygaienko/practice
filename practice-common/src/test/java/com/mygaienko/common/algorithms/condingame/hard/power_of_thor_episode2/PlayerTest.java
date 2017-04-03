@@ -50,4 +50,30 @@ public class PlayerTest {
         );
     }
 
+    @Test
+    public void countCentroidRev10() throws Exception {
+        System.out.println(
+                Player.countCentroid(Arrays.asList(
+                        new Player.Position(9, 0),
+
+                        new Player.Position(9, 25),
+                        new Player.Position(9, 26),
+                        new Player.Position(9, 27),
+                        new Player.Position(9, 28),
+                        new Player.Position(9, 29),
+                        new Player.Position(9, 30),
+                        new Player.Position(9, 31),
+                        new Player.Position(9, 32),
+                        new Player.Position(9, 33),
+                        new Player.Position(9, 34),
+                        new Player.Position(9, 35),
+                        new Player.Position(9, 36),
+                        new Player.Position(9, 37),
+                        new Player.Position(9, 38),
+                        new Player.Position(9, 39)
+                        )
+                )
+        );
+    }
+
 }
