@@ -7,7 +7,7 @@ import java.util.Scanner;
 /**
  * Created by dmygaenko on 03/04/2017.
  */
-public class Player {
+class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -20,6 +20,7 @@ public class Player {
             int strikes = in.nextInt(); // the remaining number of hammer strikes.
 
             List<Position> giants = initGiants(in);
+            giants.add(new Position(TX, TY));
             Position centroid = countCentroid(giants);
             System.err.println(centroid);
 
