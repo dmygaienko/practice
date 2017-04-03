@@ -34,6 +34,24 @@ class Player {
     }
 
     public static Position countCentroid(List<Position> giants) {
+        Position centroid;
+        if (giants.size() > 2) {
+            centroid = countPolygonCentroid(giants);
+        } else {
+            centroid = countCentroidBetweenTwoPoints(giants);
+        }
+        return centroid;
+    }
+
+    private static Position countCentroidBetweenTwoPoints(List<Position> giants) {
+        Position first = giants.get(0);
+        Position second = giants.get(1);
+        int cx = (first.x + second.x) / 2;
+        int cy = (first.y + second.y) / 2;
+        return new Position(cx, cy);
+    }
+
+    private static Position countPolygonCentroid(List<Position> giants) {
         long A = countA(giants);
         int cX = countCentroidX(A, giants);
         int cY = countCentroidY(A, giants);
