@@ -20,6 +20,7 @@ public class Player {
             int strikes = in.nextInt(); // the remaining number of hammer strikes.
 
             List<Position> giants = initGiants(in);
+            Position centroid = countCentroid(giants);
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
@@ -28,6 +29,67 @@ public class Player {
             // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
             System.out.println("WAIT");
         }
+    }
+
+    public static Position countCentroid(List<Position> giants) {
+        long A = countA(giants);
+        int cX = countCentroidX(A, giants);
+        int cY = countCentroidY(A, giants);
+        return new Position(cX, cY);
+    }
+
+    @SuppressWarnings("Duplicates")
+    private static int countCentroidX(long A, List<Position> giants) {
+        int sum = 0;
+
+        for (int i = 0; i < giants.size(); i++) {
+            Position iPosition = giants.get(i);
+            int xi = iPosition.x;
+            int yi = iPosition.y;
+
+            Position i_1Position = giants.get(i + 1 == giants.size() ? 0 : i + 1);
+            int xi_1 = i_1Position.x;
+            int yi_1 = i_1Position.y;
+
+            sum += (xi + xi_1) * (xi * yi_1 - xi_1 * yi);
+        }
+
+        return (int) (sum / (6 * A));
+    }
+
+    @SuppressWarnings("Duplicates")
+    private static int countCentroidY(long A, List<Position> giants) {
+        int sum = 0;
+
+        for (int i = 0; i < giants.size() - 1; i++) {
+            Position iPosition = giants.get(i);
+            int xi = iPosition.x;
+            int yi = iPosition.y;
+
+            Position i_1Position = giants.get(i + 1 == giants.size() ? 0 : i + 1);
+            int xi_1 = i_1Position.x;
+            int yi_1 = i_1Position.y;
+
+            sum += (yi + yi_1) * (xi * yi_1 - xi_1 * yi);
+        }
+
+        return (int) (sum / (6 * A));
+    }
+
+    private static long countA(List<Position> giants) {
+        int A = 0;
+        for (int i = 0; i < giants.size(); i++) {
+            Position iPosition = giants.get(i);
+            int xi = iPosition.x;
+            int yi = iPosition.y;
+
+            Position i_1Position = giants.get(i + 1 == giants.size() ? 0 : i + 1);
+            int xi_1 = i_1Position.x;
+            int yi_1 = i_1Position.y;
+
+            A += xi * yi_1 - xi_1 * yi;
+        }
+        return A/2L;
     }
 
     private static List<Position> initGiants(Scanner in) {
@@ -41,7 +103,7 @@ public class Player {
         return giants;
     }
 
-    private static class Position {
+    public static class Position {
         private final int x;
         private final int y;
 
