@@ -62,7 +62,7 @@ public class Player {
     private static int countCentroidY(long A, List<Position> giants) {
         int sum = 0;
 
-        for (int i = 0; i < giants.size() - 1; i++) {
+        for (int i = 0; i < giants.size(); i++) {
             Position iPosition = giants.get(i);
             int xi = iPosition.x;
             int yi = iPosition.y;
