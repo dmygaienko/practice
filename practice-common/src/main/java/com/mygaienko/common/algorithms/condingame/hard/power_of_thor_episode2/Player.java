@@ -21,6 +21,7 @@ public class Player {
 
             List<Position> giants = initGiants(in);
             Position centroid = countCentroid(giants);
+            System.err.println(centroid);
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
