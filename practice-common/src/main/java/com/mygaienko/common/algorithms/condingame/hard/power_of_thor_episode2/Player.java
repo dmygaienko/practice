@@ -44,39 +44,53 @@ class Player {
 
     private static String move(Position thorPosition, Position centroid,
                                Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
-        String result = "";
-        int newX = thorPosition.x;
-        int newY= thorPosition.y;
 
-        int yDiff = centroid.y - newY;
-        if (yDiff > 0) {
-            result += "S";
-            newY++;
-        } else if (yDiff < 0) {
-            result += "N";
-            newY--;
-        }
+        Position newPosition = new Position(thorPosition);
 
-        int xDiff = centroid.x - newX;
-        if (xDiff > 0) {
-            result += "E";
-            newX++;
-        } else if (xDiff < 0) {
-            result += "W";
-            newX--;
-        }
+        String result = takeDirection(centroid, newPosition);
 
-        if (yDiff == 0 && xDiff == 0) {
-            result = "WAIT";
-        }
+        result = getSafeDirection(result, thorPosition, newPosition, giantsMap);
 
         if (cornered(thorPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
             result = "STRIKE";
         }
 
-        thorPosition.x = newX;
-        thorPosition.y = newY;
+        thorPosition.setPosition(newPosition);
+        return result;
+    }
 
+    private static String getSafeDirection(String result, Position thorPosition, Position newPosition,
+                                           Map<Integer, Map<Integer, Position>> giantsMap) {
+
+
+
+        return result;
+    }
+
+    private static String takeDirection(Position centroid, Position newPosition) {
+        int yDiff = centroid.y - newPosition.y;
+        int xDiff = centroid.x - newPosition.x;
+
+        String result = "";
+        if (yDiff > 0) {
+            result += "S";
+            newPosition.y++;
+        } else if (yDiff < 0) {
+            result += "N";
+            newPosition.y--;
+        }
+
+        if (xDiff > 0) {
+            result += "E";
+            newPosition.x++;
+        } else if (xDiff < 0) {
+            result += "W";
+            newPosition.x--;
+        }
+
+        if (yDiff == 0 && xDiff == 0) {
+            result = "WAIT";
+        }
         return result;
     }
 
@@ -278,12 +292,22 @@ class Player {
             this.y = y;
         }
 
+        public Position(Position position) {
+            this.x = position.x;
+            this.y = position.y;
+        }
+
         @Override
         public String toString() {
             return "Position{" +
                     "x=" + x +
                     ", y=" + y +
                     '}';
+        }
+
+        public void setPosition(Position newPosition) {
+            x = newPosition.x;
+            y = newPosition.y;
         }
     }
 }
