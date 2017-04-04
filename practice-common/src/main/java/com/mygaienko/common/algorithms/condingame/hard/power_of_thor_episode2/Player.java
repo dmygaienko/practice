@@ -1,8 +1,7 @@
 package com.mygaienko.common.algorithms.condingame.hard.power_of_thor_episode2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by dmygaenko on 03/04/2017.
@@ -15,14 +14,19 @@ class Player {
         int TX = in.nextInt();
         int TY = in.nextInt();
 
+        Position thorPosition = new Position(TX, TY);
         // game loop
         while (true) {
             int strikes = in.nextInt(); // the remaining number of hammer strikes.
 
             List<Position> giants = initGiants(in);
-            giants.add(new Position(TX, TY));
+            Map<Integer, Map<Integer, Position>> giantsMap = initGiantsMap(giants);
+
+            giants.add(thorPosition);
             Position centroid = countCentroid(giants);
             System.err.println(centroid);
+
+            String action = moveToCentroid(thorPosition, centroid, giantsMap);
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
@@ -31,6 +35,34 @@ class Player {
             // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
             System.out.println("WAIT");
         }
+    }
+
+    public static Map<Integer, Map<Integer, Position>> initGiantsMap(List<Position> giants) {
+        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, Collectors.toMap(pos -> pos.y, pos -> pos)));
+    }
+
+    private static String moveToCentroid(Position thorPosition, Position centroid, Map<Integer, Map<Integer, Position>> giantsMap) {
+      /*  var yDiff = lightY-positionY;
+        if (yDiff > 0) {
+            move += 'S';
+            positionY++;
+        } else if (yDiff < 0) {
+            move += 'N';
+            positionY--;
+        }
+
+        var xDiff = lightX-positionX;
+        if (xDiff > 0) {
+            move += 'E';
+            positionX++;
+        } else if (xDiff < 0) {
+            move += 'W';
+            positionX--;
+        };*/
+
+      return "";
+
+
     }
 
     public static Position countCentroid(List<Position> giants) {
