@@ -3,6 +3,7 @@ package com.mygaienko.common.algorithms.condingame.hard.power_of_thor_episode2;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -11,8 +12,21 @@ import static org.junit.Assert.*;
  */
 public class PlayerTest {
     @Test
-    public void main() throws Exception {
+    public void initGiantsMap() throws Exception {
 
+    }
+
+    @Test
+    public void main() throws Exception {
+        Map<Integer, Map<Integer, Player.Position>> integerMapMap = Player.initGiantsMap(Arrays.asList(
+                new Player.Position(25, 9),
+                new Player.Position(25, 10),
+                new Player.Position(25, 11),
+                new Player.Position(26, 9),
+                new Player.Position(27, 9),
+                new Player.Position(28, 9)
+        ));
+        System.out.println(integerMapMap);
     }
 
     @Test
