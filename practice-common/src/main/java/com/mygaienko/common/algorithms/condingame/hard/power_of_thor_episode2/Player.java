@@ -61,7 +61,9 @@ class Player {
 
     private static String getSafeDirection(String result, Position thorPosition, Position newPosition,
                                            Map<Integer, Map<Integer, Position>> giantsMap) {
-
+//        if (result.contains("N") && g) {
+//
+//        }
 
 
         return result;
