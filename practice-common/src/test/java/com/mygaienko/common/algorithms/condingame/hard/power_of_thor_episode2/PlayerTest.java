@@ -38,6 +38,16 @@ public class PlayerTest {
                 new Player.Position(1, 11)
         )));
     }
+
+    @Test
+    public void countCentroid2() throws Exception {
+        System.out.println(Player.countCentroid(Arrays.asList(
+                new Player.Position(29, 17),
+                new Player.Position(28, 17),
+                new Player.Position(18, 12)
+        )));
+    }
+
     @Test
     public void countCentroid10() throws Exception {
         System.out.println(

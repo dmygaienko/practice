@@ -24,16 +24,17 @@ class Player {
 
             giants.add(thorPosition);
             Position centroid = countCentroid(giants);
-            System.err.println(centroid);
+            System.err.println("thorPosition: " + thorPosition);
+            System.err.println("centroid: " + centroid);
 
-            String action = moveToCentroid(thorPosition, centroid, giantsMap);
+            String action = move(thorPosition, centroid, giantsMap, giants);
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
 
 
             // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
-            System.out.println("WAIT");
+            System.out.println(action);
         }
     }
 
@@ -41,28 +42,61 @@ class Player {
         return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, Collectors.toMap(pos -> pos.y, pos -> pos)));
     }
 
-    private static String moveToCentroid(Position thorPosition, Position centroid, Map<Integer, Map<Integer, Position>> giantsMap) {
-      /*  var yDiff = lightY-positionY;
+    private static String move(Position thorPosition, Position centroid,
+                               Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
+        String result = "";
+        int newX = thorPosition.x;
+        int newY= thorPosition.y;
+
+        int yDiff = centroid.y - newY;
         if (yDiff > 0) {
-            move += 'S';
-            positionY++;
+            result += "S";
+            newY++;
         } else if (yDiff < 0) {
-            move += 'N';
-            positionY--;
+            result += "N";
+            newY--;
         }
 
-        var xDiff = lightX-positionX;
+        int xDiff = centroid.x - newX;
         if (xDiff > 0) {
-            move += 'E';
-            positionX++;
+            result += "E";
+            newX++;
         } else if (xDiff < 0) {
-            move += 'W';
-            positionX--;
-        };*/
+            result += "W";
+            newX--;
+        }
 
-      return "";
+        if (yDiff == 0 && xDiff == 0) {
+            result = "WAIT";
+        }
 
+        if (cornered(thorPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
+            result = "STRIKE";
+        }
 
+        thorPosition.x = newX;
+        thorPosition.y = newY;
+
+        return result;
+    }
+
+    private static boolean canKillAllGiants(Position thorPosition, List<Position> giantsMap) {
+        for (Position giantPosition : giantsMap) {
+            if (!canKillGiant(giantPosition, thorPosition)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean canKillGiant(Position giantPosition, Position thorPosition) {
+        int xDiff = Math.abs(thorPosition.x - giantPosition.x);
+        int yDiff = Math.abs(thorPosition.y - giantPosition.y);
+        return xDiff < 5 && yDiff < 5;
+    }
+
+    private static boolean cornered(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap) {
+        return false;
     }
 
     public static Position countCentroid(List<Position> giants) {
@@ -84,14 +118,14 @@ class Player {
     }
 
     private static Position countPolygonCentroid(List<Position> giants) {
-        long A = countA(giants);
+        double A = countA(giants);
         int cX = countCentroidX(A, giants);
         int cY = countCentroidY(A, giants);
         return new Position(cX, cY);
     }
 
     @SuppressWarnings("Duplicates")
-    private static int countCentroidX(long A, List<Position> giants) {
+    private static int countCentroidX(double A, List<Position> giants) {
         int sum = 0;
 
         for (int i = 0; i < giants.size(); i++) {
@@ -103,14 +137,14 @@ class Player {
             int xi_1 = i_1Position.x;
             int yi_1 = i_1Position.y;
 
-            sum += (xi + xi_1) * (xi * yi_1 - xi_1 * yi);
+            sum += ((xi + xi_1) * ((xi * yi_1) - (xi_1 * yi)));
         }
 
         return (int) (sum / (6 * A));
     }
 
     @SuppressWarnings("Duplicates")
-    private static int countCentroidY(long A, List<Position> giants) {
+    private static int countCentroidY(double A, List<Position> giants) {
         int sum = 0;
 
         for (int i = 0; i < giants.size(); i++) {
@@ -122,14 +156,14 @@ class Player {
             int xi_1 = i_1Position.x;
             int yi_1 = i_1Position.y;
 
-            sum += (yi + yi_1) * (xi * yi_1 - xi_1 * yi);
+            sum += ((yi + yi_1) * ((xi * yi_1) - (xi_1 * yi)));
         }
 
         return (int) (sum / (6 * A));
     }
 
-    private static long countA(List<Position> giants) {
-        int A = 0;
+    private static double countA(List<Position> giants) {
+        double A = 0;
         for (int i = 0; i < giants.size(); i++) {
             Position iPosition = giants.get(i);
             int xi = iPosition.x;
@@ -139,9 +173,9 @@ class Player {
             int xi_1 = i_1Position.x;
             int yi_1 = i_1Position.y;
 
-            A += xi * yi_1 - xi_1 * yi;
+            A += ((xi * yi_1) - (xi_1 * yi));
         }
-        A /= 2L;
+        A /= 2d;
         return A == 0 ? 1 : A;
     }
 
@@ -151,15 +185,16 @@ class Player {
         for (int i = 0; i < N; i++) {
             int x = in.nextInt();
             int y = in.nextInt();
-            System.err.println(new Position(x, y));
-            giants.add(new Position(x, y));
+            Position giantPosition = new Position(x, y);
+            System.err.println("giantPosition " + giantPosition);
+            giants.add(giantPosition);
         }
         return giants;
     }
 
     public static class Position {
-        private final int x;
-        private final int y;
+        private int x;
+        private int y;
 
         public Position(int x, int y) {
             this.x = x;
