@@ -143,7 +143,9 @@ public class StreamTest {
                 new JoinObject("2", JoinType.OUTER),
                 new JoinObject("2", JoinType.INNER),
 
-                new JoinObject("3", JoinType.OUTER)
+                new JoinObject("3", JoinType.OUTER),
+                new JoinObject("3", JoinType.INNER),
+                new JoinObject("3", JoinType.NO_JOINS)
                 );
 
         Map<String, Integer> collected = joins.stream().collect(
@@ -185,7 +187,7 @@ public class StreamTest {
     }
 
     private enum JoinType {
-        INNER, OUTER
+        INNER, NO_JOINS, OUTER
     }
 
     @Test
