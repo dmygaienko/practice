@@ -1,6 +1,6 @@
 package com.mygaienko.common.stream;
 
-import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,16 +8,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -119,6 +116,126 @@ public class StreamTest {
                 .reduce(BigDecimal::add);
 
         assertEquals(new BigDecimal("13.5"), total.orElse(BigDecimal.ZERO));
+    }
+
+    @Test
+    public void testGroupingWithMapping() {
+        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+                Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
+
+        ConcurrentMap<Integer, List<Integer>> collected = pairs.stream().collect(
+                Collectors.groupingByConcurrent(
+                        tuple -> tuple.getLeft(),
+                        Collectors.mapping(tuple -> tuple.getRight(), Collectors.toList())));
+
+        System.out.println(collected);
+    }
+
+    @Test
+    public void testStreamWithJoinTypes() {
+        List<JoinObject> joins = Arrays.asList(
+                new JoinObject("1", JoinType.INNER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.INNER),
+
+                new JoinObject("2", JoinType.INNER),
+                new JoinObject("2", JoinType.OUTER),
+                new JoinObject("2", JoinType.INNER),
+
+                new JoinObject("3", JoinType.OUTER),
+                new JoinObject("3", JoinType.INNER)
+                );
+
+        boolean valid = joins.stream().collect(
+                Collectors.groupingBy(
+                        JoinObject::getTableId,
+                        mapping(e -> e.getType(), toSet())
+                ))
+                .values().stream()
+                .mapToInt(e -> e.size())
+                .max().getAsInt() == 1;
+
+
+        System.out.println(valid);
+    }
+
+    @Test
+    public void testStreamWithJoinTypes1() {
+        List<JoinObject> joins = Arrays.asList(
+                new JoinObject("1", JoinType.INNER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.INNER),
+
+                new JoinObject("2", JoinType.INNER),
+                new JoinObject("2", JoinType.OUTER),
+                new JoinObject("2", JoinType.INNER),
+
+                new JoinObject("3", JoinType.OUTER),
+                new JoinObject("3", JoinType.INNER),
+                new JoinObject("3", JoinType.NO_JOINS)
+        );
+
+        Optional<Integer> max = joins.stream().collect(
+                Collectors.groupingBy(
+                        JoinObject::getTableId,
+                        collectingAndThen(
+                                mapping(join -> join.getType(), Collectors.toSet()),
+                                Set::size)
+                ))
+                .values()
+                .stream()
+                .max(Comparator.naturalOrder());
+
+        System.out.println(max.get());
+    }
+
+    private static class JoinObject {
+        private String tableId;
+        private JoinType type;
+
+        public JoinObject(String tableId, JoinType type) {
+            this.tableId = tableId;
+            this.type = type;
+        }
+
+        public String getTableId() {
+            return tableId;
+        }
+
+        public JoinType getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return "JoinObject{" +
+                    "tableId='" + tableId + '\'' +
+                    ", type=" + type +
+                    '}';
+        }
+
+    }
+
+    private enum JoinType {
+        INNER, NO_JOINS, OUTER
+    }
+
+    @Test
+    public void testGroupingWithReducing() {
+        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+                Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
+
+        Map<Integer, Integer> collect = pairs.stream().collect(
+                groupingBy(tuple -> tuple.getLeft(),
+                        reducing(0,                             // identity
+                                tuple -> tuple.getRight(),      // mapper
+                                (a, b) -> a > b ? a : b         // comparator
+                        )
+                ));
+
+        System.out.println(collect);
     }
 
     @Test
