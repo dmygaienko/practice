@@ -1,6 +1,6 @@
 package com.mygaienko.common.stream;
 
-import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,16 +8,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -119,6 +116,35 @@ public class StreamTest {
                 .reduce(BigDecimal::add);
 
         assertEquals(new BigDecimal("13.5"), total.orElse(BigDecimal.ZERO));
+    }
+
+    @Test
+    public void testGroupingWithMapping() {
+        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+                Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
+
+        ConcurrentMap<Integer, List<Integer>> collected = pairs.stream().collect(
+                Collectors.groupingByConcurrent(
+                        tuple -> tuple.getLeft(),
+                        Collectors.mapping(tuple -> tuple.getRight(), Collectors.toList())));
+
+        System.out.println(collected);
+    }
+
+    @Test
+    public void testGroupingWithReducing() {
+        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+                Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
+
+        Map<Integer, Integer> collect = pairs.stream().collect(
+                groupingBy(tuple -> tuple.getLeft(),
+                        reducing(0,                             // identity
+                                tuple -> tuple.getRight(),      // mapper
+                                (a, b) -> a > b ? a : b         // comparator
+                        )
+                ));
+
+        System.out.println(collect);
     }
 
     @Test
