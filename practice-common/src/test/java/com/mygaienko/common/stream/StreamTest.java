@@ -144,19 +144,51 @@ public class StreamTest {
                 new JoinObject("2", JoinType.INNER),
 
                 new JoinObject("3", JoinType.OUTER),
-                new JoinObject("3", JoinType.INNER),
-                new JoinObject("3", JoinType.NO_JOINS)
+                new JoinObject("3", JoinType.INNER)
                 );
 
-        Map<String, Integer> collected = joins.stream().collect(
+        boolean valid = joins.stream().collect(
+                Collectors.groupingBy(
+                        JoinObject::getTableId,
+                        mapping(e -> e.getType(), toSet())
+                ))
+                .values().stream()
+                .mapToInt(e -> e.size())
+                .max().getAsInt() == 1;
+
+
+        System.out.println(valid);
+    }
+
+    @Test
+    public void testStreamWithJoinTypes1() {
+        List<JoinObject> joins = Arrays.asList(
+                new JoinObject("1", JoinType.INNER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.INNER),
+
+                new JoinObject("2", JoinType.INNER),
+                new JoinObject("2", JoinType.OUTER),
+                new JoinObject("2", JoinType.INNER),
+
+                new JoinObject("3", JoinType.OUTER),
+                new JoinObject("3", JoinType.INNER),
+                new JoinObject("3", JoinType.NO_JOINS)
+        );
+
+        Optional<Integer> max = joins.stream().collect(
                 Collectors.groupingBy(
                         JoinObject::getTableId,
                         collectingAndThen(
-                                mapping(join -> join.getType(),  Collectors.toSet()),
+                                mapping(join -> join.getType(), Collectors.toSet()),
                                 Set::size)
-                ));
+                ))
+                .values()
+                .stream()
+                .max(Comparator.naturalOrder());
 
-        System.out.println(collected);
+        System.out.println(max.get());
     }
 
     private static class JoinObject {
