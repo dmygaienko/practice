@@ -1,6 +1,9 @@
 package com.mygaienko.common.algorithms.condingame.hard.power_of_thor_episode2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
@@ -47,29 +50,83 @@ class Player {
 
         Position newPosition = new Position(thorPosition);
 
-        String result = takeDirection(centroid, newPosition);
+        takeDirection(centroid, newPosition);
 
-        result = getSafeDirection(result, thorPosition, newPosition, giantsMap);
+        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
 
         if (cornered(thorPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
-            result = "STRIKE";
+            newPosition.direction = "STRIKE";
         }
 
         thorPosition.setPosition(newPosition);
-        return result;
+        return newPosition.direction;
     }
 
-    private static String getSafeDirection(String result, Position thorPosition, Position newPosition,
+    private static Position getSafeDirection(Position thorPosition, Position newPosition,
                                            Map<Integer, Map<Integer, Position>> giantsMap) {
-//        if (result.contains("N") && g) {
-//
-//        }
 
+        int radius = 3;
 
-        return result;
+        for (int i = 0; i < 4; i ++) {
+            Borders borders = countBorders(newPosition, radius);
+
+            int giants = countGiants(borders, giantsMap);
+
+            if (giants > 0) {
+                newPosition.setPosition(thorPosition);
+                setNewNearestDirection(thorPosition, newPosition);
+            } else {
+                return newPosition;
+            }
+        }
+        newPosition.direction = "WAIT";
+        return newPosition;
     }
 
-    private static String takeDirection(Position centroid, Position newPosition) {
+    private static void setNewNearestDirection(Position thorPosition, Position newPosition) {
+        String prevDirection = newPosition.direction;
+
+        String direction;
+        if (prevDirection.contains("W")) {
+            direction = "N";
+            newPosition.y = thorPosition.y + 1;
+        } else if (prevDirection.contains("N")) {
+            direction = "E";
+            newPosition.x = thorPosition.x + 1;
+        } else if (prevDirection.contains("E")) {
+            direction = "S";
+            newPosition.y = thorPosition.y - 1;
+        } else {
+            direction = "W";
+            newPosition.x = thorPosition.x - 1;
+        }
+
+        newPosition.direction = direction;
+    }
+
+    private static Borders countBorders(Position newPosition, int radius) {
+        int leftX = newPosition.x - radius;
+        int rightX = newPosition.x + radius;
+
+        int upY = newPosition.y + radius;
+        int downY = newPosition.y - radius;
+        return new Borders(leftX, rightX, upY, downY);
+    }
+
+    private static int countGiants(Borders b, Map<Integer, Map<Integer, Position>> giantsMap) {
+        int result = 0;
+        for (int x = b.leftX; x <= b.rightX; x++) {
+            for (int y = b.downY; y < b.upY; y++) {
+                if (giantExists(new Position(x, y), giantsMap)) {
+                    result++;
+                }
+            }
+        }
+        return result;
+
+    }
+
+    private static void takeDirection(Position centroid, Position newPosition) {
         int yDiff = centroid.y - newPosition.y;
         int xDiff = centroid.x - newPosition.x;
 
@@ -93,7 +150,7 @@ class Player {
         if (yDiff == 0 && xDiff == 0) {
             result = "WAIT";
         }
-        return result;
+        newPosition.direction = result;
     }
 
     private static boolean canKillAllGiants(Position thorPosition, List<Position> giantsMap) {
@@ -288,6 +345,7 @@ class Player {
     public static class Position {
         private int x;
         private int y;
+        public String direction;
 
         public Position(int x, int y) {
             this.x = x;
@@ -310,6 +368,20 @@ class Player {
         public void setPosition(Position newPosition) {
             x = newPosition.x;
             y = newPosition.y;
+        }
+    }
+
+    private static class Borders {
+        private final int leftX;
+        private final int rightX;
+        private final int upY;
+        private final int downY;
+
+        public Borders(int leftX, int rightX, int upY, int downY) {
+            this.leftX = leftX;
+            this.rightX = rightX;
+            this.upY = upY;
+            this.downY = downY;
         }
     }
 }
