@@ -132,6 +132,79 @@ public class StreamTest {
     }
 
     @Test
+    public void testStreamWithJoinTypes() {
+        List<JoinObject> joins = Arrays.asList(
+                new JoinObject("1", JoinType.INNER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.INNER),
+
+                new JoinObject("2", JoinType.INNER),
+                new JoinObject("2", JoinType.OUTER),
+                new JoinObject("2", JoinType.INNER),
+
+                new JoinObject("3", JoinType.OUTER)
+                );
+
+        Map<String, Integer> collected = joins.stream().collect(
+                Collectors.groupingBy(
+                        JoinObject::getTableId,
+                        collectingAndThen(toSet(), Set::size)
+                ));
+
+        System.out.println(collected);
+    }
+
+    private static class JoinObject {
+        private String tableId;
+        private JoinType type;
+
+        public JoinObject(String tableId, JoinType type) {
+            this.tableId = tableId;
+            this.type = type;
+        }
+
+        public String getTableId() {
+            return tableId;
+        }
+
+        public JoinType getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return "JoinObject{" +
+                    "tableId='" + tableId + '\'' +
+                    ", type=" + type +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            JoinObject that = (JoinObject) o;
+
+            if (tableId != null ? !tableId.equals(that.tableId) : that.tableId != null) return false;
+            return type == that.type;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = tableId != null ? tableId.hashCode() : 0;
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            return result;
+        }
+    }
+
+    private enum JoinType {
+        INNER, OUTER
+    }
+
+    @Test
     public void testGroupingWithReducing() {
         List<Pair<Integer, Integer>> pairs = Arrays.asList(
                 Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
