@@ -50,12 +50,20 @@ class Player {
 
         newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
 
-        if (canKillAllGiants(thorPosition, giants)) {
+        if (waitButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
             newPosition.direction = "STRIKE";
         }
 
         thorPosition.setPosition(newPosition);
         return newPosition.direction;
+    }
+
+    private static boolean waitButGiantNear(Position pos, Map<Integer, Map<Integer, Position>> giantsMap) {
+        if (pos.direction != "WAIT") {
+            return false;
+        }
+        Borders nearBorders = new Borders(pos.x - 1, pos.x + 1, pos.y - 1, pos.y + 1);
+        return countGiants(nearBorders, giantsMap) > 0;
     }
 
     private static Position getSafeDirection(Position thorPosition, Position newPosition,
@@ -74,7 +82,7 @@ class Player {
                 return newPosition;
             }
         }
-        newPosition.direction = "STRIKE";
+        newPosition.direction = "WAIT";
         newPosition.setPosition(thorPosition);
         return newPosition;
     }
@@ -158,8 +166,8 @@ class Player {
     private static int countGiants(Borders b, Map<Integer, Map<Integer, Position>> giantsMap) {
         int result = 0;
         for (int x = b.leftX; x <= b.rightX; x++) {
-            for (int y = b.upY; y < b.downY; y++) {
-                if (giantExists(new Position(x, y), giantsMap) || x < 0 || y < 0) {
+            for (int y = b.upY; y <= b.downY; y++) {
+                if (giantExists(new Position(x, y), giantsMap) || x < 0 || y < 0 || x > 39 || y > 17) {
                     result++;
                 }
             }

@@ -35,7 +35,7 @@ public class PlayerTest {
                 "23 9\n" +
                 "31 8\n" +
                 "16 4\n" +
-                "14 7\n";
+                "14 7";
     }
 
     private String getInput5() {
