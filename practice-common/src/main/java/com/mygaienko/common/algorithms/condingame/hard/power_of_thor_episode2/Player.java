@@ -32,10 +32,6 @@ class Player {
 
             String action = move(thorPosition, centroid, giantsMap, giants);
 
-            // Write an action using System.out.println()
-            // To debug: System.err.println("Debug messages...");
-
-
             // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
             System.out.println(action);
         }
@@ -66,7 +62,6 @@ class Player {
                                            Map<Integer, Map<Integer, Position>> giantsMap) {
 
         int radius = 3;
-
         for (int i = 0; i < 4; i ++) {
             Borders borders = countBorders(newPosition, radius);
 
@@ -89,34 +84,80 @@ class Player {
         String direction;
         if (prevDirection.contains("W")) {
             direction = "N";
-            newPosition.y = thorPosition.y + 1;
+            newPosition.y = thorPosition.y - 1;
         } else if (prevDirection.contains("N")) {
             direction = "E";
-            newPosition.x = thorPosition.x + 1;
+            newPosition.x = thorPosition.x - 1;
         } else if (prevDirection.contains("E")) {
             direction = "S";
-            newPosition.y = thorPosition.y - 1;
+            newPosition.y = thorPosition.y + 1;
         } else {
             direction = "W";
-            newPosition.x = thorPosition.x - 1;
+            newPosition.x = thorPosition.x + 1;
         }
 
         newPosition.direction = direction;
     }
 
     private static Borders countBorders(Position newPosition, int radius) {
-        int leftX = newPosition.x - radius;
-        int rightX = newPosition.x + radius;
+        String direction = newPosition.direction;
+        Borders borders = new Borders();
+        if (direction.equals("N")) {
+            borders.leftX = newPosition.x - radius;
+            borders.rightX = newPosition.x + radius;
 
-        int upY = newPosition.y + radius;
-        int downY = newPosition.y - radius;
-        return new Borders(leftX, rightX, upY, downY);
+            borders.upY = newPosition.y - radius;
+            borders.downY = newPosition.y - 1;
+        } else if (direction.equals("NE")) {
+            borders.leftX = newPosition.x - 1;
+            borders.rightX = newPosition.x + radius;
+
+            borders.upY = newPosition.y - radius;
+            borders.downY = newPosition.y - 1;
+        } else if (direction.equals("E")) {
+            borders.leftX = newPosition.x - 1;
+            borders.rightX = newPosition.x + radius;
+
+            borders.upY = newPosition.y - radius;
+            borders.downY = newPosition.y + radius;
+        } else if (direction.equals("SE")) {
+            borders.leftX = newPosition.x - 1;
+            borders.rightX = newPosition.x + radius;
+
+            borders.upY = newPosition.y - 1;
+            borders.downY = newPosition.y + radius;
+        } else if (direction.equals("S")) {
+            borders.leftX = newPosition.x - radius;
+            borders.rightX = newPosition.x + radius;
+
+            borders.upY = newPosition.y - 1;
+            borders.downY = newPosition.y + radius;
+        } else if (direction.equals("SW")) {
+            borders.leftX = newPosition.x - radius;
+            borders.rightX = newPosition.x - 1;
+
+            borders.upY = newPosition.y - 1;
+            borders.downY = newPosition.y + radius;
+        } else if (direction.equals("W")) { //W
+            borders.leftX = newPosition.x - radius;
+            borders.rightX = newPosition.x - 1;
+
+            borders.upY = newPosition.y - radius;
+            borders.downY = newPosition.y + radius;
+        } else if (direction.equals("NW")) { //W
+            borders.leftX = newPosition.x - radius;
+            borders.rightX = newPosition.x - 1;
+
+            borders.upY = newPosition.y - radius;
+            borders.downY = newPosition.y - 1;
+        }
+        return borders;
     }
 
     private static int countGiants(Borders b, Map<Integer, Map<Integer, Position>> giantsMap) {
         int result = 0;
         for (int x = b.leftX; x <= b.rightX; x++) {
-            for (int y = b.downY; y < b.upY; y++) {
+            for (int y = b.upY; y < b.downY; y++) {
                 if (giantExists(new Position(x, y), giantsMap)) {
                     result++;
                 }
@@ -332,13 +373,15 @@ class Player {
     private static List<Position> initGiants(Scanner in) {
         List<Position> giants = new ArrayList<Position>();
         int N = in.nextInt(); // the number of giants which are still present on the map.
+        System.err.println("giants start");
         for (int i = 0; i < N; i++) {
             int x = in.nextInt();
             int y = in.nextInt();
             Position giantPosition = new Position(x, y);
-            System.err.println("giantPosition " + giantPosition);
+            System.err.println(x + " " + y);
             giants.add(giantPosition);
         }
+        System.err.println("giants end");
         return giants;
     }
 
@@ -372,16 +415,20 @@ class Player {
     }
 
     private static class Borders {
-        private final int leftX;
-        private final int rightX;
-        private final int upY;
-        private final int downY;
+        private int leftX;
+        private int rightX;
+        private int upY;
+        private int downY;
 
         public Borders(int leftX, int rightX, int upY, int downY) {
             this.leftX = leftX;
             this.rightX = rightX;
             this.upY = upY;
             this.downY = downY;
+        }
+
+        public Borders() {
+
         }
     }
 }

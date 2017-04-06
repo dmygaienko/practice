@@ -2,18 +2,84 @@ package com.mygaienko.common.algorithms.condingame.hard.power_of_thor_episode2;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by enda1n on 03.04.2017.
  */
 public class PlayerTest {
     @Test
-    public void initGiantsMap() throws Exception {
+    public void test5() throws Exception {
+        String inputs = getInput5();
+        System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
+        Player.main(new String[]{});
+    }
 
+    private String getInput5() {
+        return "20 9\n" +
+
+                "2\n" +
+                "15\n" +
+                //giants 1 move
+                "5 9\n" +
+                "2 17\n" +
+                "0 0\n" +
+                "24 9\n" +
+                "38 7\n" +
+                "20 12\n" +
+                "28 2\n" +
+                "3 8\n" +
+                "12 11\n" +
+                "11 11\n" +
+                "32 4\n" +
+                "31 17\n" +
+                "39 8\n" +
+                "10 4\n" +
+                "8 15\n" +
+                //giants 2 move
+                "2\n" +
+                "15\n" +
+
+                "6 9\n" +
+                "3 17\n" +
+                "1 0\n" +
+                "23 9\n" +
+                "37 7\n" +
+                "20 11\n" +
+                "27 3\n" +
+                "4 8\n" +
+                "13 11\n" +
+                "12 11\n" +
+                "31 5\n" +
+                "30 16\n" +
+                "38 8\n" +
+                "11 5\n" +
+                "9 15\n" +
+                //giants 3 move
+                "2\n" +
+                "15\n" +
+
+                "7 9\n" +
+                "4 17\n" +
+                "2 1\n" +
+                "23 10\n" +
+                "36 7\n" +
+                "21 11\n" +
+                "26 4\n" +
+                "5 8\n" +
+                "14 11\n" +
+                "13 11\n" +
+                "30 6\n" +
+                "29 15\n" +
+                "37 8\n" +
+                "12 6\n" +
+                "10 15\n"
+
+
+                ;
     }
 
     @Test
@@ -45,6 +111,24 @@ public class PlayerTest {
                 new Player.Position(29, 17),
                 new Player.Position(28, 17),
                 new Player.Position(18, 12)
+        )));
+    }
+
+    @Test
+    public void countCentroid12() throws Exception {
+        System.out.println(Player.countCentroid(Arrays.asList(
+                new Player.Position(5, 9),
+                new Player.Position(2, 17),
+                new Player.Position(0, 0),
+                new Player.Position(24, 9),
+                new Player.Position(38, 7),
+                new Player.Position(20, 12),
+                new Player.Position(28, 2),
+                new Player.Position(3, 8),
+                new Player.Position(12, 11),
+                new Player.Position(11, 11),
+                new Player.Position(32, 4),
+                new Player.Position(20, 9)
         )));
     }
 
