@@ -63,7 +63,7 @@ class Player {
 
         int radius = 3;
         for (int i = 0; i < 4; i ++) {
-            Borders borders = countBorders(newPosition, radius);
+            Borders borders = countBorders(thorPosition, newPosition, radius);
 
             int giants = countGiants(borders, giantsMap);
 
@@ -87,19 +87,19 @@ class Player {
             newPosition.y = thorPosition.y - 1;
         } else if (prevDirection.contains("N")) {
             direction = "E";
-            newPosition.x = thorPosition.x - 1;
+            newPosition.x = thorPosition.x + 1;
         } else if (prevDirection.contains("E")) {
             direction = "S";
             newPosition.y = thorPosition.y + 1;
         } else {
             direction = "W";
-            newPosition.x = thorPosition.x + 1;
+            newPosition.x = thorPosition.x - 1;
         }
 
         newPosition.direction = direction;
     }
 
-    private static Borders countBorders(Position newPosition, int radius) {
+    private static Borders countBorders(Position prevPosition, Position newPosition, int radius) {
         String direction = newPosition.direction;
         Borders borders = new Borders();
         if (direction.equals("N")) {
@@ -107,49 +107,49 @@ class Player {
             borders.rightX = newPosition.x + radius;
 
             borders.upY = newPosition.y - radius;
-            borders.downY = newPosition.y - 1;
+            borders.downY = prevPosition.y;
         } else if (direction.equals("NE")) {
-            borders.leftX = newPosition.x - 1;
+            borders.leftX = prevPosition.x;
             borders.rightX = newPosition.x + radius;
 
             borders.upY = newPosition.y - radius;
-            borders.downY = newPosition.y - 1;
+            borders.downY = prevPosition.y;
         } else if (direction.equals("E")) {
-            borders.leftX = newPosition.x - 1;
+            borders.leftX = prevPosition.x;
             borders.rightX = newPosition.x + radius;
 
             borders.upY = newPosition.y - radius;
             borders.downY = newPosition.y + radius;
         } else if (direction.equals("SE")) {
-            borders.leftX = newPosition.x - 1;
+            borders.leftX = prevPosition.x;
             borders.rightX = newPosition.x + radius;
 
-            borders.upY = newPosition.y - 1;
+            borders.upY = prevPosition.y;
             borders.downY = newPosition.y + radius;
         } else if (direction.equals("S")) {
             borders.leftX = newPosition.x - radius;
             borders.rightX = newPosition.x + radius;
 
-            borders.upY = newPosition.y - 1;
+            borders.upY = prevPosition.y;
             borders.downY = newPosition.y + radius;
         } else if (direction.equals("SW")) {
             borders.leftX = newPosition.x - radius;
-            borders.rightX = newPosition.x - 1;
+            borders.rightX = prevPosition.x;
 
-            borders.upY = newPosition.y - 1;
+            borders.upY = prevPosition.y;
             borders.downY = newPosition.y + radius;
         } else if (direction.equals("W")) { //W
             borders.leftX = newPosition.x - radius;
-            borders.rightX = newPosition.x - 1;
+            borders.rightX = prevPosition.x;
 
             borders.upY = newPosition.y - radius;
             borders.downY = newPosition.y + radius;
         } else if (direction.equals("NW")) { //W
             borders.leftX = newPosition.x - radius;
-            borders.rightX = newPosition.x - 1;
+            borders.rightX = prevPosition.x;
 
             borders.upY = newPosition.y - radius;
-            borders.downY = newPosition.y - 1;
+            borders.downY = prevPosition.y;
         }
         return borders;
     }
@@ -158,7 +158,7 @@ class Player {
         int result = 0;
         for (int x = b.leftX; x <= b.rightX; x++) {
             for (int y = b.upY; y < b.downY; y++) {
-                if (giantExists(new Position(x, y), giantsMap)) {
+                if (giantExists(new Position(x, y), giantsMap) || x < 0 || y < 0) {
                     result++;
                 }
             }
