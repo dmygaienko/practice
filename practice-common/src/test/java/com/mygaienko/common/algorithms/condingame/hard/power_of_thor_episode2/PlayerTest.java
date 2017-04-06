@@ -13,9 +13,28 @@ import java.util.Map;
 public class PlayerTest {
     @Test
     public void test5() throws Exception {
-        String inputs = getInput5();
+        String inputs = getInput51();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
+    }
+
+    private String getInput51() {
+        return "17 6\n" +           "2\n" + "15\n" +
+                "10 9\n" +
+                "7 13\n" +
+                "5 1\n" +
+                "19 7\n" +
+                "33 7\n" +
+                "18 7\n" +
+                "23 4\n" +
+                "8 8\n" +
+                "16 8\n" +
+                "16 9\n" +
+                "27 4\n" +
+                "26 12\n" +
+                "34 8\n" +
+                "15 6\n" +
+                "13 10\n";
     }
 
     private String getInput5() {
