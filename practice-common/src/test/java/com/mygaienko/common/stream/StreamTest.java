@@ -162,20 +162,7 @@ public class StreamTest {
 
     @Test
     public void testStreamWithJoinTypes1() {
-        List<JoinObject> joins = Arrays.asList(
-                new JoinObject("1", JoinType.INNER),
-                new JoinObject("1", JoinType.OUTER),
-                new JoinObject("1", JoinType.OUTER),
-                new JoinObject("1", JoinType.INNER),
-
-                new JoinObject("2", JoinType.INNER),
-                new JoinObject("2", JoinType.OUTER),
-                new JoinObject("2", JoinType.INNER),
-
-                new JoinObject("3", JoinType.OUTER),
-                new JoinObject("3", JoinType.INNER),
-                new JoinObject("3", JoinType.NO_JOINS)
-        );
+        List<JoinObject> joins = getJoins();
 
         Optional<Integer> max = joins.stream().collect(
                 Collectors.groupingBy(
@@ -189,6 +176,42 @@ public class StreamTest {
                 .max(Comparator.naturalOrder());
 
         System.out.println(max.get());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStreamWithFindFirst() {
+        List<JoinObject> joins = getJoins();
+
+        joins.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                JoinObject::getTableId,
+                                mapping(e -> e.getType(), toSet())
+                        ))
+                .values()
+                .stream()
+                .map(set -> set.size() > 1)
+                .findFirst()
+                .ifPresent(result -> {
+                    throw new IllegalStateException();
+                });
+    }
+
+    private List<JoinObject> getJoins() {
+        return Arrays.asList(
+                new JoinObject("1", JoinType.INNER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.OUTER),
+                new JoinObject("1", JoinType.INNER),
+
+                new JoinObject("2", JoinType.INNER),
+                new JoinObject("2", JoinType.OUTER),
+                new JoinObject("2", JoinType.INNER),
+
+                new JoinObject("3", JoinType.OUTER),
+                new JoinObject("3", JoinType.INNER),
+                new JoinObject("3", JoinType.NO_JOINS)
+        );
     }
 
     private static class JoinObject {
