@@ -50,7 +50,7 @@ class Player {
 
         newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
 
-        if (cornered(thorPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
+        if (canKillAllGiants(thorPosition, giants)) {
             newPosition.direction = "STRIKE";
         }
 
@@ -74,7 +74,8 @@ class Player {
                 return newPosition;
             }
         }
-        newPosition.direction = "WAIT";
+        newPosition.direction = "STRIKE";
+        newPosition.setPosition(thorPosition);
         return newPosition;
     }
 
@@ -209,85 +210,12 @@ class Player {
         return xDiff < 5 && yDiff < 5;
     }
 
-    private static boolean cornered(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap) {
-        int giantsAround = 0;
-
-        ArrayList<Position> positionsAround = new ArrayList<>();
-        int upY = thorPosition.y + 1;
-        int downY = thorPosition.y - 1;
-
-        int rightX = thorPosition.x + 1;
-        int leftX = thorPosition.x - 1;
-
-        giantsAround += getUpPositions(thorPosition, positionsAround, upY);
-        giantsAround += getDownPositions(thorPosition, positionsAround, downY);
-        giantsAround += getRightPositions(thorPosition, positionsAround, rightX);
-        giantsAround += getLeftPositions(thorPosition, positionsAround, leftX);
-        getDiagonalPositions(positionsAround, upY, downY, leftX, rightX);
-
-        for (Position position : positionsAround) {
-            if (giantExists(position, giantsMap)) {
-                giantsAround++;
-            }
-        }
-
-        return giantsAround > 3;
-    }
-
-    //clockwise
-    private static void getDiagonalPositions(ArrayList<Position> positionsAround, int upY, int downY, int leftX, int rightX) {
-        positionsAround.add(new Position(leftX, upY));
-        positionsAround.add(new Position(rightX, upY));
-        positionsAround.add(new Position(rightX, downY));
-        positionsAround.add(new Position(leftX, downY));
-    }
-
     private static boolean giantExists(Position position, Map<Integer, Map<Integer, Position>> giantsMap) {
         Map<Integer, Position> integerPositionMap = giantsMap.get(position.x);
         if (integerPositionMap != null && integerPositionMap.containsKey(position.y)) {
             return true;
         }
         return false;
-    }
-
-    private static int getLeftPositions(Position thorPosition, ArrayList<Position> around, int leftX) {
-        int giantsAround = 0;
-        if (leftX < 0) {
-            giantsAround++;
-        } else {
-            around.add(new Position(leftX, thorPosition.y));
-        }
-        return giantsAround;
-    }
-
-    private static int getRightPositions(Position thorPosition, ArrayList<Position> around, int rightX) {
-        int giantsAround = 0;
-        if (rightX > 39) {
-            giantsAround++;
-        } else {
-            around.add(new Position(rightX, thorPosition.y));
-        }
-        return giantsAround;
-    }
-
-    private static int getDownPositions(Position thorPosition, ArrayList<Position> around, int downY) {
-        int giantsAround = 0;
-        if (downY < 0) {
-            giantsAround++;
-        } else {
-            around.add(new Position(thorPosition.x, downY));
-        }
-        return giantsAround;
-    }
-
-    private static int getUpPositions(Position thorPosition, ArrayList<Position> around, int upY) {
-        int giantsAround = 0;
-        if (upY > 17) {
-            giantsAround++;
-        } else {
-            around.add(new Position(thorPosition.x, upY));
-        }
-        return giantsAround;
     }
 
     public static Position countCentroid(List<Position> giants) {
