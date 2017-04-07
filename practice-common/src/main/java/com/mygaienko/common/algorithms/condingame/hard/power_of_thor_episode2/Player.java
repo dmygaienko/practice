@@ -50,7 +50,7 @@ class Player {
 
         newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
 
-        if (waitButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
+        if (waitingButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
             newPosition.direction = "STRIKE";
         }
 
@@ -58,8 +58,8 @@ class Player {
         return newPosition.direction;
     }
 
-    private static boolean waitButGiantNear(Position pos, Map<Integer, Map<Integer, Position>> giantsMap) {
-        if (pos.direction != "WAIT") {
+    private static boolean waitingButGiantNear(Position pos, Map<Integer, Map<Integer, Position>> giantsMap) {
+        if ("WAIT".equals(pos.direction)) {
             return false;
         }
         Borders nearBorders = new Borders(pos.x - 1, pos.x + 1, pos.y - 1, pos.y + 1);
@@ -111,54 +111,63 @@ class Player {
     private static Borders countBorders(Position prevPosition, Position newPosition, int radius) {
         String direction = newPosition.direction;
         Borders borders = new Borders();
-        if (direction.equals("N")) {
-            borders.leftX = newPosition.x - radius;
-            borders.rightX = newPosition.x + radius;
+        switch (direction) {
+            case "N":
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = newPosition.x + radius;
 
-            borders.upY = newPosition.y - radius;
-            borders.downY = prevPosition.y;
-        } else if (direction.equals("NE")) {
-            borders.leftX = prevPosition.x;
-            borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                break;
+            case "NE":
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
 
-            borders.upY = newPosition.y - radius;
-            borders.downY = prevPosition.y;
-        } else if (direction.equals("E")) {
-            borders.leftX = prevPosition.x;
-            borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                break;
+            case "E":
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
 
-            borders.upY = newPosition.y - radius;
-            borders.downY = newPosition.y + radius;
-        } else if (direction.equals("SE")) {
-            borders.leftX = prevPosition.x;
-            borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = newPosition.y + radius;
+                break;
+            case "SE":
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
 
-            borders.upY = prevPosition.y;
-            borders.downY = newPosition.y + radius;
-        } else if (direction.equals("S")) {
-            borders.leftX = newPosition.x - radius;
-            borders.rightX = newPosition.x + radius;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                break;
+            case "S":
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = newPosition.x + radius;
 
-            borders.upY = prevPosition.y;
-            borders.downY = newPosition.y + radius;
-        } else if (direction.equals("SW")) {
-            borders.leftX = newPosition.x - radius;
-            borders.rightX = prevPosition.x;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                break;
+            case "SW":
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
 
-            borders.upY = prevPosition.y;
-            borders.downY = newPosition.y + radius;
-        } else if (direction.equals("W")) { //W
-            borders.leftX = newPosition.x - radius;
-            borders.rightX = prevPosition.x;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                break;
+            case "W":  //W
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
 
-            borders.upY = newPosition.y - radius;
-            borders.downY = newPosition.y + radius;
-        } else if (direction.equals("NW")) { //W
-            borders.leftX = newPosition.x - radius;
-            borders.rightX = prevPosition.x;
+                borders.upY = newPosition.y - radius;
+                borders.downY = newPosition.y + radius;
+                break;
+            case "NW":  //W
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
 
-            borders.upY = newPosition.y - radius;
-            borders.downY = prevPosition.y;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                break;
         }
         return borders;
     }
