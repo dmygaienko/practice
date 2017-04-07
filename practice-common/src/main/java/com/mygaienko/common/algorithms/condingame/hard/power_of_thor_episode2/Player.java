@@ -13,10 +13,7 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
-        int TX = in.nextInt();
-        int TY = in.nextInt();
-
-        Position thorPosition = new Position(TX, TY);
+        Position thorPosition = new Position(in.nextInt(), in.nextInt());
         // game loop
         while (true) {
             int strikes = in.nextInt(); // the remaining number of hammer strikes.
@@ -27,38 +24,34 @@ class Player {
             giants.add(thorPosition);
             System.err.println("thorPosition: " + thorPosition);
 
-            String action = move(thorPosition, giantsMap, giants);
+            thorPosition = move(thorPosition, giantsMap, giants);
 
-            // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
-            System.out.println(action);
+            System.out.println(thorPosition.direction);
         }
     }
 
     public static Map<Integer, Map<Integer, Position>> initGiantsMap(List<Position> giants) {
-        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos)));
+        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos, (a, b) -> a)));
     }
 
-    private static String move(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
-
-        Position newPosition = new Position(thorPosition);
+    private static Position move(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
 
         Position nextTarget = chooseNextTargetPosition(giants);
 
-        takeDirection(nextTarget, newPosition);
+        Position newPosition = takeDirection(nextTarget, thorPosition);
 
         newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 3);
 
         if (waiting(newPosition)) {
-            setNewNearestDirection(thorPosition, newPosition);
+            newPosition = setNewNearestDirection(thorPosition, newPosition.direction);
             newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 1);
         }
 
         if (waitingButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
-            newPosition.direction = "STRIKE";
+            newPosition = new Position(thorPosition, "STRIKE");
         }
 
-        thorPosition.setPosition(newPosition);
-        return newPosition.direction;
+        return newPosition;
     }
 
     private static Position chooseNextTargetPosition(List<Position> giants) {
@@ -124,36 +117,33 @@ class Player {
             int giants = countGiants(borders, giantsMap);
 
             if (giants > 0) {
-                newPosition.setPosition(thorPosition);
-                setNewNearestDirection(thorPosition, newPosition);
+                //newPosition.setPosition(thorPosition);
+                newPosition = setNewNearestDirection(thorPosition, newPosition.direction);
             } else {
                 return newPosition;
             }
         }
-        newPosition.direction = "WAIT";
-        newPosition.setPosition(thorPosition);
-        return newPosition;
+        return new Position(thorPosition, "WAIT");
     }
 
-    private static void setNewNearestDirection(Position thorPosition, Position newPosition) {
-        String prevDirection = newPosition.direction;
+    private static Position setNewNearestDirection(Position thorPosition, String prevDirection) {
+        Position newPosition = new Position(thorPosition);
 
-        String direction;
         if (prevDirection.contains("W")) {
-            direction = "N";
-            newPosition.y = thorPosition.y - 1;
+            newPosition.direction = "N";
+            newPosition.y--;
         } else if (prevDirection.contains("N")) {
-            direction = "E";
-            newPosition.x = thorPosition.x + 1;
+            newPosition.direction = "E";
+            newPosition.x++;
         } else if (prevDirection.contains("E")) {
-            direction = "S";
-            newPosition.y = thorPosition.y + 1;
+            newPosition.direction = "S";
+            newPosition.y++;
         } else {
-            direction = "W";
-            newPosition.x = thorPosition.x - 1;
+            newPosition.direction = "W";
+            newPosition.x--;
         }
 
-        newPosition.direction = direction;
+        return newPosition;
     }
 
     private static Borders countBorders(Position prevPosition, Position newPosition, int radius) {
@@ -233,31 +223,34 @@ class Player {
 
     }
 
-    private static void takeDirection(Position nextTarget, Position newPosition) {
-        int yDiff = nextTarget.y - newPosition.y;
-        int xDiff = nextTarget.x - newPosition.x;
+    private static Position takeDirection(Position nextTarget, Position currentPosition) {
+        int yDiff = nextTarget.y - currentPosition.y;
+        int xDiff = nextTarget.x - currentPosition.x;
 
-        String result = "";
+        Position newPosition = new Position(currentPosition);
+
+        newPosition.direction = "";
         if (yDiff > 0) {
-            result += "S";
+            newPosition.direction += "S";
             newPosition.y++;
         } else if (yDiff < 0) {
-            result += "N";
+            newPosition.direction += "N";
             newPosition.y--;
         }
 
         if (xDiff > 0) {
-            result += "E";
+            newPosition.direction += "E";
             newPosition.x++;
         } else if (xDiff < 0) {
-            result += "W";
+            newPosition.direction += "W";
             newPosition.x--;
         }
 
         if (yDiff == 0 && xDiff == 0) {
-            result = "WAIT";
+            newPosition.direction = "WAIT";
         }
-        newPosition.direction = result;
+
+        return newPosition;
     }
 
     private static boolean canKillAllGiants(Position thorPosition, List<Position> giantsMap) {
@@ -291,6 +284,7 @@ class Player {
         } else {
             centroid = countCentroidBetweenTwoPoints(giants);
         }
+        System.err.println("centroid " + centroid);
         return centroid;
     }
 
@@ -394,6 +388,12 @@ class Player {
             this.y = position.y;
         }
 
+        public Position(Position position, String direction) {
+            this.x = position.x;
+            this.y = position.y;
+            this.direction = direction;
+        }
+
         @Override
         public String toString() {
             return "Position{" +
@@ -402,10 +402,6 @@ class Player {
                     '}';
         }
 
-        public void setPosition(Position newPosition) {
-            x = newPosition.x;
-            y = newPosition.y;
-        }
     }
 
     private static class Borders {

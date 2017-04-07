@@ -13,7 +13,7 @@ import java.util.Map;
 public class PlayerTest {
     @Test
     public void test5() throws Exception {
-        String inputs = getInput5();
+        String inputs = getInput51();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
     }
@@ -105,6 +105,7 @@ public class PlayerTest {
     @Test
     public void main() throws Exception {
         Map<Integer, Map<Integer, Player.Position>> integerMapMap = Player.initGiantsMap(Arrays.asList(
+                new Player.Position(25, 9),
                 new Player.Position(25, 9),
                 new Player.Position(25, 10),
                 new Player.Position(25, 11),
