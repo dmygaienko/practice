@@ -40,7 +40,7 @@ class Player {
 
         Position newPosition = takeDirection(nextTarget, thorPosition);
 
-        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 3);
+        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 1);
 
         if (waiting(newPosition)) {
             newPosition = setNewNearestDirection(thorPosition, newPosition.action);
@@ -111,7 +111,7 @@ class Player {
     private static Position getSafeDirection(Position thorPosition, Position newPosition,
                                              Map<Integer, Map<Integer, Position>> giantsMap, int radius) {
 
-        for (int i = 0; i < 4; i ++) {
+        for (int i = 0; i < 8; i ++) {
             Borders borders = countBorders(thorPosition, newPosition, radius);
 
             int giants = countGiants(borders, giantsMap);
