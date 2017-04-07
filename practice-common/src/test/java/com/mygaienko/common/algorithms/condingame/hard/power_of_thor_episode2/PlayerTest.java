@@ -13,7 +13,7 @@ import java.util.Map;
 public class PlayerTest {
     @Test
     public void test5() throws Exception {
-        String inputs = getInput51();
+        String inputs = getInput5();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
     }

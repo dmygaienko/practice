@@ -220,9 +220,9 @@ class Player {
 
     }
 
-    private static void takeDirection(Position centroid, Position newPosition) {
-        int yDiff = centroid.y - newPosition.y;
-        int xDiff = centroid.x - newPosition.x;
+    private static void takeDirection(Position nextTarget, Position newPosition) {
+        int yDiff = nextTarget.y - newPosition.y;
+        int xDiff = nextTarget.x - newPosition.x;
 
         String result = "";
         if (yDiff > 0) {
