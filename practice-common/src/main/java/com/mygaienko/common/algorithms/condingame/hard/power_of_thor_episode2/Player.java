@@ -272,7 +272,8 @@ class Player {
     private static boolean canKillGiant(Position giantPosition, Position thorPosition) {
         int xDiff = Math.abs(thorPosition.x - giantPosition.x);
         int yDiff = Math.abs(thorPosition.y - giantPosition.y);
-        return xDiff < 5 && yDiff < 5;
+        int killDistance = 6;
+        return xDiff < killDistance && yDiff < killDistance;
     }
 
     private static boolean giantExists(Position position, Map<Integer, Map<Integer, Position>> giantsMap) {
