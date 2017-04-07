@@ -1,10 +1,9 @@
 package com.mygaienko.common.algorithms.condingame.hard.power_of_thor_episode2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by dmygaenko on 03/04/2017.
@@ -38,7 +37,7 @@ class Player {
     }
 
     public static Map<Integer, Map<Integer, Position>> initGiantsMap(List<Position> giants) {
-        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, Collectors.toMap(pos -> pos.y, pos -> pos)));
+        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos)));
     }
 
     private static String move(Position thorPosition, Position centroid,
@@ -46,7 +45,14 @@ class Player {
 
         Position newPosition = new Position(thorPosition);
 
-        takeDirection(centroid, newPosition);
+        Position nextTarget;
+        Position mostDistantGiant = existMostDistantGiant(centroid, giants);
+        if (mostDistantGiant  != null) {
+            nextTarget = mostDistantGiant;
+        } else {
+            nextTarget = centroid;
+        }
+        takeDirection(nextTarget, newPosition);
 
         newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
 
@@ -58,8 +64,37 @@ class Player {
         return newPosition.direction;
     }
 
+    private static Position existMostDistantGiant(Position centroid, List<Position> giants) {
+        Map<Position, Double> distances = giants.stream().collect(toMap(giant -> giant, giant -> calculateDistance(giant, centroid)));
+        Double sum = distances.values().stream().reduce((a, b) -> a + b).orElse(0d);
+        Double avg = sum/distances.values().size();
+
+        if (avg == 0) return null;
+
+        TreeMap<Double, Position> diffs = distances.entrySet().stream().collect(
+                toMap(  entry -> getDiff(avg, entry.getValue()),
+                        Map.Entry::getKey,
+                        (a,b) -> a,
+                        () -> new TreeMap<>((entry1, entry2) -> entry1 > entry2 ? 0 : 1)));
+
+        Map.Entry<Double, Position> mostDistant = diffs.firstEntry();
+
+        if (mostDistant.getKey() > 0.1) {
+            return mostDistant.getValue();
+        }
+        return null;
+    }
+
+    private static double getDiff(Double avg, Double value) {
+        return value/avg - 1;
+    }
+
+    private static Double calculateDistance(Position giantPosition, Position thorPosition) {
+        return Math.sqrt(Math.pow(giantPosition.x - thorPosition.x, 2) + Math.pow(giantPosition.y - thorPosition.y, 2));
+    }
+
     private static boolean waitingButGiantNear(Position pos, Map<Integer, Map<Integer, Position>> giantsMap) {
-        if ("WAIT".equals(pos.direction)) {
+        if (!"WAIT".equals(pos.direction)) {
             return false;
         }
         Borders nearBorders = new Borders(pos.x - 1, pos.x + 1, pos.y - 1, pos.y + 1);
