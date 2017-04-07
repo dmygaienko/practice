@@ -25,11 +25,9 @@ class Player {
             Map<Integer, Map<Integer, Position>> giantsMap = initGiantsMap(giants);
 
             giants.add(thorPosition);
-            Position centroid = countCentroid(giants);
             System.err.println("thorPosition: " + thorPosition);
-            System.err.println("centroid: " + centroid);
 
-            String action = move(thorPosition, centroid, giantsMap, giants);
+            String action = move(thorPosition, giantsMap, giants);
 
             // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
             System.out.println(action);
@@ -40,21 +38,20 @@ class Player {
         return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos)));
     }
 
-    private static String move(Position thorPosition, Position centroid,
-                               Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
+    private static String move(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
 
         Position newPosition = new Position(thorPosition);
 
-        Position nextTarget;
-        Position mostDistantGiant = existMostDistantGiant(centroid, giants);
-        if (mostDistantGiant  != null) {
-            nextTarget = mostDistantGiant;
-        } else {
-            nextTarget = centroid;
-        }
+        Position nextTarget = chooseNextTargetPosition(giants);
+
         takeDirection(nextTarget, newPosition);
 
-        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap);
+        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 3);
+
+        if (waiting(newPosition)) {
+            setNewNearestDirection(thorPosition, newPosition);
+            newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 1);
+        }
 
         if (waitingButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
             newPosition.direction = "STRIKE";
@@ -62,6 +59,23 @@ class Player {
 
         thorPosition.setPosition(newPosition);
         return newPosition.direction;
+    }
+
+    private static Position chooseNextTargetPosition(List<Position> giants) {
+        Position centroid = countCentroid(giants);
+        Position mostDistantGiant = existMostDistantGiant(centroid, giants);
+
+        Position nextTarget;
+        if (mostDistantGiant  != null) {
+            nextTarget = mostDistantGiant;
+        } else {
+            nextTarget = centroid;
+        }
+        return nextTarget;
+    }
+
+    private static boolean waiting(Position pos) {
+        return "WAIT".equals(pos.direction);
     }
 
     private static Position existMostDistantGiant(Position centroid, List<Position> giants) {
@@ -94,7 +108,7 @@ class Player {
     }
 
     private static boolean waitingButGiantNear(Position pos, Map<Integer, Map<Integer, Position>> giantsMap) {
-        if (!"WAIT".equals(pos.direction)) {
+        if (!waiting(pos)) {
             return false;
         }
         Borders nearBorders = new Borders(pos.x - 1, pos.x + 1, pos.y - 1, pos.y + 1);
@@ -102,9 +116,8 @@ class Player {
     }
 
     private static Position getSafeDirection(Position thorPosition, Position newPosition,
-                                           Map<Integer, Map<Integer, Position>> giantsMap) {
+                                             Map<Integer, Map<Integer, Position>> giantsMap, int radius) {
 
-        int radius = 3;
         for (int i = 0; i < 4; i ++) {
             Borders borders = countBorders(thorPosition, newPosition, radius);
 
