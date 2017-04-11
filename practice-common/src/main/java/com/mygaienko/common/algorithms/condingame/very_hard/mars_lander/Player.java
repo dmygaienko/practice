@@ -1,8 +1,6 @@
 package com.mygaienko.common.algorithms.condingame.very_hard.mars_lander;
 
 import java.util.*;
-import java.io.*;
-import java.math.*;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -12,11 +10,8 @@ class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        int surfaceN = in.nextInt(); // the number of points used to draw the surface of Mars.
-        for (int i = 0; i < surfaceN; i++) {
-            int landX = in.nextInt(); // X coordinate of a surface point. (0 to 6999)
-            int landY = in.nextInt(); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
-        }
+        List<Point> points = initPoints(in);
+        FlatGround flatGround = findFlatGround(points);
 
         // game loop
         while (true) {
@@ -36,4 +31,59 @@ class Player {
             System.out.println("-20 3");
         }
     }
+
+    private static List<Point> initPoints(Scanner in) {
+        ArrayList<Point> points = new ArrayList<>();
+        int surfaceN = in.nextInt(); // the number of points used to draw the surface of Mars.
+        for (int i = 0; i < surfaceN; i++) {
+            int landX = in.nextInt(); // X coordinate of a surface point. (0 to 6999)
+            int landY = in.nextInt(); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
+            points.add(new Point(landX, landY));
+        }
+        return points;
+    }
+
+    private static class Point {
+        private final int x;
+        private final int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private static class FlatGround {
+        private final Point point;
+        private final Point nextPoint;
+
+        public FlatGround(Point point, Point nextPoint) {
+            this.point = point;
+            this.nextPoint = nextPoint;
+        }
+    }
+
+    private static FlatGround findFlatGround(List<Point> points) {
+        FlatGround flatGround = null;
+
+        outer:
+        for (int i = 0, pointsSizeWithoutLast = points.size() - 1; i < pointsSizeWithoutLast; i++) {
+            Point point = points.get(i);
+
+            for (int j = i, pointsSize = points.size(); j < pointsSize; j++) {
+                Point nextPoint = points.get(j);
+                if (point.y != nextPoint.y) {
+                    break;
+                }
+
+                if (point.x - nextPoint.x >= 1000) {
+                    flatGround = new FlatGround(point, nextPoint);
+                    break outer;
+                }
+            }
+        }
+
+        return flatGround;
+    }
+
 }
