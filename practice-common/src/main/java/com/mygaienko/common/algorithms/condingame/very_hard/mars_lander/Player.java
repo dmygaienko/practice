@@ -12,6 +12,7 @@ class Player {
         Scanner in = new Scanner(System.in);
         List<Point> points = initPoints(in);
         FlatGround flatGround = findFlatGround(points);
+        findPath(flatGround.getCentralPoint());
 
         // game loop
         while (true) {
@@ -32,12 +33,16 @@ class Player {
         }
     }
 
+    private static void findPath(Point centralPoint) {
+
+    }
+
     private static List<Point> initPoints(Scanner in) {
         ArrayList<Point> points = new ArrayList<>();
         int surfaceN = in.nextInt(); // the number of points used to draw the surface of Mars.
         for (int i = 0; i < surfaceN; i++) {
-            int landX = in.nextInt(); // X coordinate of a surface point. (0 to 6999)
-            int landY = in.nextInt(); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
+            int landX = in.nextInt(); // X coordinate of a surface startPoint. (0 to 6999)
+            int landY = in.nextInt(); // Y coordinate of a surface startPoint. By linking all the points together in a sequential fashion, you form the surface of Mars.
             points.add(new Point(landX, landY));
         }
         return points;
@@ -54,12 +59,18 @@ class Player {
     }
 
     private static class FlatGround {
-        private final Point point;
-        private final Point nextPoint;
+        private final Point startPoint;
+        private final Point centralPoint;
+        private final Point endPoint;
 
         public FlatGround(Point point, Point nextPoint) {
-            this.point = point;
-            this.nextPoint = nextPoint;
+            this.startPoint = point;
+            this.endPoint = nextPoint;
+            this.centralPoint = new Point(endPoint.x - startPoint.x, endPoint.y);
+        }
+
+        public Point getCentralPoint() {
+            return centralPoint;
         }
     }
 
