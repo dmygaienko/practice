@@ -8,6 +8,8 @@ import java.util.*;
  **/
 class Player {
 
+    private static final double G = -3.711;
+
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
         List<Point> points = initPoints(in);
@@ -15,21 +17,56 @@ class Player {
 
         // game loop
         while (true) {
-            int X = in.nextInt();
-            int Y = in.nextInt();
+            Point currentPoint = new Point(in.nextInt(), in.nextInt());
+
             int hSpeed = in.nextInt(); // the horizontal speed (in m/s), can be negative.
             int vSpeed = in.nextInt(); // the vertical speed (in m/s), can be negative.
             int fuel = in.nextInt(); // the quantity of remaining fuel in liters.
             int rotate = in.nextInt(); // the rotation angle in degrees (-90 to 90).
             int power = in.nextInt(); // the thrust power (0 to 4).
 
-            // Write an action using System.out.println()
-            // To debug: System.err.println("Debug messages...");
+            double currentDirection = calculateCurrentDirection(hSpeed, vSpeed);
 
+            Point targetPoint = getNextTargetPoint();
 
-            // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
-            System.out.println("-20 3");
+            double desiredDirection = calculateDesiredDirection(currentPoint, targetPoint);
+
+            Controls controls = getNextControls(currentDirection, desiredDirection, power);
+
+            System.out.println(controls.angle + " " + controls.power);
         }
+    }
+
+    private static Controls getNextControls(double currentDirection, double desiredDirection, int power) {
+        double directionDelta = desiredDirection - currentDirection;
+
+        int angleMultiplier = 1;
+        if (Math.abs(desiredDirection) > 90) {
+            angleMultiplier = -1;
+        }
+
+        //if
+        return null;
+    }
+
+    private static Point getNextTargetPoint() {
+        return null;
+    }
+
+    public static double calculateDesiredDirection(Point currentPoint, Point targetPoint) {
+        int xDiff = targetPoint.x - currentPoint.x;
+        int yDiff = targetPoint.y - currentPoint.y;
+        return calculateDirection(xDiff, yDiff);
+    }
+
+    public static double calculateCurrentDirection(double hSpeed, double vSpeed) {
+        double totalVerticalSpeed = vSpeed + G;
+        //double tangentAlpha = hSpeed/totalVerticalSpeed;
+        return calculateDirection(hSpeed, totalVerticalSpeed);
+    }
+
+    private static double calculateDirection(double xDiff, double yDiff) {
+        return Math.toDegrees(Math.atan2(xDiff, yDiff));
     }
 
     private static List<Point> initPoints(Scanner in) {
@@ -43,7 +80,7 @@ class Player {
         return points;
     }
 
-    private static class Point {
+    public static class Point {
         private final int x;
         private final int y;
 
@@ -86,4 +123,8 @@ class Player {
         return flatGround;
     }
 
+    private static class Controls {
+        public int angle;
+        public int power;
+    }
 }
