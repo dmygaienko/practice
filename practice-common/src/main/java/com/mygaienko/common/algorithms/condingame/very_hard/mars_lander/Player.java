@@ -18,6 +18,7 @@ class Player {
     private static final double G = -3.711;
     private static Vector gravityVector = new Vector(0, G);
     private static Vector landingVector = new Vector(0, -35);
+    private static Vector extremeLandingVector = new Vector(20, -40).plus(gravityVector);
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -61,15 +62,19 @@ class Player {
         Vector deltaVector;
 
         if (isLanding(currentPoint, flatGround)) {
-            deltaVector = landingVector.minus(currentVector);
+            deltaVector = getLevelingVector(currentVector);
         } else {
-            deltaVector = getNonLandingDeltaVector(currentPoint, currentVector, flatGround.getNextTargetPoint());
+            deltaVector = getNonLevelingDeltaVector(currentPoint, currentVector, flatGround.getNextTargetPoint());
         }
 
         return deltaVector;
     }
 
-    private static Vector getNonLandingDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
+    private static Vector getLevelingVector(Vector currentVector) {
+        return landingVector.minus(currentVector);
+    }
+
+    private static Vector getNonLevelingDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
         Vector desiredVector = new Vector(currentPoint, targetPoint);
 
         while (desiredVector.length > currentVector.length * 1.2){
@@ -80,11 +85,11 @@ class Player {
 
     public static Controls getNextControls(Vector verticalVector, Vector currentVector, Vector deltaVector, boolean isLanding) {
         Controls controls;
-       /* if (isLanding) {
+        if (isLanding && currentVector.inBounds(extremeLandingVector)) {
             controls = getNextLandingControls(verticalVector);
-        } else {*/
-        controls = getNextNonLandingControls(currentVector, deltaVector);
-        //}
+        } else {
+            controls = getNextNonLandingControls(currentVector, deltaVector);
+        }
         return controls;
     }
 
@@ -295,6 +300,10 @@ class Player {
 
         public boolean isOpposite(Vector that) {
             return angle/that.angle < 0;
+        }
+
+        public boolean inBounds(Vector that) {
+            return Math.abs(x) <= Math.abs(that.x) && y >= that.y;
         }
     }
 }
