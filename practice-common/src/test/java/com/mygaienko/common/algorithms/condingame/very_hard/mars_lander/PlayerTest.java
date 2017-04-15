@@ -11,29 +11,29 @@ import java.util.Arrays;
  */
 public class PlayerTest {
 
-    @Test
-    public void testCalculateCurrentDirection() throws Exception {
-        Player.Vector v = Player.calculateCurrentVector(10, 5);
-        System.out.println(v);
-    }
-
-    @Test
-    public void testCalculateCurrentDirection1() throws Exception {
-        Player.Vector v = Player.calculateCurrentVector(10, -5);
-        System.out.println(v);
-    }
-
-    @Test
-    public void testCalculateCurrentDirection2() throws Exception {
-        Player.Vector v = Player.calculateCurrentVector(-10, -5);
-        System.out.println(v);
-    }
-
-    @Test
-    public void testCalculateCurrentDirection3() throws Exception {
-        Player.Vector v = Player.calculateCurrentVector(-10, 5);
-        System.out.println(v);
-    }
+//    @Test
+//    public void testCalculateCurrentDirection() throws Exception {
+//        Player.Vector v = Player.calculateCurrentVector(10, 5);
+//        System.out.println(v);
+//    }
+//
+//    @Test
+//    public void testCalculateCurrentDirection1() throws Exception {
+//        Player.Vector v = Player.calculateCurrentVector(10, -5);
+//        System.out.println(v);
+//    }
+//
+//    @Test
+//    public void testCalculateCurrentDirection2() throws Exception {
+//        Player.Vector v = Player.calculateCurrentVector(-10, -5);
+//        System.out.println(v);
+//    }
+//
+//    @Test
+//    public void testCalculateCurrentDirection3() throws Exception {
+//        Player.Vector v = Player.calculateCurrentVector(-10, 5);
+//        System.out.println(v);
+//    }
 
     @Test
     public void testCalculateDesiredDirection() throws Exception {

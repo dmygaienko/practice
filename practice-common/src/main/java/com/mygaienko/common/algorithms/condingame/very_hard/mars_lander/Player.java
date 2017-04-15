@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.pow;
 import static java.lang.Math.sin;
 
 /**
@@ -22,6 +23,7 @@ class Player {
         List<Point> points = initPoints(in);
         FlatGround flatGround = findFlatGround(points);
 
+
         // game loop
         while (true) {
             Point currentPoint = new Point(in.nextInt(), in.nextInt());
@@ -32,19 +34,31 @@ class Player {
             int rotate = in.nextInt(); // the rotation angle in degrees (-90 to 90).
             int power = in.nextInt(); // the thrust power (0 to 4).
 
-            Vector currentVector = calculateCurrentVector(hSpeed, vSpeed);
+            Vector verticalVector = new Vector(0, vSpeed).plus(gravityVector);
+            Vector horizontalVector = new Vector(hSpeed, 0);
 
-            Point targetPoint = getNextTargetPoint(flatGround);
+            Vector currentVector = verticalVector.plus(horizontalVector);
 
-            Vector deltaVector = getDeltaVector(currentPoint, currentVector, targetPoint);
+            Vector deltaVector = getDeltaVector(currentPoint, currentVector, flatGround);
 
-            Controls controls = getNextControls(currentVector, deltaVector);
+            Controls controls = getNextControls(verticalVector, currentVector, deltaVector, isLanding(currentPoint, flatGround));
 
-            System.out.println(-(int) controls.angle + " " + (int) controls.power);
+            System.out.println(-(int) controls.angle + " " + controls.power);
         }
     }
 
-    private static Vector getDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
+    private static boolean isLanding(Point currentPoint, FlatGround flatGround) {
+        boolean near = flatGround.startLandingPoint.distanceTo(currentPoint) < 30;
+        if (near) {
+            flatGround.setNextTargetPoint(flatGround.centralPoint);
+        }
+        //return flatGround.point.x <= currentPoint.x && currentPoint.x <= flatGround.nextPoint.x;
+        return near || flatGround.getNextTargetPoint().equals(flatGround.centralPoint);
+    }
+
+    private static Vector getDeltaVector(Point currentPoint, Vector currentVector, FlatGround flatGround) {
+        Point targetPoint = flatGround.getNextTargetPoint();
+
         Vector desiredVector = new Vector(currentPoint, targetPoint);
 
         while (desiredVector.length > currentVector.length * 1.2){
@@ -54,7 +68,24 @@ class Player {
         return desiredVector.minus(currentVector);
     }
 
-    public static Controls getNextControls(Vector currentVector, Vector deltaVector) {
+    public static Controls getNextControls(Vector verticalVector, Vector currentVector, Vector deltaVector, boolean isLanding) {
+        Controls controls;
+        if (isLanding) {
+            controls = getNextLandingControls(verticalVector);
+        } else {
+            controls = getNextNonLandingControls(currentVector, deltaVector);
+        }
+        return controls;
+    }
+
+    private static Controls getNextLandingControls(Vector verticalVector) {
+        Controls controls = new Controls();
+        controls.angle = 0;
+        controls.power = verticalVector.y < -39 ? 4 : 3;
+        return controls;
+    }
+
+    private static Controls getNextNonLandingControls(Vector currentVector, Vector deltaVector) {
         double angle = deltaVector.getAngle();
         boolean isOpposite = deltaVector.isOpposite(currentVector);
 
@@ -86,18 +117,8 @@ class Player {
         return angle * 22/90;
     }
 
-    private static Point getNextTargetPoint(FlatGround flatGround) {
-        return flatGround.centralPoint;
-    }
-
     public static Vector calculateDesiredDirection(Point currentPoint, Point targetPoint) {
         return new Vector(currentPoint, targetPoint);
-    }
-
-    public static Vector calculateCurrentVector(double hSpeed, double vSpeed) {
-        Vector verticalVector = new Vector(0, vSpeed).plus(gravityVector);
-        Vector horizontalVector = new Vector(hSpeed, 0);
-        return verticalVector.plus(horizontalVector);
     }
 
     private static List<Point> initPoints(Scanner in) {
@@ -122,8 +143,31 @@ class Player {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Point point = (Point) o;
+
+            if (x != point.x) return false;
+            return y == point.y;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = x;
+            result = 31 * result + y;
+            return result;
+        }
+
+        @Override
         public String toString() {
             return "new Point(" + x + ", " + y +')';
+        }
+
+        public double distanceTo(Point that) {
+            return Math.sqrt(pow(x - that.x, 2) + pow(y - that.y, 2));
         }
     }
 
@@ -131,11 +175,16 @@ class Player {
         private final Point point;
         private final Point nextPoint;
         private final Point centralPoint;
+        private final Point startLandingPoint;
+        private Point nextTargetPoint;
 
         public FlatGround(Point point, Point nextPoint) {
-            this.point = point;
-            this.nextPoint = nextPoint;
+            boolean inOrder = point.x < nextPoint.x;
+            this.point = inOrder ? point : nextPoint;
+            this.nextPoint = inOrder ? nextPoint : point;
             this.centralPoint = new Point((point.x + nextPoint.x)/2, (point.y + nextPoint.y)/2);
+            this.startLandingPoint = new Point(centralPoint.x, centralPoint.y + 300);
+            nextTargetPoint = startLandingPoint;
         }
 
         @Override
@@ -145,6 +194,14 @@ class Player {
                     ", nextPoint=" + nextPoint +
                     ", centralPoint=" + centralPoint +
                     '}';
+        }
+
+        public void setNextTargetPoint(Point nextTargetPoint) {
+            this.nextTargetPoint = nextTargetPoint;
+        }
+
+        public Point getNextTargetPoint() {
+            return nextTargetPoint;
         }
     }
 
