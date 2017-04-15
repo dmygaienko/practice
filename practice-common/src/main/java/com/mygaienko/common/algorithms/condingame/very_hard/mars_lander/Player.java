@@ -17,6 +17,7 @@ class Player {
 
     private static final double G = -3.711;
     private static Vector gravityVector = new Vector(0, G);
+    private static Vector landingVector = new Vector(0, -35);
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -48,7 +49,7 @@ class Player {
     }
 
     private static boolean isLanding(Point currentPoint, FlatGround flatGround) {
-        boolean near = flatGround.startLandingPoint.distanceTo(currentPoint) < 30;
+        boolean near = flatGround.startLandingPoint.distanceTo(currentPoint) < 300;
         if (near) {
             flatGround.setNextTargetPoint(flatGround.centralPoint);
         }
@@ -57,24 +58,33 @@ class Player {
     }
 
     private static Vector getDeltaVector(Point currentPoint, Vector currentVector, FlatGround flatGround) {
-        Point targetPoint = flatGround.getNextTargetPoint();
+        Vector deltaVector;
 
+        if (isLanding(currentPoint, flatGround)) {
+            deltaVector = landingVector.minus(currentVector);
+        } else {
+            deltaVector = getNonLandingDeltaVector(currentPoint, currentVector, flatGround.getNextTargetPoint());
+        }
+
+        return deltaVector;
+    }
+
+    private static Vector getNonLandingDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
         Vector desiredVector = new Vector(currentPoint, targetPoint);
 
         while (desiredVector.length > currentVector.length * 1.2){
             desiredVector = desiredVector.multiply(0.8);
         }
-
         return desiredVector.minus(currentVector);
     }
 
     public static Controls getNextControls(Vector verticalVector, Vector currentVector, Vector deltaVector, boolean isLanding) {
         Controls controls;
-        if (isLanding) {
+       /* if (isLanding) {
             controls = getNextLandingControls(verticalVector);
-        } else {
-            controls = getNextNonLandingControls(currentVector, deltaVector);
-        }
+        } else {*/
+        controls = getNextNonLandingControls(currentVector, deltaVector);
+        //}
         return controls;
     }
 
