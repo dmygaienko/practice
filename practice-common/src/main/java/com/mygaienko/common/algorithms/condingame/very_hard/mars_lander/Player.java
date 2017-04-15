@@ -1,6 +1,12 @@
 package com.mygaienko.common.algorithms.condingame.very_hard.mars_lander;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -9,6 +15,7 @@ import java.util.*;
 class Player {
 
     private static final double G = -3.711;
+    private static Vector gravityVector = new Vector(0, G);
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -25,48 +32,72 @@ class Player {
             int rotate = in.nextInt(); // the rotation angle in degrees (-90 to 90).
             int power = in.nextInt(); // the thrust power (0 to 4).
 
-            double currentDirection = calculateCurrentDirection(hSpeed, vSpeed);
+            Vector currentVector = calculateCurrentVector(hSpeed, vSpeed);
 
-            Point targetPoint = getNextTargetPoint();
+            Point targetPoint = getNextTargetPoint(flatGround);
 
-            double desiredDirection = calculateDesiredDirection(currentPoint, targetPoint);
+            Vector deltaVector = getDeltaVector(currentPoint, currentVector, targetPoint);
 
-            Controls controls = getNextControls(currentDirection, desiredDirection, power);
+            Controls controls = getNextControls(currentVector, deltaVector);
 
-            System.out.println(controls.angle + " " + controls.power);
+            System.out.println(-(int) controls.angle + " " + (int) controls.power);
         }
     }
 
-    private static Controls getNextControls(double currentDirection, double desiredDirection, int power) {
-        double directionDelta = desiredDirection - currentDirection;
+    private static Vector getDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
+        Vector desiredVector = new Vector(currentPoint, targetPoint);
 
-        int angleMultiplier = 1;
-        if (Math.abs(desiredDirection) > 90) {
-            angleMultiplier = -1;
+        while (desiredVector.length > currentVector.length * 1.2){
+            desiredVector = desiredVector.multiply(0.8);
         }
 
-        //if
-        return null;
+        return desiredVector.minus(currentVector);
     }
 
-    private static Point getNextTargetPoint() {
-        return null;
+    public static Controls getNextControls(Vector currentVector, Vector deltaVector) {
+        double angle = deltaVector.getAngle();
+        boolean isOpposite = deltaVector.isOpposite(currentVector);
+
+        Controls controls = new Controls();
+        if (angle == 0) {
+            controls.angle = 0;
+            controls.power = 4;
+        } else if (angle == 180) {
+            controls.angle = 0;
+            controls.power = 3;
+        } else if (angle > 0 && angle < 90) {
+            controls.angle = getSafeAngle(angle);
+            controls.power = 4;
+        } else if (angle > 90 && angle < 180) {
+            controls.angle = getSafeAngle(isOpposite ? angle :(angle - 90));
+            controls.power = isOpposite ? 4 : 3;
+        } else if (angle > -90 && angle < 0) {
+            controls.angle = getSafeAngle(angle);
+            controls.power = 4;
+        } else if (angle > -180 && angle < -90) {
+            controls.angle = getSafeAngle(isOpposite ? angle :(angle - 90));
+            controls.power = isOpposite ? 4 : 3;
+        }
+
+        return controls;
     }
 
-    public static double calculateDesiredDirection(Point currentPoint, Point targetPoint) {
-        int xDiff = targetPoint.x - currentPoint.x;
-        int yDiff = targetPoint.y - currentPoint.y;
-        return calculateDirection(xDiff, yDiff);
+    private static double getSafeAngle(double angle) {
+        return angle * 22/90;
     }
 
-    public static double calculateCurrentDirection(double hSpeed, double vSpeed) {
-        double totalVerticalSpeed = vSpeed + G;
-        //double tangentAlpha = hSpeed/totalVerticalSpeed;
-        return calculateDirection(hSpeed, totalVerticalSpeed);
+    private static Point getNextTargetPoint(FlatGround flatGround) {
+        return flatGround.centralPoint;
     }
 
-    private static double calculateDirection(double xDiff, double yDiff) {
-        return Math.toDegrees(Math.atan2(xDiff, yDiff));
+    public static Vector calculateDesiredDirection(Point currentPoint, Point targetPoint) {
+        return new Vector(currentPoint, targetPoint);
+    }
+
+    public static Vector calculateCurrentVector(double hSpeed, double vSpeed) {
+        Vector verticalVector = new Vector(0, vSpeed).plus(gravityVector);
+        Vector horizontalVector = new Vector(hSpeed, 0);
+        return verticalVector.plus(horizontalVector);
     }
 
     private static List<Point> initPoints(Scanner in) {
@@ -77,6 +108,7 @@ class Player {
             int landY = in.nextInt(); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
             points.add(new Point(landX, landY));
         }
+        System.err.println(points);
         return points;
     }
 
@@ -88,32 +120,48 @@ class Player {
             this.x = x;
             this.y = y;
         }
+
+        @Override
+        public String toString() {
+            return "new Point(" + x + ", " + y +')';
+        }
     }
 
-    private static class FlatGround {
+    static class FlatGround {
         private final Point point;
         private final Point nextPoint;
+        private final Point centralPoint;
 
         public FlatGround(Point point, Point nextPoint) {
             this.point = point;
             this.nextPoint = nextPoint;
+            this.centralPoint = new Point((point.x + nextPoint.x)/2, (point.y + nextPoint.y)/2);
+        }
+
+        @Override
+        public String toString() {
+            return "FlatGround{" +
+                    "point=" + point +
+                    ", nextPoint=" + nextPoint +
+                    ", centralPoint=" + centralPoint +
+                    '}';
         }
     }
 
-    private static FlatGround findFlatGround(List<Point> points) {
+    public static FlatGround findFlatGround(List<Point> points) {
         FlatGround flatGround = null;
 
         outer:
         for (int i = 0, pointsSizeWithoutLast = points.size() - 1; i < pointsSizeWithoutLast; i++) {
             Point point = points.get(i);
 
-            for (int j = i, pointsSize = points.size(); j < pointsSize; j++) {
+            for (int j = i + 1, pointsSize = points.size(); j < pointsSize; j++) {
                 Point nextPoint = points.get(j);
                 if (point.y != nextPoint.y) {
                     break;
                 }
 
-                if (point.x - nextPoint.x >= 1000) {
+                if (Math.abs(point.x - nextPoint.x) >= 1000) {
                     flatGround = new FlatGround(point, nextPoint);
                     break outer;
                 }
@@ -123,8 +171,63 @@ class Player {
         return flatGround;
     }
 
-    private static class Controls {
-        public int angle;
+    public static class Controls {
+        public double angle;
         public int power;
+    }
+
+    public static class Vector {
+
+        private final double x;
+        private final double y;
+        private final double angle;
+        private final double length;
+
+        public Vector(double x, double y) {
+            this.x = x;
+            this.y = y;
+            this.angle = Math.toDegrees(Math.atan2(x, y));
+            this.length = Math.sqrt(x * x + y * y);
+        }
+
+        public Vector(Point currentPoint, Point targetPoint) {
+            this(targetPoint.x - currentPoint.x, targetPoint.y - currentPoint.y);
+        }
+
+        public Vector plus(Vector that) {
+            return new Vector(x + that.x, y + that.y);
+        }
+
+        public Vector minus(Vector that) {
+            return new Vector(x - that.x, y - that.y);
+        }
+
+        public Vector rotate(double angle){
+            double x1 = x * cos(angle) - y * sin(angle);
+            double y1 = x * sin(angle) + y * cos(angle);
+            return  new Vector(x1, y1);
+        }
+
+        @Override
+        public String toString() {
+            return "Vector{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", angle=" + angle +
+                    ", length=" + length +
+                    '}';
+        }
+
+        public double getAngle() {
+            return angle;
+        }
+
+        public Vector multiply(double scalar) {
+            return new Vector(x * scalar, y * scalar);
+        }
+
+        public boolean isOpposite(Vector that) {
+            return angle/that.angle < 0;
+        }
     }
 }
