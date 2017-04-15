@@ -106,7 +106,7 @@ class Player {
             controls.angle = getSafeAngle(angle);
             controls.power = 4;
         } else if (angle > -180 && angle < -90) {
-            controls.angle = getSafeAngle(isOpposite ? angle :(angle - 90));
+            controls.angle = getSafeAngle(isOpposite ? angle :(angle + 90));
             controls.power = isOpposite ? 4 : 3;
         }
 
