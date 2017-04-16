@@ -139,10 +139,6 @@ class Player {
         return angle * 22/90;
     }
 
-    public static Vector calculateDesiredDirection(Point currentPoint, Point targetPoint) {
-        return new Vector(currentPoint, targetPoint);
-    }
-
     private static List<Point> initPoints(Scanner in) {
         ArrayList<Point> points = new ArrayList<>();
         int surfaceN = in.nextInt(); // the number of points used to draw the surface of Mars.

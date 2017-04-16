@@ -36,24 +36,6 @@ public class PlayerTest {
 //    }
 
     @Test
-    public void testCalculateDesiredDirection() throws Exception {
-        Player.Vector v = Player.calculateDesiredDirection(new Player.Point(0, 0), new Player.Point(1, 1));
-        System.out.println(v);
-    }
-
-    @Test
-    public void testCalculateDesiredDirection1() throws Exception {
-        Player.Vector v = Player.calculateDesiredDirection(new Player.Point(3, 4), new Player.Point(1, 1));
-        System.out.println(v);
-    }
-
-    @Test
-    public void testCalculateDesiredDirection2() throws Exception {
-        Player.Vector v = Player.calculateDesiredDirection(new Player.Point(-3, -4), new Player.Point(1, 1));
-        System.out.println(v);
-    }
-
-    @Test
     public void testGetAngle() throws Exception {
         Player.Vector vector = new Player.Vector(-4, -5);
         System.out.println(vector.getAngle());

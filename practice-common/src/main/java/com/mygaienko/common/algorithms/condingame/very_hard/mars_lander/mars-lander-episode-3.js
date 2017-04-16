@@ -71,6 +71,80 @@ function completePath(x, y) {
 }
 printErr('surfacePoints: ' + JSON.stringify(surfacePoints));
 
+function Point(x, y)  {
+    self = this;
+
+    this.x = x;
+    this.y = y;
+
+    this.distanceTo = function(that){
+        return Math.sqrt(Math.pow(self.x - that.x, 2) + Math.pow(self.y - that.y, 2));
+    };
+
+    this.equals = function(that) {
+        return that.x == self.x && that.y == self.y;
+    }
+
+}
+
+function vectorFromPoints(currentPoint, targetPoint) {
+    return new Vector(targetPoint.x - currentPoint.x, targetPoint.y - currentPoint.y);
+}
+
+function Vector(x, y) {
+    self = this;
+
+    this.x = x;
+    this.y = y;
+
+    this.toDegrees = function (radians) {
+        return radians * (180 / Math.PI);
+    };
+
+    this.length = Math.sqrt(self.x * self.x + self.y * self.y);
+
+    this.angle = this.toDegrees(Math.atan2(self.x, self.y));
+
+    this.plus = function (that) {
+        return new Vector(this.x + that.x, this.y + that.y);
+    };
+
+    this.minus = function (that) {
+        return new Vector(this.x - that.x, this.y - that.y);
+    };
+
+    this.multiply = function (scalar) {
+        return new Vector(x * scalar, y * scalar);
+    };
+
+    this.isOpposite = function (that) {
+        return self.angle/that.angle < 0;
+    };
+
+    this.inBounds = function (that) {
+        return Math.abs(self.x) <= Math.abs(that.x) && Math.abs(self.y) <= Math.abs(that.y);
+    };
+
+    this.slowDown = function (that) {
+        var newX = self.x;
+        if (Math.abs(newX) > Math.abs(that.x)) {
+            newX = newX > 0 ? that.x : - that.x;
+        }
+        var newY = self.y;
+        if (Math.abs(newY) > Math.abs(that.y)) {
+            newY = newY > 0 ? that.y : - that.y;
+        }
+        return new Vector(newX, newY);
+    }
+
+}
+
+var G = -3.711;
+var gravityVector = new Vector(0, G);
+var levelingVector = new Vector(0, -35);
+var extremeLandingVector = new Vector(20, -40).plus(gravityVector);
+var maxSpeedVector = new Vector(20, 20);
+
 // game loop
 while (true) {
     var inputs = readline().split(' ');
@@ -85,12 +159,130 @@ while (true) {
     if (!pathComplete) {
         completePath(X, Y);
     }
+
+    var currentPoint = new Point(X, Y);
+
+    var verticalVector = new Vector(0, vSpeed).plus(gravityVector);
+    printErr('verticalVector ' + JSON.stringify(verticalVector));
+    var horizontalVector = new Vector(hSpeed, 0);
+    printErr('horizontalVector ' + JSON.stringify(horizontalVector));
+    var currentVector = verticalVector.plus(horizontalVector);
+    printErr('currentVector ' + JSON.stringify(currentVector));
+    printErr('currentVector ' + JSON.stringify(verticalVector.plus(horizontalVector)));
+
+    var deltaVector = getDeltaVector(currentPoint, currentVector, flatGround);
+
+    var controls = getNextControls(verticalVector, currentVector, deltaVector, isLanding(currentPoint, flatGround));
+    printErr('controls ' + JSON.stringify(controls));
+    print(-parseInt(controls.angle) + " " + controls.power);
+
     // Write an action using print()
     // To debug: printErr('Debug messages...');
 
-    flyPath(X, Y, hSpeed, vSpeed, rotate, power);
+    //flyPath(X, Y, hSpeed, vSpeed, rotate, power);
+
     // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
     //print('-20 3');
+}
+
+function getDeltaVector(currentPoint, currentVector, flatGround) {
+    var deltaVector;
+
+    if (isLanding(currentPoint, flatGround)) {
+        deltaVector = levelingVector.minus(currentVector);
+    } else {
+        deltaVector = getNonLevelingDeltaVector(currentPoint, currentVector, getNextTarget(currentPoint));
+
+        printErr('currentVector' + JSON.stringify(currentVector));
+        if (!currentVector.inBounds(maxSpeedVector)) {
+            var slowDownVector = currentVector.slowDown(maxSpeedVector).minus(currentVector);
+            deltaVector = slowDownVector.plus(deltaVector);
+            printErr('deltaVector slowDownVector' + JSON.stringify(deltaVector));
+        }
+    }
+    return deltaVector;
+}
+
+function getNextTarget(currentPoint) {
+
+    var nextTarget = path[flyTargetIndex];
+    var hDistance = nextTarget.x - currentPoint.x;
+    var vDistance = nextTarget.y - currentPoint.y;
+    printErr('nextTarget: ' + JSON.stringify(nextTarget) + ';hDistance ' + hDistance + ';vDistance ' + vDistance);
+    if (Math.abs(hDistance) < 90 && Math.abs(vDistance) < 90) {
+        nextTarget = path[++flyTargetIndex];
+        hDistance = nextTarget.x - currentPoint.x;
+        vDistance = nextTarget.y - currentPoint.y;
+    }
+
+    return new Point(nextTarget.x, nextTarget.y);
+}
+
+function getNonLevelingDeltaVector(currentPoint, currentVector, targetPoint) {
+    var desiredVector = vectorFromPoints(currentPoint, targetPoint);
+
+    while (desiredVector.length > currentVector.length * 1.05){
+        desiredVector = desiredVector.multiply(0.95);
+    }
+    return desiredVector.minus(currentVector);
+}
+
+function getNextControls(verticalVector, currentVector, deltaVector, isLanding) {
+    var controls;
+    if (isLanding && currentVector.inBounds(extremeLandingVector)) {
+        controls = getNextLandingControls(verticalVector);
+    } else {
+        controls = getNextNonLandingControls(currentVector, deltaVector);
+    }
+    return controls;
+}
+
+function getNextLandingControls(verticalVector) {
+    var controls = {};
+    controls.angle = 0;
+    controls.power = verticalVector.y < -39 ? 4 : 3;
+    return controls;
+}
+
+function getNextNonLandingControls(currentVector, deltaVector) {
+    var angle = deltaVector.angle;
+    var isOpposite = deltaVector.isOpposite(currentVector);
+
+    var controls = {};
+    if (angle == 0) {
+        controls.angle = 0;
+        controls.power = 4;
+    } else if (angle == 180) {
+        controls.angle = 0;
+        controls.power = 3;
+    } else if (angle > 0 && angle < 90) {
+        controls.angle = getSafeAngle(angle);
+        controls.power = 4;
+    } else if (angle > 90 && angle < 180) {
+        controls.angle = getSafeAngle(isOpposite ? angle :(angle - 90));
+        controls.power = isOpposite ? 4 : 3;
+    } else if (angle > -90 && angle < 0) {
+        controls.angle = getSafeAngle(angle);
+        controls.power = 4;
+    } else if (angle > -180 && angle < -90) {
+        controls.angle = getSafeAngle(isOpposite ? angle :(angle + 90));
+        controls.power = isOpposite ? 4 : 3;
+    }
+
+    printErr('controls ' + JSON.stringify(controls));
+    return controls;
+}
+
+function getSafeAngle(angle) {
+    return angle * 22/90;
+}
+
+function isLanding(currentPoint, flatGround) {
+    var near = flatGround.startLandingPoint.distanceTo(currentPoint) < 300;
+    if (near) {
+        flatGround.nextTargetPoint(flatGround.centralPoint);
+    }
+    return near || flatGround.nextTargetPoint.equals(flatGround.centralPoint);
 }
 
 function countIntersectedSegments(currentPoint, targetPoint) {
@@ -159,7 +351,7 @@ function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
                 rotate = -22;
                 power = 3;
             }
-        } else if (hSpeed > desiredSpeed.h) { //<-----  
+        } else if (hSpeed > desiredSpeed.h) { //<-----
             if (hPrior) {
                 rotate = 0;
                 power = 2;
@@ -364,10 +556,10 @@ function onSegment(p, q, r){
 
 }
 
-function getFlatGround(){
+function getFlatGround() {
     flatGround = {};
 
-    for(var i = 0; i < surfacePoints.length; i++) {
+    for (var i = 0; i < surfacePoints.length; i++) {
         if (flatGround.y0 == surfacePoints[i].y) {
 
             for (var f = i; f < surfacePoints.length; f++) {
@@ -386,10 +578,11 @@ function getFlatGround(){
         }
     }
 
-    flatGround.centralPoint = {
-        x: (flatGround.x1 + flatGround.x0)/2,
-        y:  flatGround.y1
-    };
+    flatGround.centralPoint = new Point((flatGround.x1 + flatGround.x0)/2, flatGround.y1);
+
+    flatGround.startLandingPoint = new Point(flatGround.centralPoint.x, flatGround.centralPoint.y + 300);
+
+    flatGround.nextTargetPoint = flatGround.startLandingPoint;
 
     flatGround.contains = function (point) {
         return point.y == flatGround.y0 && point.x >= flatGround.x0 && point.x <= flatGround.x1;
