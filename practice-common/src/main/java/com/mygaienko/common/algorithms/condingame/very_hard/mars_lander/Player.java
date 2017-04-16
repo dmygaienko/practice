@@ -19,6 +19,7 @@ class Player {
     private static Vector gravityVector = new Vector(0, G);
     private static Vector landingVector = new Vector(0, -35);
     private static Vector extremeLandingVector = new Vector(20, -40).plus(gravityVector);
+    private static Vector maxSpeedVector = new Vector(30, 50);
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -65,8 +66,14 @@ class Player {
             deltaVector = getLevelingVector(currentVector);
         } else {
             deltaVector = getNonLevelingDeltaVector(currentPoint, currentVector, flatGround.getNextTargetPoint());
-        }
 
+            if (!currentVector.inBounds(maxSpeedVector)) {
+                Vector slowDownVector = currentVector.slowDown(maxSpeedVector).minus(currentVector);
+                System.err.println("slowDownVector " + slowDownVector);
+                deltaVector = slowDownVector.plus(deltaVector);
+            }
+        }
+        System.err.println("deltaVector " + deltaVector);
         return deltaVector;
     }
 
@@ -303,7 +310,19 @@ class Player {
         }
 
         public boolean inBounds(Vector that) {
-            return Math.abs(x) <= Math.abs(that.x) && y >= that.y;
+            return Math.abs(x) <= Math.abs(that.x) && Math.abs(y) <= Math.abs(that.y);
+        }
+
+        public Vector slowDown(Vector that) {
+            double newX = x;
+            if (Math.abs(x) > Math.abs(that.x)) {
+                newX = x > 0 ? that.x : - that.x;
+            }
+            double newY = y;
+            if (Math.abs(y) > Math.abs(that.y)) {
+                newY = y > 0 ? that.y : - that.y;
+            }
+            return new Vector(newX, newY);
         }
     }
 }
