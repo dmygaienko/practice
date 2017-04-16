@@ -1,21 +1,7 @@
-// def getNextState(lander : Lander, action : Action) : Lander = {
-//     var nextP = lander.power + action.power
-//     var nextFuel = lander.fuel - nextP
-//     var nextAngle = lander.angle + action.angle
-//     var nextX = 2 * lander.x - lander.prevX - nextP * sin(toRadians(nextAngle))
-//     var nextY = 2 * lander.y - lander.prevY - g + nextP * cos(toRadians(nextAngle))
-//     var nextVx = lander.hSpeed - nextP * sin(toRadians(nextAngle))
-//     var nextVy = lander.vSpeed - g + nextP * cos(toRadians(nextAngle))
-//     var nextLander = Lander(nextX, nextY, lander.x, lander.y, nextVx, nextVy, nextFuel, nextAngle, nextP)
-//     nextLander
-// }
-
-//var surfaces = ['0 450','300 750','1000 450','1500 650','1800 850','2000 1950','2200 1850','2400 2000','3100 1800','3150 1550','2500 1600','2200 1550','2100 750','2200 150','3200 150','3500 450','4000 950','4500 1450','5000 1550','5500 1500','6000 950','6999 1750'];
-var surfaces = ['0 1800', '300 1200', '1000 1550', '2000 1200', '2500 1650', '3700 220', '4700 220', '4750 1000', '4700 1650', '4000 1700', '3700 1600', '3750 1900', '4000 2100', '4900 2050', '5100 1000', '5500 500', '6200 800', '6999 600'];
-
 var surfacePoints = [];
-for (var i = 0; i < surfaces.length; i++) {
-    var inputs = surfaces[i].split(' ');
+var surfaceN = parseInt(readline()); // the number of points used to draw the surface of Mars.
+for (var i = 0; i < surfaceN; i++) {
+    var inputs = readline().split(' ');
     surfacePoints.push({
         x: parseInt(inputs[0]),
         y: parseInt(inputs[1])
@@ -32,161 +18,80 @@ for (var j = 0; j + 1 < surfacePoints.length; j++) {
 
 var flatGround = getFlatGround();
 
-console.log(JSON.stringify(surfacePoints.length));
-console.log(JSON.stringify(surfacePoints));
-console.log(JSON.stringify(surfaceSegments.length));
-console.log(JSON.stringify(surfaceSegments));
-console.log(JSON.stringify(flatGround));
 
-var path = [];
 var pathComplete = false;
 
 var currentPoint = {x: 6500, y: 2600};
 var targetPoints = [];
 var fliedTargetPoints = [];
 setFlatCentralPointAsTarget(targetPoints);
-path.push(currentPoint);
-
-var roundaboutPointIndex;
-var direction = currentPoint.x - flatGround.centralPoint.x > 0 ? 0 : 1;
-
 var targetPoint = targetPoints.shift();
-while (!pathComplete) {
-
-    var intersectedSegments = countIntersectedSegments(currentPoint, targetPoint);
-
-    if (intersectedSegments.length == 1) {
-        path.push(targetPoint);
-        pathComplete = true;
-    } else if (intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
-        var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
-        fliedTargetPoints.push(targetPoint);
-        path.push(shiftedTargetPoint);
-        currentPoint = shiftedTargetPoint;
-        setFlatCentralPointAsTarget(targetPoints);
-        if (flatGround.contains(targetPoint)) {
-            pathComplete = true;
-            path.push(targetPoint);
-        }
-    } else {
-        if (!roundaboutPointIndex) {
-            roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments);
-        }
-        targetPoint = surfacePoints[roundaboutPointIndex];
-        roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
-    }
-}
 
 var flyTargetIndex = 0;
-var bestHSpeed = 40;
-var bestVSpeed = 20;
-function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
-    var desiredSpeed = getDesiredSpeed(x, y, hSpeed, vSpeed);
-    printErr('desiredSpeed: ' + JSON.stringify(desiredSpeed));
+var bestHSpeed = 27;
+var bestVSpeed = 22;
 
-    if (hSpeed != desiredSpeed.h && vSpeed != desiredSpeed.v) {
-        /*if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) {
-         if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
-         if (desiredSpeed.h > 0 && desiredSpeed.v > 0) {
-         rotate = -10;
-         } else if (desiredSpeed.h > 0 && desiredSpeed.v < 0) {
-         rotate = -30;
-         } else if (desiredSpeed.h < 0 && desiredSpeed.v > 0) {
-         rotate = 10;
-         } else if (desiredSpeed.h < 0 && desiredSpeed.v < 0) {
-         rotate = 30;
-         }
-         }
-         }*/
+var roundaboutPointIndex;
+var path = [];
+var direction
+function completePath(x, y) {
+    path.push({x: x, y: y});
+    direction = x - flatGround.centralPoint.x > 0 ? 0 : 1;
 
-        if (hSpeed < desiredSpeed.h) {
-            if (vSpeed < desiredSpeed.v) {
-                rotate = -10;
-                power = 4;
-            } else {
-                rotate = -30;
-                power = 4;
+    while (!pathComplete) {
+
+        var intersectedSegments = countIntersectedSegments(currentPoint, targetPoint);
+
+        if (intersectedSegments.length == 1) {
+            path.push(targetPoint);
+            pathComplete = true;
+        } else if (intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
+            var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
+            fliedTargetPoints.push(targetPoint);
+            path.push(shiftedTargetPoint);
+            currentPoint = shiftedTargetPoint;
+            setFlatCentralPointAsTarget(targetPoints);
+            if (flatGround.contains(targetPoint)) {
+                pathComplete = true;
+                path.push(targetPoint);
             }
-        }  else {
-            if (vSpeed < desiredSpeed.v) {
-                rotate = 10;
-                power = 4;
-            } else {
-                rotate = 30;
-                power = 4;
-            }
-        }
-
-    } else if (hSpeed != desiredSpeed.h) {
-        power = 4;
-        if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) { //speedup
-            rotate = desiredSpeed.h > 0 ? -22 : 22;
-        } else { //slowdown
-            rotate = desiredSpeed.h < 0 ? -22 : 22;
-        }
-    } else if (vSpeed != desiredSpeed.v) {
-        rotate = 0;
-        if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
-            power = desiredSpeed.v > 0 ? 4 : 2;
         } else {
-            power = desiredSpeed.v > 0 ? 2 : 4;
+            if (!roundaboutPointIndex) {
+                roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments);
+            }
+            targetPoint = surfacePoints[roundaboutPointIndex];
+            roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
         }
     }
 
-    print(rotate + ' ' + power);
+
+    var lastPoint = path[path.length-1];
+    path.splice(path.length-2, 0, {x:lastPoint.x, y:lastPoint.y+500});
+    printErr('path: ' + JSON.stringify(path));
 }
+printErr('surfacePoints: ' + JSON.stringify(surfacePoints));
 
-function getDesiredSpeed(x, y, hSpeed, vSpeed) {
-    var desiredSpeed = {};
+// game loop
+while (true) {
+    var inputs = readline().split(' ');
+    var X = parseInt(inputs[0]);
+    var Y = parseInt(inputs[1]);
+    var hSpeed = parseInt(inputs[2]); // the horizontal speed (in m/s), can be negative.
+    var vSpeed = parseInt(inputs[3]); // the vertical speed (in m/s), can be negative.
+    var fuel = parseInt(inputs[4]); // the quantity of remaining fuel in liters.
+    var rotate = parseInt(inputs[5]); // the rotation angle in degrees (-90 to 90).
+    var power = parseInt(inputs[6]); // the thrust power (0 to 4).
 
-    var nextTarget = path[flyTargetIndex];
-    printErr('nextTarget: ' + JSON.stringify(nextTarget));
-    var hDistance = nextTarget.x - x;
-    var vDistance = nextTarget.y - y;
-    if (Math.abs(hDistance) < 30 && Math.abs(vDistance) < 30) {
-        nextTarget = path[++flyTargetIndex];
-        hDistance = nextTarget.x - x;
-        vDistance = nextTarget.y - y;
+    if (!pathComplete) {
+        completePath(X, Y);
     }
+    // Write an action using print()
+    // To debug: printErr('Debug messages...');
 
-    var hTime = hDistance / hSpeed;
-    printErr('hTime: ' + hTime);
-    if (hTime < 0) { //need to change H direction
-        desiredSpeed.h = bestHSpeed * (hSpeed > 0 ? -1 : 1);
-    } else if (hTime > 50 && Math.abs(hSpeed * 1.2) < bestHSpeed) {
-        printErr('entered')
-        desiredSpeed.h = hSpeed * 1.2;
-    } else {
-        desiredSpeed.h = hSpeed;
-    }
-
-    var vTime = vDistance / vSpeed;
-    printErr('vTime: ' + vTime);
-    if (vTime < 0) { //need to change V direction
-        desiredSpeed.v = bestVSpeed * (vSpeed > 0 ? -1 : 1);
-    } else if (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed) {
-        desiredSpeed.v = vSpeed * 1.2;
-    } else {
-        desiredSpeed.v = vSpeed;
-    }
-    printErr('vTime > 50' + (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed));
-
-    var avgTime;
-    if (vTime == hTime) {
-        avgTime = vTime;
-    } else {
-        avgTime = (hDistance/desiredSpeed.h + vDistance/desiredSpeed.v) / 2;
-
-        desiredSpeed.h = hDistance / avgTime;
-        desiredSpeed.v = vDistance / avgTime;
-    }
-
-    printErr('avgTime: ' + avgTime);
-    return desiredSpeed;
+    flyPath(X, Y, hSpeed, vSpeed, rotate, power);
+    // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
+    //print('-20 3');
 }
-
-console.log('targetPoints: ' + JSON.stringify(targetPoints));
-console.log(JSON.stringify(path));
 
 function countIntersectedSegments(currentPoint, targetPoint) {
     var intersectedSegments = [];
@@ -196,11 +101,147 @@ function countIntersectedSegments(currentPoint, targetPoint) {
         if (intersects(currentPoint, targetPoint, segment.start, segment.end)) {
             intersectedSegments.push(segment);
 
-            console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint) + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
-                + '; segment.start: ' + JSON.stringify(segment.start) + '; segment.end: ' + JSON.stringify(segment.end));
+            //  console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint) + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
+            //      + '; segment.start: ' + JSON.stringify(segment.start) + '; segment.end: ' + JSON.stringify(segment.end));
         }
     }
     return intersectedSegments;
+}
+
+function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
+    hSpeed = hSpeed == 0 ? 1 : hSpeed;
+    vSpeed = vSpeed == 0 ? 1 : vSpeed;
+
+    var desiredSpeed = getDesiredSpeed(x, y, hSpeed, vSpeed);
+    printErr('desiredSpeed: ' + JSON.stringify(desiredSpeed));
+
+    if (hSpeed != desiredSpeed.h && Math.abs(vSpeed - desiredSpeed.v) < 1) {
+        power = 4;
+        if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) { //speedup
+            rotate = desiredSpeed.h > 0 ? -22 : 22;
+        } else { //slowdown
+            rotate = desiredSpeed.h < 0 ? -22 : 22;
+        }
+    } else if (vSpeed != desiredSpeed.v && Math.abs(hSpeed - desiredSpeed.h) < 1) {
+        rotate = 0;
+        if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
+            power = desiredSpeed.v > 0 ? 4 : 2;
+        } else {
+            power = desiredSpeed.v > 0 ? 2 : 4;
+        }
+    } else if (hSpeed != desiredSpeed.h && vSpeed != desiredSpeed.v) {
+        var hDiff = Math.abs((desiredSpeed.h - hSpeed)/hSpeed);
+        var vDiff = Math.abs((desiredSpeed.v - vSpeed)/vSpeed);
+        printErr('hDiff: ' + hDiff + ' ;vDiff: ' + vDiff);
+
+        var hvDiff = Math.abs((hDiff - vDiff)/vDiff) > 0.2;
+        var vhDiff = Math.abs((vDiff - hDiff)/hDiff) > 0.2;
+
+        var hPrior = hvDiff && !vhDiff;
+        var vPrior = vhDiff && !hvDiff;
+        printErr('hPrior: ' + hPrior + ' ;vPrior: ' + vPrior);
+
+        if (hSpeed < desiredSpeed.h) { // ----->
+            if (hPrior) {
+                rotate = -22;
+                power = 4;
+            }
+            else if (vSpeed < desiredSpeed.v) {
+                if (vPrior) {
+                    rotate = 0;
+                    power = 4;
+                } else {
+                    rotate = -14;
+                    power = 4;
+                }
+
+            } else {
+                rotate = -22;
+                power = 3;
+            }
+        } else if (hSpeed > desiredSpeed.h) { //<-----  
+            if (hPrior) {
+                rotate = 0;
+                power = 2;
+            } else if (vSpeed < desiredSpeed.v) {
+                if (vPrior) {
+                    rotate = 0;
+                    power = 4;
+                } else {
+                    rotate = 14;
+                    power = 4;
+                }
+            } else {
+                rotate = 22;
+                power = 3;
+            }
+        }
+    }
+
+    print(rotate + ' ' + power);
+}
+
+function getDesiredSpeed(x, y, hSpeed, vSpeed) {
+    var desiredSpeed = {};
+    hSpeed = hSpeed == 0 ? 1 : hSpeed;
+    vSpeed = vSpeed == 0 ? 1 : vSpeed;
+
+    var nextTarget = path[flyTargetIndex];
+    var hDistance = nextTarget.x - x;
+    var vDistance = nextTarget.y - y;
+    printErr('nextTarget: ' + JSON.stringify(nextTarget) + ';hDistance ' + hDistance + ';vDistance ' + vDistance);
+    if (Math.abs(hDistance) < 90 && Math.abs(vDistance) < 90) {
+        nextTarget = path[++flyTargetIndex];
+        hDistance = nextTarget.x - x;
+        vDistance = nextTarget.y - y;
+    }
+
+    var hTime = hDistance / hSpeed;
+    printErr('hTime: ' + hTime);
+    if (hTime < 0) { //need to change H direction
+        desiredSpeed.h = bestHSpeed * (hSpeed > 0 ? -1 : 1);
+    } else if (hTime >90 && Math.abs(hSpeed * 2) < bestHSpeed) {
+        printErr('entered H')
+        desiredSpeed.h = (hSpeed == 0 ? 1 : hSpeed) * 2;
+    } else {
+        desiredSpeed.h = hSpeed;
+    }
+
+    var vTime = vDistance / vSpeed;
+    printErr('vTime: ' + vTime);
+    if (vTime < 0) { //need to change V direction
+        desiredSpeed.v = bestVSpeed * (vSpeed > 0 ? -1 : 1);
+    } else if (vTime > 20 && Math.abs(vSpeed * 2) < bestVSpeed) {
+        printErr('entered V')
+        desiredSpeed.v = vSpeed * 2;
+    } else {
+        desiredSpeed.v = vSpeed;
+    }
+    printErr('vTime > 50' + (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed));
+    printErr('desired speed before ' + desiredSpeed.h + ' ' + desiredSpeed.v);
+
+    var avgTime;
+    if (vTime == hTime) {
+        avgTime = vTime;
+    } else {
+        printErr(hDistance+' '+desiredSpeed.h+' '+vDistance+' '+desiredSpeed.v);
+        avgTime = (hDistance/desiredSpeed.h + vDistance/desiredSpeed.v) / 2;
+
+        var avgHDesiredSpeed = hDistance / avgTime;
+        var avgVDesiredSpeed = vDistance / avgTime;
+
+        if (Math.abs(avgHDesiredSpeed) <= bestHSpeed) {
+            desiredSpeed.h = avgHDesiredSpeed
+        }
+
+        if (Math.abs(avgVDesiredSpeed) <= bestVSpeed) {
+            desiredSpeed.v = avgVDesiredSpeed
+        }
+
+    }
+
+    printErr('avgTime: ' + avgTime);
+    return desiredSpeed;
 }
 
 function findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments) {
@@ -216,7 +257,7 @@ function findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments
         result.distance = Math.sqrt(Math.pow(currentPoint.x - value.x,2) + Math.pow(currentPoint.y - value.y ,2));
         return result;
     });
-    
+
     distances.sort(function (a, b) {
         return a.distance - b.distance;
     });
@@ -319,7 +360,7 @@ function orientation(p, q, r) {
 
 function onSegment(p, q, r){
     return (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) &&
-        q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y));
+    q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y));
 
 }
 
@@ -356,5 +397,3 @@ function getFlatGround(){
 
     return flatGround;
 }
-
-
