@@ -21,58 +21,59 @@ var flatGround = getFlatGround();
 
 var pathComplete = false;
 
-var currentPoint = {x: 6500, y: 2600};
 var targetPoints = [];
 var fliedTargetPoints = [];
 setFlatCentralPointAsTarget(targetPoints);
 var targetPoint = targetPoints.shift();
 
 var flyTargetIndex = 0;
-var bestHSpeed = 27;
-var bestVSpeed = 22;
 
 var roundaboutPointIndex;
 var path = [];
-var direction
-function completePath(x, y) {
-    path.push({x: x, y: y});
-    direction = x - flatGround.centralPoint.x > 0 ? 0 : 1;
+var direction;
+function completePath(currentPoint) {
+    path.push(currentPoint);
+    direction = currentPoint.x - flatGround.centralPoint.x > 0 ? 0 : 1;
 
+    var centralPointNotChecked = false;
     while (!pathComplete) {
 
         var intersectedSegments = countIntersectedSegments(currentPoint, targetPoint);
-
-        if (intersectedSegments.length == 1) {
-            path.push(targetPoint);
-            pathComplete = true;
-        } else if (intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
-            var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
-            fliedTargetPoints.push(targetPoint);
-            path.push(shiftedTargetPoint);
-            currentPoint = shiftedTargetPoint;
-            setFlatCentralPointAsTarget(targetPoints);
+        printErr('intersectedSegments '  + JSON.stringify(intersectedSegments)  + JSON.stringify(fliedTargetPoints));
+        if (intersectedSegments.length == 1 || intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
             if (flatGround.contains(targetPoint)) {
                 pathComplete = true;
-                path.push(targetPoint);
+                path.push(flatGround.startLandingPoint);
+                path.push(flatGround.centralPoint);
+            } else {
+                var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
+                printErr('shiftedTargetPoint: ' + JSON.stringify(shiftedTargetPoint) + ' '  + JSON.stringify(currentPoint) + ' ' + JSON.stringify(targetPoint));
+                fliedTargetPoints.push(targetPoint);
+                path.push(shiftedTargetPoint);
+                centralPointNotChecked = true;
+                printErr('centralPointNotChecked = true');
+                currentPoint = shiftedTargetPoint;
             }
         } else {
-            if (!roundaboutPointIndex) {
-                roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments);
+
+            if (centralPointNotChecked) {
+                printErr('targetPoint new' + JSON.stringify(flatGround.startLandingPoint));
+                targetPoint = flatGround.centralPoint;
+                centralPointNotChecked = false;
+            } else {
+                if (!roundaboutPointIndex) {
+                    roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, intersectedSegments);
+                }
+                targetPoint = surfacePoints[roundaboutPointIndex];
+                printErr('surfacePoints: ' + JSON.stringify(surfacePoints) + ' index '  + roundaboutPointIndex);
+                roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
             }
-            targetPoint = surfacePoints[roundaboutPointIndex];
-            roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
         }
     }
-
-
-    var lastPoint = path[path.length-1];
-    path.splice(path.length-2, 0, {x:lastPoint.x, y:lastPoint.y+500});
-    printErr('path: ' + JSON.stringify(path));
 }
-printErr('surfacePoints: ' + JSON.stringify(surfacePoints));
 
 function Point(x, y)  {
-    self = this;
+    var self = this;
 
     this.x = x;
     this.y = y;
@@ -92,7 +93,7 @@ function vectorFromPoints(currentPoint, targetPoint) {
 }
 
 function Vector(x, y) {
-    self = this;
+    var self = this;
 
     this.x = x;
     this.y = y;
@@ -106,11 +107,11 @@ function Vector(x, y) {
     this.angle = this.toDegrees(Math.atan2(self.x, self.y));
 
     this.plus = function (that) {
-        return new Vector(this.x + that.x, this.y + that.y);
+        return new Vector(self.x + that.x, self.y + that.y);
     };
 
     this.minus = function (that) {
-        return new Vector(this.x - that.x, this.y - that.y);
+        return new Vector(self.x - that.x, self.y - that.y);
     };
 
     this.multiply = function (scalar) {
@@ -122,7 +123,7 @@ function Vector(x, y) {
     };
 
     this.inBounds = function (that) {
-        return Math.abs(self.x) <= Math.abs(that.x) && Math.abs(self.y) <= Math.abs(that.y);
+        return Math.abs(this.x) <= Math.abs(that.x) && Math.abs(this.y) <= Math.abs(that.y);
     };
 
     this.slowDown = function (that) {
@@ -143,7 +144,7 @@ var G = -3.711;
 var gravityVector = new Vector(0, G);
 var levelingVector = new Vector(0, -35);
 var extremeLandingVector = new Vector(20, -40).plus(gravityVector);
-var maxSpeedVector = new Vector(20, 20);
+var maxSpeedVector = new Vector(18, 18);
 
 // game loop
 while (true) {
@@ -156,22 +157,23 @@ while (true) {
     var rotate = parseInt(inputs[5]); // the rotation angle in degrees (-90 to 90).
     var power = parseInt(inputs[6]); // the thrust power (0 to 4).
 
-    if (!pathComplete) {
-        completePath(X, Y);
-    }
-
     var currentPoint = new Point(X, Y);
+
+    if (!pathComplete) {
+        completePath(currentPoint);
+    }
 
     var verticalVector = new Vector(0, vSpeed).plus(gravityVector);
     printErr('verticalVector ' + JSON.stringify(verticalVector));
     var horizontalVector = new Vector(hSpeed, 0);
     printErr('horizontalVector ' + JSON.stringify(horizontalVector));
     var currentVector = verticalVector.plus(horizontalVector);
-    printErr('currentVector ' + JSON.stringify(currentVector));
+    printErr('currentPoint ' + JSON.stringify(currentPoint));
     printErr('currentVector ' + JSON.stringify(verticalVector.plus(horizontalVector)));
 
     var deltaVector = getDeltaVector(currentPoint, currentVector, flatGround);
 
+    printErr('currentPoint ' + JSON.stringify(currentPoint));
     var controls = getNextControls(verticalVector, currentVector, deltaVector, isLanding(currentPoint, flatGround));
     printErr('controls ' + JSON.stringify(controls));
     print(-parseInt(controls.angle) + " " + controls.power);
@@ -193,13 +195,14 @@ function getDeltaVector(currentPoint, currentVector, flatGround) {
     } else {
         deltaVector = getNonLevelingDeltaVector(currentPoint, currentVector, getNextTarget(currentPoint));
 
-        printErr('currentVector' + JSON.stringify(currentVector));
+        printErr('deltaVector' + JSON.stringify(deltaVector));
         if (!currentVector.inBounds(maxSpeedVector)) {
             var slowDownVector = currentVector.slowDown(maxSpeedVector).minus(currentVector);
             deltaVector = slowDownVector.plus(deltaVector);
             printErr('deltaVector slowDownVector' + JSON.stringify(deltaVector));
         }
     }
+    printErr('deltaVector' + JSON.stringify(deltaVector));
     return deltaVector;
 }
 
@@ -209,7 +212,7 @@ function getNextTarget(currentPoint) {
     var hDistance = nextTarget.x - currentPoint.x;
     var vDistance = nextTarget.y - currentPoint.y;
     printErr('nextTarget: ' + JSON.stringify(nextTarget) + ';hDistance ' + hDistance + ';vDistance ' + vDistance);
-    if (Math.abs(hDistance) < 90 && Math.abs(vDistance) < 90) {
+    if (Math.abs(hDistance) < 120 && Math.abs(vDistance) < 120) {
         nextTarget = path[++flyTargetIndex];
         hDistance = nextTarget.x - currentPoint.x;
         vDistance = nextTarget.y - currentPoint.y;
@@ -221,8 +224,8 @@ function getNextTarget(currentPoint) {
 function getNonLevelingDeltaVector(currentPoint, currentVector, targetPoint) {
     var desiredVector = vectorFromPoints(currentPoint, targetPoint);
 
-    while (desiredVector.length > currentVector.length * 1.05){
-        desiredVector = desiredVector.multiply(0.95);
+    while (desiredVector.length > currentVector.length * 1.1){
+        desiredVector = desiredVector.multiply(0.9);
     }
     return desiredVector.minus(currentVector);
 }
@@ -278,9 +281,10 @@ function getSafeAngle(angle) {
 }
 
 function isLanding(currentPoint, flatGround) {
+    printErr('currentPoint isLanding ' + JSON.stringify(currentPoint));
     var near = flatGround.startLandingPoint.distanceTo(currentPoint) < 300;
     if (near) {
-        flatGround.nextTargetPoint(flatGround.centralPoint);
+        flatGround.nextTargetPoint = flatGround.centralPoint;
     }
     return near || flatGround.nextTargetPoint.equals(flatGround.centralPoint);
 }
@@ -292,151 +296,12 @@ function countIntersectedSegments(currentPoint, targetPoint) {
 
         if (intersects(currentPoint, targetPoint, segment.start, segment.end)) {
             intersectedSegments.push(segment);
-
-            //  console.log('intersects with: currentPoint ' + JSON.stringify(currentPoint) + '; flatGround.centralPoint: ' + JSON.stringify(flatGround.centralPoint)
-            //      + '; segment.start: ' + JSON.stringify(segment.start) + '; segment.end: ' + JSON.stringify(segment.end));
         }
     }
     return intersectedSegments;
 }
 
-function flyPath(x, y, hSpeed, vSpeed, rotate, power) {
-    hSpeed = hSpeed == 0 ? 1 : hSpeed;
-    vSpeed = vSpeed == 0 ? 1 : vSpeed;
-
-    var desiredSpeed = getDesiredSpeed(x, y, hSpeed, vSpeed);
-    printErr('desiredSpeed: ' + JSON.stringify(desiredSpeed));
-
-    if (hSpeed != desiredSpeed.h && Math.abs(vSpeed - desiredSpeed.v) < 1) {
-        power = 4;
-        if (Math.abs(hSpeed) < Math.abs(desiredSpeed.h)) { //speedup
-            rotate = desiredSpeed.h > 0 ? -22 : 22;
-        } else { //slowdown
-            rotate = desiredSpeed.h < 0 ? -22 : 22;
-        }
-    } else if (vSpeed != desiredSpeed.v && Math.abs(hSpeed - desiredSpeed.h) < 1) {
-        rotate = 0;
-        if (Math.abs(vSpeed) < Math.abs(desiredSpeed.v)) {
-            power = desiredSpeed.v > 0 ? 4 : 2;
-        } else {
-            power = desiredSpeed.v > 0 ? 2 : 4;
-        }
-    } else if (hSpeed != desiredSpeed.h && vSpeed != desiredSpeed.v) {
-        var hDiff = Math.abs((desiredSpeed.h - hSpeed)/hSpeed);
-        var vDiff = Math.abs((desiredSpeed.v - vSpeed)/vSpeed);
-        printErr('hDiff: ' + hDiff + ' ;vDiff: ' + vDiff);
-
-        var hvDiff = Math.abs((hDiff - vDiff)/vDiff) > 0.2;
-        var vhDiff = Math.abs((vDiff - hDiff)/hDiff) > 0.2;
-
-        var hPrior = hvDiff && !vhDiff;
-        var vPrior = vhDiff && !hvDiff;
-        printErr('hPrior: ' + hPrior + ' ;vPrior: ' + vPrior);
-
-        if (hSpeed < desiredSpeed.h) { // ----->
-            if (hPrior) {
-                rotate = -22;
-                power = 4;
-            }
-            else if (vSpeed < desiredSpeed.v) {
-                if (vPrior) {
-                    rotate = 0;
-                    power = 4;
-                } else {
-                    rotate = -14;
-                    power = 4;
-                }
-
-            } else {
-                rotate = -22;
-                power = 3;
-            }
-        } else if (hSpeed > desiredSpeed.h) { //<-----
-            if (hPrior) {
-                rotate = 0;
-                power = 2;
-            } else if (vSpeed < desiredSpeed.v) {
-                if (vPrior) {
-                    rotate = 0;
-                    power = 4;
-                } else {
-                    rotate = 14;
-                    power = 4;
-                }
-            } else {
-                rotate = 22;
-                power = 3;
-            }
-        }
-    }
-
-    print(rotate + ' ' + power);
-}
-
-function getDesiredSpeed(x, y, hSpeed, vSpeed) {
-    var desiredSpeed = {};
-    hSpeed = hSpeed == 0 ? 1 : hSpeed;
-    vSpeed = vSpeed == 0 ? 1 : vSpeed;
-
-    var nextTarget = path[flyTargetIndex];
-    var hDistance = nextTarget.x - x;
-    var vDistance = nextTarget.y - y;
-    printErr('nextTarget: ' + JSON.stringify(nextTarget) + ';hDistance ' + hDistance + ';vDistance ' + vDistance);
-    if (Math.abs(hDistance) < 90 && Math.abs(vDistance) < 90) {
-        nextTarget = path[++flyTargetIndex];
-        hDistance = nextTarget.x - x;
-        vDistance = nextTarget.y - y;
-    }
-
-    var hTime = hDistance / hSpeed;
-    printErr('hTime: ' + hTime);
-    if (hTime < 0) { //need to change H direction
-        desiredSpeed.h = bestHSpeed * (hSpeed > 0 ? -1 : 1);
-    } else if (hTime >90 && Math.abs(hSpeed * 2) < bestHSpeed) {
-        printErr('entered H')
-        desiredSpeed.h = (hSpeed == 0 ? 1 : hSpeed) * 2;
-    } else {
-        desiredSpeed.h = hSpeed;
-    }
-
-    var vTime = vDistance / vSpeed;
-    printErr('vTime: ' + vTime);
-    if (vTime < 0) { //need to change V direction
-        desiredSpeed.v = bestVSpeed * (vSpeed > 0 ? -1 : 1);
-    } else if (vTime > 20 && Math.abs(vSpeed * 2) < bestVSpeed) {
-        printErr('entered V')
-        desiredSpeed.v = vSpeed * 2;
-    } else {
-        desiredSpeed.v = vSpeed;
-    }
-    printErr('vTime > 50' + (vTime > 50 && Math.abs(vSpeed * 1.2) < bestVSpeed));
-    printErr('desired speed before ' + desiredSpeed.h + ' ' + desiredSpeed.v);
-
-    var avgTime;
-    if (vTime == hTime) {
-        avgTime = vTime;
-    } else {
-        printErr(hDistance+' '+desiredSpeed.h+' '+vDistance+' '+desiredSpeed.v);
-        avgTime = (hDistance/desiredSpeed.h + vDistance/desiredSpeed.v) / 2;
-
-        var avgHDesiredSpeed = hDistance / avgTime;
-        var avgVDesiredSpeed = vDistance / avgTime;
-
-        if (Math.abs(avgHDesiredSpeed) <= bestHSpeed) {
-            desiredSpeed.h = avgHDesiredSpeed
-        }
-
-        if (Math.abs(avgVDesiredSpeed) <= bestVSpeed) {
-            desiredSpeed.v = avgVDesiredSpeed
-        }
-
-    }
-
-    printErr('avgTime: ' + avgTime);
-    return desiredSpeed;
-}
-
-function findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments) {
+function findRoundaboutPointIndex(currentPoint, intersectedSegments) {
     var uniquePoints = [];
     intersectedSegments.forEach(function(value) {
         addUniquePoint(uniquePoints, value.start);
@@ -458,55 +323,56 @@ function findRoundaboutPointIndex(currentPoint, targetPoint, intersectedSegments
 }
 
 function shiftTargetPoint(currentPoint, targetPoint, changeMark) {
-    var shifterTargetPoint = {};
+    printErr('shiftTargetPoint ' + JSON.stringify(currentPoint) + ' ' + JSON.stringify(targetPoint));
+    var shiftedTargetPoint = {};
 
     if (!changeMark) {
         if (targetPoint.x - currentPoint.x > 0) {
             //right
-            shifterTargetPoint.x = targetPoint.x + 100;
+            shiftedTargetPoint.x = targetPoint.x + 100;
             if (targetPoint.y - currentPoint.y > 0) {
-                shifterTargetPoint.y = targetPoint.y + 100;
+                shiftedTargetPoint.y = targetPoint.y + 100;
                 changeMark = {rightTop: true};
                 //top
             } else {
-                shifterTargetPoint.y = targetPoint.y - 100;
+                shiftedTargetPoint.y = targetPoint.y - 100;
                 changeMark = {rightBottom: true};
             }
         } else {
             //left
-            shifterTargetPoint.x = targetPoint.x - 100;
+            shiftedTargetPoint.x = targetPoint.x - 100;
             if (targetPoint.y - currentPoint.y > 0) {
                 //top
-                shifterTargetPoint.y = targetPoint.y + 100;
+                shiftedTargetPoint.y = targetPoint.y + 100;
                 changeMark = {leftTop: true};
             } else {
-                shifterTargetPoint.y = targetPoint.y - 100;
+                shiftedTargetPoint.y = targetPoint.y - 100;
                 changeMark = {leftBottom: true};
             }
         }
     } else if (changeMark.rightBottom && !changeMark.rightTop || (changeMark.leftTop && changeMark.leftBottom)) {
         changeMark.rightTop = true;
-        shifterTargetPoint.x = targetPoint.x + 100;
-        shifterTargetPoint.y = targetPoint.y + 100;
+        shiftedTargetPoint.x = targetPoint.x + 100;
+        shiftedTargetPoint.y = targetPoint.y + 100;
     } else if (changeMark.leftBottom && !changeMark.leftTop || (changeMark.rightBottom && changeMark.rightTop)) {
         changeMark.leftTop = true;
-        shifterTargetPoint.x = targetPoint.x - 100;
-        shifterTargetPoint.y = targetPoint.y + 100;
+        shiftedTargetPoint.x = targetPoint.x - 100;
+        shiftedTargetPoint.y = targetPoint.y + 100;
     } else if (changeMark.leftTop && !changeMark.leftBottom || (changeMark.rightBottom && changeMark.rightTop)) {
         changeMark.leftBottom = true;
-        shifterTargetPoint.x = targetPoint.x - 100;
-        shifterTargetPoint.y = targetPoint.y - 100;
+        shiftedTargetPoint.x = targetPoint.x - 100;
+        shiftedTargetPoint.y = targetPoint.y - 100;
     } else if (changeMark.rightTop && !changeMark.rightBottom || (changeMark.leftTop && changeMark.leftBottom)) {
         changeMark.rightBottom = true;
-        shifterTargetPoint.x = targetPoint.x + 100;
-        shifterTargetPoint.y = targetPoint.y - 100;
+        shiftedTargetPoint.x = targetPoint.x + 100;
+        shiftedTargetPoint.y = targetPoint.y - 100;
     }
 
-    var intersectedSegments = countIntersectedSegments(currentPoint, shifterTargetPoint);
+    var intersectedSegments = countIntersectedSegments(currentPoint, shiftedTargetPoint);
     if (intersectedSegments.length > 0) {
         return shiftTargetPoint(currentPoint, targetPoint, changeMark);
     }
-    return shifterTargetPoint;
+    return shiftedTargetPoint;
 }
 
 function addUniquePoint(targetPoints, point) {
