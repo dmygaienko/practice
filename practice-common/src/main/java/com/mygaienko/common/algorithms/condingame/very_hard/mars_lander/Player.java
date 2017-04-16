@@ -19,7 +19,7 @@ class Player {
     private static Vector gravityVector = new Vector(0, G);
     private static Vector levelingVector = new Vector(0, -35);
     private static Vector extremeLandingVector = new Vector(20, -40).plus(gravityVector);
-    private static Vector maxSpeedVector = new Vector(30, 50);
+    private static Vector maxSpeedVector = new Vector(55, 50);
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
