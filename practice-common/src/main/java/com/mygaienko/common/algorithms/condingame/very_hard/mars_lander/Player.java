@@ -17,7 +17,7 @@ class Player {
 
     private static final double G = -3.711;
     private static Vector gravityVector = new Vector(0, G);
-    private static Vector landingVector = new Vector(0, -35);
+    private static Vector levelingVector = new Vector(0, -35);
     private static Vector extremeLandingVector = new Vector(20, -40).plus(gravityVector);
     private static Vector maxSpeedVector = new Vector(30, 50);
 
@@ -78,7 +78,7 @@ class Player {
     }
 
     private static Vector getLevelingVector(Vector currentVector) {
-        return landingVector.minus(currentVector);
+        return levelingVector.minus(currentVector);
     }
 
     private static Vector getNonLevelingDeltaVector(Point currentPoint, Vector currentVector, Point targetPoint) {
