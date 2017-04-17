@@ -139,7 +139,7 @@ var G = -3.711;
 var gravityVector = new Vector(0, G);
 var levelingVector = new Vector(0, -35);
 var extremeLandingVector = new Vector(20, -40).plus(gravityVector);
-var maxSpeedVector = new Vector(18, 18);
+var maxSpeedVector = new Vector(22, 22);
 
 
 // game loop
@@ -189,7 +189,7 @@ function getDeltaVector(currentPoint, currentVector, flatGround) {
     } else {
         deltaVector = getNonLevelingDeltaVector(currentPoint, currentVector, getNextTarget(currentPoint));
 
-        printErr('deltaVector' + JSON.stringify(deltaVector));
+        printErr('deltaVector' + JSON.stringify(deltaVector) + ' '  + JSON.stringify(currentPoint));
         if (!currentVector.inBounds(maxSpeedVector)) {
             var slowDownVector = currentVector.slowDown(maxSpeedVector).minus(currentVector);
             deltaVector = slowDownVector.plus(deltaVector);
@@ -218,8 +218,8 @@ function getNextTarget(currentPoint) {
 function getNonLevelingDeltaVector(currentPoint, currentVector, targetPoint) {
     var desiredVector = vectorFromPoints(currentPoint, targetPoint);
 
-    while (desiredVector.length > currentVector.length * 1.1){
-        desiredVector = desiredVector.multiply(0.9);
+    while (desiredVector.length > currentVector.length * 3){
+        desiredVector = desiredVector.multiply(0.33);
     }
     return desiredVector.minus(currentVector);
 }
