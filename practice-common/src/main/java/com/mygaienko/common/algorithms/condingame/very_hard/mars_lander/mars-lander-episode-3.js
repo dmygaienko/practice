@@ -26,7 +26,7 @@ var fliedTargetPoints = [];
 setFlatCentralPointAsTarget(targetPoints);
 var targetPoint = targetPoints.shift();
 
-var flyTargetIndex = 0;
+var flyTargetIndex = 2;
 
 var roundaboutPointIndex;
 var path = [];
@@ -39,7 +39,6 @@ function completePath(currentPoint) {
     while (!pathComplete) {
 
         var intersectedSegments = countIntersectedSegments(currentPoint, targetPoint);
-        printErr('intersectedSegments '  + JSON.stringify(intersectedSegments)  + JSON.stringify(fliedTargetPoints));
         if (intersectedSegments.length == 1 || intersectedSegments.length == 2 && fliedTargetPoints.indexOf(targetPoint) < 0) {
             if (flatGround.contains(targetPoint)) {
                 pathComplete = true;
@@ -47,17 +46,14 @@ function completePath(currentPoint) {
                 path.push(flatGround.centralPoint);
             } else {
                 var shiftedTargetPoint = shiftTargetPoint(currentPoint, targetPoint);
-                printErr('shiftedTargetPoint: ' + JSON.stringify(shiftedTargetPoint) + ' '  + JSON.stringify(currentPoint) + ' ' + JSON.stringify(targetPoint));
                 fliedTargetPoints.push(targetPoint);
                 path.push(shiftedTargetPoint);
                 centralPointNotChecked = true;
-                printErr('centralPointNotChecked = true');
                 currentPoint = shiftedTargetPoint;
             }
         } else {
 
             if (centralPointNotChecked) {
-                printErr('targetPoint new' + JSON.stringify(flatGround.startLandingPoint));
                 targetPoint = flatGround.centralPoint;
                 centralPointNotChecked = false;
             } else {
@@ -65,7 +61,6 @@ function completePath(currentPoint) {
                     roundaboutPointIndex = findRoundaboutPointIndex(currentPoint, intersectedSegments);
                 }
                 targetPoint = surfacePoints[roundaboutPointIndex];
-                printErr('surfacePoints: ' + JSON.stringify(surfacePoints) + ' index '  + roundaboutPointIndex);
                 roundaboutPointIndex = direction == 0 ? --roundaboutPointIndex : ++roundaboutPointIndex;
             }
         }
@@ -146,6 +141,7 @@ var levelingVector = new Vector(0, -35);
 var extremeLandingVector = new Vector(20, -40).plus(gravityVector);
 var maxSpeedVector = new Vector(18, 18);
 
+
 // game loop
 while (true) {
     var inputs = readline().split(' ');
@@ -163,13 +159,11 @@ while (true) {
         completePath(currentPoint);
     }
 
+    printErr('path ' + JSON.stringify(path));
     var verticalVector = new Vector(0, vSpeed).plus(gravityVector);
-    printErr('verticalVector ' + JSON.stringify(verticalVector));
     var horizontalVector = new Vector(hSpeed, 0);
-    printErr('horizontalVector ' + JSON.stringify(horizontalVector));
     var currentVector = verticalVector.plus(horizontalVector);
-    printErr('currentPoint ' + JSON.stringify(currentPoint));
-    printErr('currentVector ' + JSON.stringify(verticalVector.plus(horizontalVector)));
+    printErr('currentVector ' + JSON.stringify(currentVector));
 
     var deltaVector = getDeltaVector(currentPoint, currentVector, flatGround);
 
@@ -319,11 +313,13 @@ function findRoundaboutPointIndex(currentPoint, intersectedSegments) {
         return a.distance - b.distance;
     });
 
+    printErr('intersectedSegments ' + JSON.stringify(intersectedSegments));
+    printErr('distances ' + JSON.stringify(distances));
+
     return surfacePoints.indexOf(distances[0].point);
 }
 
 function shiftTargetPoint(currentPoint, targetPoint, changeMark) {
-    printErr('shiftTargetPoint ' + JSON.stringify(currentPoint) + ' ' + JSON.stringify(targetPoint));
     var shiftedTargetPoint = {};
 
     if (!changeMark) {
