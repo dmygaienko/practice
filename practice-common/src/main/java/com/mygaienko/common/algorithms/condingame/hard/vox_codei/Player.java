@@ -16,8 +16,8 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
-        HashSet<Node> survNodes = new HashSet<>();
-        List<List<Node>> grid = initGrid(in, survNodes);
+        HashSet<Node> survivedNodes = new HashSet<>();
+        List<List<Node>> grid = initGrid(in, survivedNodes);
         Map<Integer, Set<Node>> toExplode = new HashMap<>();
 
         // game loop
@@ -30,11 +30,11 @@ class Player {
 
             String result = "WAIT";
             BombLocationResult bombResult;
-            if (bombs > 0 && !survNodes.isEmpty()) {
-                bombResult = getMostProductiveBombLocation(grid, survNodes, bombs);
+            if (bombs > 0 && !survivedNodes.isEmpty()) {
+                bombResult = getMostProductiveBombLocation(grid, survivedNodes, bombs);
                 if (NodeType.EMPTY.equals(bombResult.location.type)) {
                     result = bombResult.location.width + " " + bombResult.location.height;
-                    mineNodes(survNodes, toExplode, bombResult.exploded, round + 3);
+                    mineNodes(survivedNodes, toExplode, bombResult.exploded, round + 3);
                 }
             }
             System.out.println(result);
@@ -77,37 +77,36 @@ class Player {
         return result;
     }
 
-    private static List<BombLocationResult> defineStepsToExplodeAll(List<BombLocationResult> steps, HashSet<Node> survNodes, int bombs) {
-        List<BombLocationResult> successSteps = getNextStepToExplode(0, steps, new ArrayList<>(), survNodes, new HashSet<>(), bombs);
-        return successSteps;
+    private static List<BombLocationResult> defineStepsToExplodeAll(List<BombLocationResult> steps, HashSet<Node> survivedNodes, int bombs) {
+        return getNextStepToExplode(0, steps, new ArrayList<>(), survivedNodes, bombs);
     }
 
     private static List<BombLocationResult> getNextStepToExplode(int i, List<BombLocationResult> steps, ArrayList<BombLocationResult> currentSteps,
-                                                                 HashSet<Node> survNodes, HashSet<Object> exploded, int bombs) {
-        List<BombLocationResult> bombLocationResults = countExplosions(i, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survNodes.clone(), (HashSet<Object>) exploded.clone(), bombs);
+                                                                 HashSet<Node> survivedNodes, int bombs) {
+        List<BombLocationResult> bombLocationResults = countExplosions(i, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survivedNodes.clone(), bombs);
         if (bombLocationResults != null) {
             return bombLocationResults;
         } else if (i + 1 < steps.size() && steps.get(i).result() > 0) {
-            return getNextStepToExplode(i + 1, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survNodes.clone(), (HashSet<Object>) exploded.clone(), bombs);
+            return getNextStepToExplode(i + 1, steps, (ArrayList<BombLocationResult>) currentSteps.clone(), (HashSet<Node>) survivedNodes.clone(), bombs);
         } else {
             return null;
         }
     }
 
     private static List<BombLocationResult> countExplosions(int i, List<BombLocationResult> steps,
-                                                            ArrayList<BombLocationResult> currentSteps, HashSet<Node> survNodes,
-                                                            HashSet<Object> exploded, int bombs) {
+                                                            ArrayList<BombLocationResult> currentSteps, HashSet<Node> survivedNodes,
+                                                            int bombs) {
         BombLocationResult step = steps.get(i);
 
         currentSteps.add(step);
-        survNodes.removeAll(step.exploded);
+        survivedNodes.removeAll(step.exploded);
 
-        if (survNodes.isEmpty()) {
+        if (survivedNodes.isEmpty()) {
             return currentSteps;
         } else if (bombs == 1) {
             return null;
         } else {
-            return getNextStepToExplode(i + 1, steps, currentSteps, survNodes, exploded, bombs - 1);
+            return getNextStepToExplode(i + 1, steps, currentSteps, survivedNodes, bombs - 1);
         }
     }
 
@@ -157,7 +156,7 @@ class Player {
         Node node = grid.get(height).get(width);
         if (NodeType.PASSIVE.equals(node.type)){
             return true;
-        } else if (NodeType.SURV.equals(node.type)) {
+        } else if (NodeType.SURVIVED.equals(node.type)) {
             result.add(node);
         }
         return false;
@@ -186,7 +185,7 @@ class Player {
         return IntStream.range(0, width)
                                 .mapToObj(w -> {
                                     Node node = new Node(splitted[w], w, h);
-                                    if (NodeType.SURV.equals(node.type)) {
+                                    if (NodeType.SURVIVED.equals(node.type)) {
                                         survNodes.add(node);
                                     }
                                     return node;
@@ -235,14 +234,14 @@ class Player {
     }
 
     enum  NodeType {
-        EMPTY, SURV, PASSIVE, MINED;
+        EMPTY, SURVIVED, PASSIVE, MINED;
 
         static NodeType getNode(String s) {
             NodeType result = null;
             switch (s) {
                 case "." : result = EMPTY; break;
                 case "#" : result = PASSIVE; break;
-                case "@" : result = SURV; break;
+                case "@" : result = SURVIVED; break;
             }
             return result;
         }
