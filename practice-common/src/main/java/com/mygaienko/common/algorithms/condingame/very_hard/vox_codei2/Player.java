@@ -4,6 +4,9 @@ import java.util.*;
 import java.io.*;
 import java.math.*;
 
+import static com.mygaienko.common.algorithms.condingame.very_hard.vox_codei2.Player.StaticNodeType.EMPTY;
+import static com.mygaienko.common.algorithms.condingame.very_hard.vox_codei2.Player.StaticNodeType.PASSIVE;
+
 /**
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
@@ -35,4 +38,56 @@ class Player {
             System.out.println("3 0");
         }
     }
+
+    static class Node {
+
+        private final int width;
+        private final int height;
+
+        public Node(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+    }
+
+    static class NodeFactory {
+
+        static Node getNode(String s, int width, int height) {
+            Node node = null;
+            switch (s) {
+                case "." : node = new StaticNode(EMPTY, width, height); break;
+                case "#" : node = new StaticNode(PASSIVE, width, height); break;
+                case "@" : node = new MovableNode(width, height); break;
+            }
+            return node;
+        }
+
+    }
+
+    static class StaticNode extends Node {
+
+        private final StaticNodeType type;
+
+        public StaticNode(StaticNodeType type, int width, int height) {
+            super(width, height);
+            this.type = type;
+        }
+
+    }
+
+    enum StaticNodeType {
+        EMPTY, PASSIVE, MINED;
+    }
+
+    //SURVEILLANCE
+    static class MovableNode extends Node {
+
+        public MovableNode(int width, int height) {
+            super(width, height);
+        }
+
+
+    }
+
 }
