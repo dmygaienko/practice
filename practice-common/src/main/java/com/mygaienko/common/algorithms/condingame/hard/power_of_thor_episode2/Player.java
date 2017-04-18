@@ -13,10 +13,7 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
-        int TX = in.nextInt();
-        int TY = in.nextInt();
-
-        Position thorPosition = new Position(TX, TY);
+        Position thorPosition = new Position(in.nextInt(), in.nextInt());
         // game loop
         while (true) {
             int strikes = in.nextInt(); // the remaining number of hammer strikes.
@@ -27,38 +24,29 @@ class Player {
             giants.add(thorPosition);
             System.err.println("thorPosition: " + thorPosition);
 
-            String action = move(thorPosition, giantsMap, giants);
+            thorPosition = move(thorPosition, giantsMap, giants);
 
-            // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
-            System.out.println(action);
+            System.out.println(thorPosition.action.name());
         }
     }
 
     public static Map<Integer, Map<Integer, Position>> initGiantsMap(List<Position> giants) {
-        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos)));
+        return giants.stream().collect(Collectors.groupingBy(pos -> pos.x, toMap(pos -> pos.y, pos -> pos, (a, b) -> a)));
     }
 
-    private static String move(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
-
-        Position newPosition = new Position(thorPosition);
+    private static Position move(Position thorPosition, Map<Integer, Map<Integer, Position>> giantsMap, List<Position> giants) {
 
         Position nextTarget = chooseNextTargetPosition(giants);
 
-        takeDirection(nextTarget, newPosition);
+        Position newPosition = takeDirection(nextTarget, thorPosition);
 
-        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 3);
-
-        if (waiting(newPosition)) {
-            setNewNearestDirection(thorPosition, newPosition);
-            newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 1);
-        }
+        newPosition = getSafeDirection(thorPosition, newPosition, giantsMap, 1);
 
         if (waitingButGiantNear(newPosition, giantsMap) || canKillAllGiants(thorPosition, giants)) {
-            newPosition.direction = "STRIKE";
+            newPosition = thorPosition.applyAction(NonMovingAction.STRIKE);
         }
 
-        thorPosition.setPosition(newPosition);
-        return newPosition.direction;
+        return newPosition;
     }
 
     private static Position chooseNextTargetPosition(List<Position> giants) {
@@ -75,7 +63,7 @@ class Player {
     }
 
     private static boolean waiting(Position pos) {
-        return "WAIT".equals(pos.direction);
+        return NonMovingAction.WAIT.equals(pos.action);
     }
 
     private static Position existMostDistantGiant(Position centroid, List<Position> giants) {
@@ -118,106 +106,32 @@ class Player {
     private static Position getSafeDirection(Position thorPosition, Position newPosition,
                                              Map<Integer, Map<Integer, Position>> giantsMap, int radius) {
 
-        for (int i = 0; i < 4; i ++) {
-            Borders borders = countBorders(thorPosition, newPosition, radius);
+        for (int i = 0; i < 8; i++) {
+            Borders borders = newPosition.action.countBorders(thorPosition, newPosition, radius);
 
             int giants = countGiants(borders, giantsMap);
 
             if (giants > 0) {
-                newPosition.setPosition(thorPosition);
-                setNewNearestDirection(thorPosition, newPosition);
+                newPosition = setNewNearestDirection(thorPosition, newPosition.action);
             } else {
                 return newPosition;
             }
         }
-        newPosition.direction = "WAIT";
-        newPosition.setPosition(thorPosition);
-        return newPosition;
+        return thorPosition.applyAction(NonMovingAction.WAIT);
     }
 
-    private static void setNewNearestDirection(Position thorPosition, Position newPosition) {
-        String prevDirection = newPosition.direction;
+    private static Position setNewNearestDirection(Position currentPosition, Action prevAction) {
+        Action[] values = MovingAction.values();
 
-        String direction;
-        if (prevDirection.contains("W")) {
-            direction = "N";
-            newPosition.y = thorPosition.y - 1;
-        } else if (prevDirection.contains("N")) {
-            direction = "E";
-            newPosition.x = thorPosition.x + 1;
-        } else if (prevDirection.contains("E")) {
-            direction = "S";
-            newPosition.y = thorPosition.y + 1;
+        int nextActionOrdinal;
+        if (prevAction instanceof MovingAction) {
+            nextActionOrdinal = (((MovingAction) prevAction).ordinal() + 1) % values.length;
         } else {
-            direction = "W";
-            newPosition.x = thorPosition.x - 1;
+            nextActionOrdinal = 0;
         }
 
-        newPosition.direction = direction;
-    }
-
-    private static Borders countBorders(Position prevPosition, Position newPosition, int radius) {
-        String direction = newPosition.direction;
-        Borders borders = new Borders();
-        switch (direction) {
-            case "N":
-                borders.leftX = newPosition.x - radius;
-                borders.rightX = newPosition.x + radius;
-
-                borders.upY = newPosition.y - radius;
-                borders.downY = prevPosition.y;
-                break;
-            case "NE":
-                borders.leftX = prevPosition.x;
-                borders.rightX = newPosition.x + radius;
-
-                borders.upY = newPosition.y - radius;
-                borders.downY = prevPosition.y;
-                break;
-            case "E":
-                borders.leftX = prevPosition.x;
-                borders.rightX = newPosition.x + radius;
-
-                borders.upY = newPosition.y - radius;
-                borders.downY = newPosition.y + radius;
-                break;
-            case "SE":
-                borders.leftX = prevPosition.x;
-                borders.rightX = newPosition.x + radius;
-
-                borders.upY = prevPosition.y;
-                borders.downY = newPosition.y + radius;
-                break;
-            case "S":
-                borders.leftX = newPosition.x - radius;
-                borders.rightX = newPosition.x + radius;
-
-                borders.upY = prevPosition.y;
-                borders.downY = newPosition.y + radius;
-                break;
-            case "SW":
-                borders.leftX = newPosition.x - radius;
-                borders.rightX = prevPosition.x;
-
-                borders.upY = prevPosition.y;
-                borders.downY = newPosition.y + radius;
-                break;
-            case "W":  //W
-                borders.leftX = newPosition.x - radius;
-                borders.rightX = prevPosition.x;
-
-                borders.upY = newPosition.y - radius;
-                borders.downY = newPosition.y + radius;
-                break;
-            case "NW":  //W
-                borders.leftX = newPosition.x - radius;
-                borders.rightX = prevPosition.x;
-
-                borders.upY = newPosition.y - radius;
-                borders.downY = prevPosition.y;
-                break;
-        }
-        return borders;
+        Action nextAction = values[nextActionOrdinal];
+        return currentPosition.applyAction(nextAction);
     }
 
     private static int countGiants(Borders b, Map<Integer, Map<Integer, Position>> giantsMap) {
@@ -230,35 +144,178 @@ class Player {
             }
         }
         return result;
-
     }
 
-    private static void takeDirection(Position nextTarget, Position newPosition) {
-        int yDiff = nextTarget.y - newPosition.y;
-        int xDiff = nextTarget.x - newPosition.x;
+    private static Position takeDirection(Position nextTarget, Position currentPosition) {
+        int yDiff = nextTarget.y - currentPosition.y;
+        int xDiff = nextTarget.x - currentPosition.x;
 
-        String result = "";
+        String action = "";
         if (yDiff > 0) {
-            result += "S";
-            newPosition.y++;
+            action += "S";
         } else if (yDiff < 0) {
-            result += "N";
-            newPosition.y--;
+            action += "N";
         }
 
         if (xDiff > 0) {
-            result += "E";
-            newPosition.x++;
+            action += "E";
         } else if (xDiff < 0) {
-            result += "W";
-            newPosition.x--;
+            action += "W";
         }
 
+
+        Action nextAction;
         if (yDiff == 0 && xDiff == 0) {
-            result = "WAIT";
+            nextAction = NonMovingAction.WAIT;
+        } else {
+            nextAction = MovingAction.valueOf(action);
         }
-        newPosition.direction = result;
+
+        return currentPosition.applyAction(nextAction);
     }
+
+    private interface Action {
+        int getX();
+        int getY();
+        String name();
+        Borders countBorders(Position thorPosition, Position newPosition, int radius);
+    }
+
+    private enum NonMovingAction implements Action {
+        WAIT,
+        STRIKE;
+
+        private final int x = 0;
+        private final int y = 0;
+
+        @Override
+        public int getX() {
+            return x;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+
+        @Override
+        public Borders countBorders(Position thorPosition, Position newPosition, int radius) {
+            return new Borders(newPosition.x - 1, newPosition.x + 1, newPosition.y - 1, newPosition.y + 1);
+        }
+
+    }
+
+    private enum MovingAction implements Action {
+
+        N(0, -1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                return borders;
+            }
+        },
+        NE(1, -1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                return borders;
+            }
+        },
+        E(1, 0) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
+                borders.upY = newPosition.y - radius;
+                borders.downY = newPosition.y + radius;
+                return borders;
+            }
+        },
+        SE(1, 1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = prevPosition.x;
+                borders.rightX = newPosition.x + radius;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                return borders;
+            }
+        },
+
+        S(0, 1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = newPosition.x + radius;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                return borders;
+            }
+        },
+        SW(-1, 1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
+                borders.upY = prevPosition.y;
+                borders.downY = newPosition.y + radius;
+                return borders;
+            }
+        },
+        W(-1, 0) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
+                borders.upY = newPosition.y - radius;
+                borders.downY = newPosition.y + radius;
+                return borders;
+            }
+        },
+        NW(-1, -1) {
+            @Override
+            public Borders countBorders(Position prevPosition, Position newPosition, int radius) {
+                Borders borders = new Borders();
+                borders.leftX = newPosition.x - radius;
+                borders.rightX = prevPosition.x;
+                borders.upY = newPosition.y - radius;
+                borders.downY = prevPosition.y;
+                return borders;
+            }
+        };
+
+        private final int x;
+        private final int y;
+
+        MovingAction(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public int getX() {
+            return x;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+    }
+
 
     private static boolean canKillAllGiants(Position thorPosition, List<Position> giantsMap) {
         for (Position giantPosition : giantsMap) {
@@ -272,8 +329,8 @@ class Player {
     private static boolean canKillGiant(Position giantPosition, Position thorPosition) {
         int xDiff = Math.abs(thorPosition.x - giantPosition.x);
         int yDiff = Math.abs(thorPosition.y - giantPosition.y);
-        int killDistance = 6;
-        return xDiff < killDistance && yDiff < killDistance;
+        int killDistance = 5;
+        return xDiff <= killDistance && yDiff <= killDistance;
     }
 
     private static boolean giantExists(Position position, Map<Integer, Map<Integer, Position>> giantsMap) {
@@ -291,6 +348,7 @@ class Player {
         } else {
             centroid = countCentroidBetweenTwoPoints(giants);
         }
+        System.err.println("centroid " + centroid);
         return centroid;
     }
 
@@ -382,7 +440,7 @@ class Player {
     public static class Position {
         private int x;
         private int y;
-        public String direction;
+        public Action action;
 
         public Position(int x, int y) {
             this.x = x;
@@ -394,6 +452,9 @@ class Player {
             this.y = position.y;
         }
 
+        public Position() {
+        }
+
         @Override
         public String toString() {
             return "Position{" +
@@ -402,9 +463,12 @@ class Player {
                     '}';
         }
 
-        public void setPosition(Position newPosition) {
-            x = newPosition.x;
-            y = newPosition.y;
+        public Position applyAction(Action action) {
+            Position position = new Position();
+            position.x = this.x + action.getX();
+            position.y = this.y + action.getY();
+            position.action = action;
+            return position;
         }
     }
 

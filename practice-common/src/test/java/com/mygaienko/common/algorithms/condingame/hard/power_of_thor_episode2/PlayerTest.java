@@ -13,9 +13,25 @@ import java.util.Map;
 public class PlayerTest {
     @Test
     public void test5() throws Exception {
-        String inputs = getInput5();
+        String inputs = getInput7();
         System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
         Player.main(new String[]{});
+    }
+
+    private String getInput7() {
+        return  "24 4\n" +
+                "1\n 10\n" +
+
+                "20 7\n" +
+                "17 10\n" +
+                "15 3\n" +
+                "25 5\n" +
+                "18 7\n" +
+                "24 6\n" +
+                "24 7\n" +
+                "25 6\n" +
+                "24 5\n" +
+                "22 8";
     }
 
     private String getInput51() {
@@ -105,6 +121,7 @@ public class PlayerTest {
     @Test
     public void main() throws Exception {
         Map<Integer, Map<Integer, Player.Position>> integerMapMap = Player.initGiantsMap(Arrays.asList(
+                new Player.Position(25, 9),
                 new Player.Position(25, 9),
                 new Player.Position(25, 10),
                 new Player.Position(25, 11),
