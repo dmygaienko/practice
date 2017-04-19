@@ -1,11 +1,6 @@
 package com.mygaienko.common.algorithms.condingame.very_hard.vox_codei2;
 
-import java.util.*;
-import java.io.*;
-import java.math.*;
-
-import static com.mygaienko.common.algorithms.condingame.very_hard.vox_codei2.Player.StaticNodeType.EMPTY;
-import static com.mygaienko.common.algorithms.condingame.very_hard.vox_codei2.Player.StaticNodeType.PASSIVE;
+import java.util.Scanner;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -56,37 +51,41 @@ class Player {
         static Node getNode(String s, int width, int height) {
             Node node = null;
             switch (s) {
-                case "." : node = new StaticNode(EMPTY, width, height); break;
-                case "#" : node = new StaticNode(PASSIVE, width, height); break;
-                case "@" : node = new MovableNode(width, height); break;
+                case "." : node = new EmptyNode(width, height); break;
+                case "#" : node = new PassiveNode(width, height); break;
+                case "@" : node = new EmptyNode(width, height); registerSupervisor((EmptyNode) node); break;
             }
             return node;
         }
 
-    }
-
-    static class StaticNode extends Node {
-
-        private final StaticNodeType type;
-
-        public StaticNode(StaticNodeType type, int width, int height) {
-            super(width, height);
-            this.type = type;
+        private static void registerSupervisor(EmptyNode node) {
+            new Supervisor(node);
         }
-
     }
 
-    enum StaticNodeType {
-        EMPTY, PASSIVE, MINED;
-    }
+    static class EmptyNode extends Node {
+        
+        private boolean mined = false;
 
-    //SURVEILLANCE
-    static class MovableNode extends Node {
-
-        public MovableNode(int width, int height) {
+        public EmptyNode(int width, int height) {
             super(width, height);
         }
+    }
 
+    static class PassiveNode extends Node {
+
+        public PassiveNode(int width, int height) {
+            super(width, height);
+        }
+    }
+
+    static class Supervisor {
+        
+        private EmptyNode node;
+
+        public Supervisor(EmptyNode node) {
+            this.node = node;
+        }
 
     }
 
