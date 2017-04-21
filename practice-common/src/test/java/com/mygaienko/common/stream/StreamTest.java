@@ -394,5 +394,28 @@ public class StreamTest {
         }
     }
 
+    @Test
+    public void testZip1() {
+        List<String> chars = Arrays.asList("A", "B", "C");
+        List<Integer> ints = Arrays.asList(1, 2, 3);
+
+        List<String> zipped = StreamUtil
+                .zip(chars.stream(), ints.stream(), (a, b) -> a + " " + b)
+                .collect(toList());
+
+        System.out.println(zipped);
+    }
+
+    @Test
+    public void testZip2() {
+        List<String> chars = Arrays.asList("A", "B", "C", "D");
+        List<Integer> ints = Arrays.asList(1, 2, 3);
+
+        List<String> zipped = StreamUtil
+                .zip(chars.stream(), ints.stream(), (a, b) -> a + " " + b)
+                .collect(toList());
+
+        System.out.println(zipped);
+    }
 
 }
