@@ -418,4 +418,70 @@ public class StreamTest {
         System.out.println(zipped);
     }
 
+    @Test
+    public void test111() {
+
+        Map<Key, List<String>> m = new HashMap<Key, List<String>>() {{
+            put(new Key("u1"), Arrays.asList("u1a1", "u1a2"));
+            put(new Key("u2"), Arrays.asList("u2a1", "u2a2"));
+            put(new Key("u1"), Arrays.asList("u1a3", "u1a4"));
+        }};
+
+       /* Map<String, List<String>> collect = m.entrySet().stream()
+                .collect(
+                        groupingBy(
+                                entry -> entry.getKey().getUserName(),
+                                Collectors.mapping(
+                                        Map.Entry::getValue,
+                                        Collectors.reducing(
+                                                new ArrayList<String>(),
+                                                (a, b) -> {
+                                                    ArrayList<String> strings = new ArrayList<>();
+                                                    strings.addAll(a);
+                                                    strings.addAll(b);
+                                                    return strings;
+                                                })
+                                )
+                        )
+                );*/
+
+        Map<String, List<String>> collect = m.entrySet().stream()
+                .collect(
+                        groupingBy(
+                                entry -> entry.getKey().getUserName(),
+                                Collectors.reducing(
+                                        new ArrayList<String>(),
+                                        Map.Entry::getValue,
+                                        (a, b) -> {
+                                            ArrayList<String> strings = new ArrayList<>();
+                                            strings.addAll(a);
+                                            strings.addAll(b);
+                                            return strings;
+                                        })
+                        )
+                );
+
+        System.out.println(collect);
+    }
+
+    static class Key {
+        private String userName;
+
+        public Key(String userName) {
+            this.userName = userName;
+        }
+
+        String getUserName() {
+            return userName;
+        }
+
+        @Override
+        public String toString() {
+            return "Key{" +
+                    "userName='" + userName + '\'' +
+                    '}';
+        }
+    }
+
+
 }
