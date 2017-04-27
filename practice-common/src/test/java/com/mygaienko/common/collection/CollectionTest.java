@@ -168,19 +168,19 @@ public class CollectionTest {
 
     @Test
     public void multiplyLists() throws Exception {
-        List<List<String>> pathes1 = new ArrayList<>();
-        pathes1.add(getArrayList(1, 3));
-        pathes1.add(getArrayList(4, 6));
+        List<List<String>> pathways1 = new ArrayList<>();
+        pathways1.add(getArrayList(1, 3));
+        pathways1.add(getArrayList(4, 6));
 
-        List<List<String>> pathes2 = new ArrayList<>();
-        pathes2.add(getArrayList(7, 9));
-        pathes2.add(getArrayList(10, 12));
-        pathes2.add(getArrayList(13, 15));
+        List<List<String>> pathways2 = new ArrayList<>();
+        pathways2.add(getArrayList(7, 9));
+        pathways2.add(getArrayList(10, 12));
+        pathways2.add(getArrayList(13, 15));
 
         List<List<String>> multipliedResult =
-                pathes1.stream()
+                pathways1.stream()
                         .flatMap(path1 ->
-                                pathes2.stream()
+                                pathways2.stream()
                                         .map(path2 -> {
                                             List<String> newPath = new ArrayList<>();
                                             newPath.addAll(path1);
