@@ -167,6 +167,39 @@ public class CollectionTest {
     }
 
     @Test
+    public void findFirst() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 5);
+
+        Integer firstMinimal = numbers.stream()
+                .peek(System.out::println)
+                .filter(number -> number > 3)
+                .findFirst()
+                .get();
+
+        System.out.println(firstMinimal);
+    }
+
+    @Test
+    public void limit() throws Exception {
+        List<Integer> collect = getArrayListOfInts(1, 10).stream()
+                .peek(System.out::println)
+                .limit(5)
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void skip() throws Exception {
+        List<Integer> collect = getArrayListOfInts(1, 10).stream()
+                .peek(System.out::println)
+                .skip(5)
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
     public void multiplyLists() throws Exception {
         List<List<String>> pathways1 = new ArrayList<>();
         pathways1.add(getArrayList(1, 3));
