@@ -168,24 +168,24 @@ public class CollectionTest {
 
     @Test
     public void multiplyLists() throws Exception {
-        List<List<String>> pathesThroughI1 = new ArrayList<>();
-        pathesThroughI1.add(getArrayList(1, 3));
-        pathesThroughI1.add(getArrayList(4, 6));
+        List<List<String>> pathes1 = new ArrayList<>();
+        pathes1.add(getArrayList(1, 3));
+        pathes1.add(getArrayList(4, 6));
 
-        List<List<String>> pathesThroughI2 = new ArrayList<>();
-        pathesThroughI2.add(getArrayList(7, 9));
-        pathesThroughI2.add(getArrayList(10, 12));
-        pathesThroughI2.add(getArrayList(13, 15));
+        List<List<String>> pathes2 = new ArrayList<>();
+        pathes2.add(getArrayList(7, 9));
+        pathes2.add(getArrayList(10, 12));
+        pathes2.add(getArrayList(13, 15));
 
         List<List<String>> multipliedResult =
-                pathesThroughI1.stream()
-                        .flatMap(path ->
-                                pathesThroughI2.stream()
-                                        .map(pathI2 -> {
+                pathes1.stream()
+                        .flatMap(path1 ->
+                                pathes2.stream()
+                                        .map(path2 -> {
                                             List<String> newPath = new ArrayList<>();
+                                            newPath.addAll(path1);
                                             newPath.add("333");
-                                            newPath.addAll(path);
-                                            newPath.addAll(pathI2);
+                                            newPath.addAll(path2);
                                             return newPath;
                                         })
                         ).collect(toList());
