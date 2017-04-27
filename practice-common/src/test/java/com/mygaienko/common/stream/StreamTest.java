@@ -419,13 +419,9 @@ public class StreamTest {
     }
 
     @Test
-    public void test111() {
+    public void testGroupingByAndReducing() {
 
-        Map<Key, List<String>> m = new HashMap<Key, List<String>>() {{
-            put(new Key("u1"), Arrays.asList("u1a1", "u1a2"));
-            put(new Key("u2"), Arrays.asList("u2a1", "u2a2"));
-            put(new Key("u1"), Arrays.asList("u1a3", "u1a4"));
-        }};
+        Map<Key, List<String>> m = getKeyListMap();
 
        /* Map<String, List<String>> collect = m.entrySet().stream()
                 .collect(
@@ -462,6 +458,47 @@ public class StreamTest {
                 );
 
         System.out.println(collect);
+    }
+
+    @Test
+    public void testForEachAndCompute() {
+        Map<Key, List<String>> m = getKeyListMap();
+
+        Map<String, List<String>> collect = new HashMap<>();
+
+        m.forEach((key, countries) -> {
+            String userName = key.getUserName();
+            collect.computeIfPresent(userName, (username, mergedCountries) -> {
+                mergedCountries.addAll(countries);
+                return mergedCountries;
+            });
+            collect.computeIfAbsent(userName, username -> new ArrayList<>(countries));
+        });
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void testForEachAndMerge() {
+        Map<Key, List<String>> m = getKeyListMap();
+
+        Map<String, List<String>> collect = new HashMap<>();
+
+        m.forEach((key, value) ->
+                collect.merge(key.getUserName(), value, (result, next) -> {
+                    result.addAll(next);
+                    return result;
+                }));
+
+        System.out.println(collect);
+    }
+
+    private Map<Key, List<String>> getKeyListMap() {
+        return new HashMap<Key, List<String>>() {{
+                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a1", "u1a2")));
+                put(new Key("u2"), new ArrayList<>(Arrays.asList("u2a1", "u2a2")));
+                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a3", "u1a4")));
+            }};
     }
 
     static class Key {
