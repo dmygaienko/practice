@@ -517,6 +517,17 @@ public class StreamTest {
     }
 
     @Test
+    public void anyMatch() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 10);
+
+        Boolean foundMatch = numbers.stream()
+                .map(number -> number * 10)
+                .anyMatch(number -> number > 50);
+
+        System.out.println(foundMatch);
+    }
+
+    @Test
     public void limit() throws Exception {
         List<Integer> collect = getArrayListOfInts(1, 10).stream()
                 .peek(System.out::println)
