@@ -298,6 +298,14 @@ public class StreamTest {
     }
 
     @Test
+    public void testPartitioningBy() {
+        Map<Boolean, List<Integer>> collect = getArrayListOfInts(0, 10).stream()
+                .collect(partitioningBy(number -> number < 5, toList()));
+
+        System.out.println(collect);
+    }
+
+    @Test
     public void testCollectGroupingByAndMapping() {
         Map<Integer, List<String>> nameOfPeopleByAge = createPersons().stream()
                 .collect(groupingBy(Person::getAge, mapping(Person::getName, toList())));
