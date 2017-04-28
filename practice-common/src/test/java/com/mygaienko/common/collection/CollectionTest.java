@@ -115,6 +115,24 @@ public class CollectionTest {
     }
 
     @Test
+    public void subLists(){
+
+        List<String> l = new ArrayList<>();
+        l.add("1");
+        l.add("2");
+        l.add("3");
+        l.add("4");
+
+        List<String> sl = l.subList(1, 3);
+        sl.add("FF");
+        sl.set(0, "");
+
+        System.out.println("subList " + sl);
+        System.out.println("original " + l);
+    }
+
+
+    @Test
     public void testGetHashMapAndCompute() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.compute("6", (key, value) -> value == null ? "default" : value + value);
