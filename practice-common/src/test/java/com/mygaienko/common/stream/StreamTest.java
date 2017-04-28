@@ -558,16 +558,14 @@ public class StreamTest {
         pathways2.add(getArrayList(10, 12));
         pathways2.add(getArrayList(13, 15));
 
-        List<List<String>> multipliedResult =
-                pathways1.stream()
-                        .flatMap(path1 ->
-                                pathways2.stream()
-                                        .map(path2 ->
-                                                Stream.concat(path1.stream(), path2.stream()).collect(Collectors.toList())
-                                        )
-                        ).collect(toList());
 
-        System.out.println(multipliedResult);
+        List<List<String>> collect = pathways1.stream()
+                .flatMap(path1 ->
+                        pathways2.stream()
+                                .map(path2 -> Stream.concat(path1.stream(), path2.stream()).collect(toList()))
+                ).collect(toList());
+
+        System.out.println(collect);
     }
 
     private Map<Key, List<String>> getKeyListMap() {
