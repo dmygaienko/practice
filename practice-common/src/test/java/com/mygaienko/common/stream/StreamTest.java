@@ -562,13 +562,9 @@ public class StreamTest {
                 pathways1.stream()
                         .flatMap(path1 ->
                                 pathways2.stream()
-                                        .map(path2 -> {
-                                            List<String> newPath = new ArrayList<>();
-                                            newPath.addAll(path1);
-                                            newPath.add("333");
-                                            newPath.addAll(path2);
-                                            return newPath;
-                                        })
+                                        .map(path2 ->
+                                                Stream.concat(path1.stream(), path2.stream()).collect(Collectors.toList())
+                                        )
                         ).collect(toList());
 
         System.out.println(multipliedResult);
