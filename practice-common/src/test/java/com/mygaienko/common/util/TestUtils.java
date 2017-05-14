@@ -73,4 +73,11 @@ public class TestUtils {
                 .map(String::valueOf)
                 .collect(toCollection(ArrayList::new));
     }
+
+    public static ArrayList<Integer> getArrayListOfInts(int i, int i1) {
+        return IntStream
+                .range(i, ++i1)
+                .boxed()
+                .collect(toCollection(ArrayList::new));
+    }
 }

@@ -115,6 +115,24 @@ public class CollectionTest {
     }
 
     @Test
+    public void subLists(){
+
+        List<String> l = new ArrayList<>();
+        l.add("1");
+        l.add("2");
+        l.add("3");
+        l.add("4");
+
+        List<String> sl = l.subList(1, 3);
+        sl.add("FF");
+        sl.set(0, "");
+
+        System.out.println("subList " + sl);
+        System.out.println("original " + l);
+    }
+
+
+    @Test
     public void testGetHashMapAndCompute() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.compute("6", (key, value) -> value == null ? "default" : value + value);
@@ -166,30 +184,4 @@ public class CollectionTest {
         System.out.println(hashMap);
     }
 
-    @Test
-    public void multiplyLists() throws Exception {
-        List<List<String>> pathesThroughI1 = new ArrayList<>();
-        pathesThroughI1.add(getArrayList(1, 3));
-        pathesThroughI1.add(getArrayList(4, 6));
-
-        List<List<String>> pathesThroughI2 = new ArrayList<>();
-        pathesThroughI2.add(getArrayList(7, 9));
-        pathesThroughI2.add(getArrayList(10, 12));
-        pathesThroughI2.add(getArrayList(13, 15));
-
-        List<List<String>> multipliedResult =
-                pathesThroughI1.stream()
-                        .flatMap(path ->
-                                pathesThroughI2.stream()
-                                        .map(pathI2 -> {
-                                            List<String> newPath = new ArrayList<>();
-                                            newPath.add("333");
-                                            newPath.addAll(path);
-                                            newPath.addAll(pathI2);
-                                            return newPath;
-                                        })
-                        ).collect(toList());
-
-        System.out.println(multipliedResult);
-    }
 }

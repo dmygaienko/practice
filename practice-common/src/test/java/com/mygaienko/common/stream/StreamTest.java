@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.mygaienko.common.util.TestUtils.getArrayList;
+import static com.mygaienko.common.util.TestUtils.getArrayListOfInts;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.assertEquals;
 
@@ -296,6 +298,14 @@ public class StreamTest {
     }
 
     @Test
+    public void testPartitioningBy() {
+        Map<Boolean, List<Integer>> collect = getArrayListOfInts(0, 10).stream()
+                .collect(partitioningBy(number -> number < 5, toList()));
+
+        System.out.println(collect);
+    }
+
+    @Test
     public void testCollectGroupingByAndMapping() {
         Map<Integer, List<String>> nameOfPeopleByAge = createPersons().stream()
                 .collect(groupingBy(Person::getAge, mapping(Person::getName, toList())));
@@ -419,13 +429,9 @@ public class StreamTest {
     }
 
     @Test
-    public void test111() {
+    public void testGroupingByAndReducing() {
 
-        Map<Key, List<String>> m = new HashMap<Key, List<String>>() {{
-            put(new Key("u1"), Arrays.asList("u1a1", "u1a2"));
-            put(new Key("u2"), Arrays.asList("u2a1", "u2a2"));
-            put(new Key("u1"), Arrays.asList("u1a3", "u1a4"));
-        }};
+        Map<Key, List<String>> m = getKeyListMap();
 
        /* Map<String, List<String>> collect = m.entrySet().stream()
                 .collect(
@@ -462,6 +468,112 @@ public class StreamTest {
                 );
 
         System.out.println(collect);
+    }
+
+    @Test
+    public void testForEachAndCompute() {
+        Map<Key, List<String>> m = getKeyListMap();
+
+        Map<String, List<String>> collect = new HashMap<>();
+
+        m.forEach((key, countries) -> {
+            String userName = key.getUserName();
+            collect.computeIfPresent(userName, (username, mergedCountries) -> {
+                mergedCountries.addAll(countries);
+                return mergedCountries;
+            });
+            collect.computeIfAbsent(userName, username -> new ArrayList<>(countries));
+        });
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void testForEachAndMerge() {
+        Map<Key, List<String>> m = getKeyListMap();
+
+        Map<String, List<String>> collect = new HashMap<>();
+
+        m.forEach((key, value) ->
+                collect.merge(key.getUserName(), value, (result, next) -> {
+                    result.addAll(next);
+                    return result;
+                }));
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void findFirst() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 5);
+
+        Integer firstMinimal = numbers.stream()
+                .peek(System.out::println)
+                .filter(number -> number > 3)
+                .findFirst()
+                .get();
+
+        System.out.println(firstMinimal);
+    }
+
+    @Test
+    public void anyMatch() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 10);
+
+        Boolean foundMatch = numbers.stream()
+                .map(number -> number * 10)
+                .anyMatch(number -> number > 50);
+
+        System.out.println(foundMatch);
+    }
+
+    @Test
+    public void limit() throws Exception {
+        List<Integer> collect = getArrayListOfInts(1, 10).stream()
+                .peek(System.out::println)
+                .limit(5)
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void skip() throws Exception {
+        List<Integer> collect = getArrayListOfInts(1, 10).stream()
+                .peek(System.out::println)
+                .skip(5)
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void multiplyLists() throws Exception {
+        List<List<String>> pathways1 = new ArrayList<>();
+        pathways1.add(getArrayList(1, 3));
+        pathways1.add(getArrayList(4, 6));
+
+        List<List<String>> pathways2 = new ArrayList<>();
+        pathways2.add(getArrayList(7, 9));
+        pathways2.add(getArrayList(10, 12));
+        pathways2.add(getArrayList(13, 15));
+
+
+        List<List<String>> collect = pathways1.stream()
+                .flatMap(path1 ->
+                        pathways2.stream()
+                                .map(path2 -> Stream.concat(path1.stream(), path2.stream()).collect(toList()))
+                ).collect(toList());
+
+        System.out.println(collect);
+    }
+
+    private Map<Key, List<String>> getKeyListMap() {
+        return new HashMap<Key, List<String>>() {{
+                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a1", "u1a2")));
+                put(new Key("u2"), new ArrayList<>(Arrays.asList("u2a1", "u2a2")));
+                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a3", "u1a4")));
+            }};
     }
 
     static class Key {
