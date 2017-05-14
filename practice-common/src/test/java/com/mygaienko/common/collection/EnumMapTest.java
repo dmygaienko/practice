@@ -2,8 +2,11 @@ package com.mygaienko.common.collection;
 
 import org.junit.Test;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Modifier;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 /**
  * Created by enda1n on 14.05.2017.
@@ -39,6 +42,13 @@ public class EnumMapTest {
         HashMap<Status, String> initialMap = getHashMap();
         EnumMap<Status, String> enumMap = getEnumMap();
         System.out.println("equals: " + enumMap.equals(initialMap));
+    }
+
+    @Test
+    public void printDeclaredMethods() throws Exception {
+        Stream.of(EnumMap.class.getDeclaredMethods())
+                .filter(method -> Modifier.isPublic(method.getModifiers()))
+                .forEach(System.out::println);
     }
 
     private EnumMap<Status, String> getEnumMap() {
