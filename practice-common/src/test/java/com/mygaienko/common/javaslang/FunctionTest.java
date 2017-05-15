@@ -4,8 +4,11 @@ import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.Function3;
 import io.vavr.Function4;
+import io.vavr.control.Option;
 import org.junit.Test;
 
+import static io.vavr.Function2.lift;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -51,5 +54,28 @@ public class FunctionTest {
         Integer apply = getSum().andThen(multiply().apply(2)).apply(1, 2, 3, 4);
 
         assertThat(apply, is(20));
+    }
+
+    @Test
+    public void liftTestWithNone() throws Exception {
+        Function2<Integer, Integer, Option<Integer>> lift = lift(FunctionTest::sum);
+        Option<Integer> apply = lift.apply(-1, -1);
+
+        assertThat(apply, equalTo(Option.none()));
+    }
+
+    @Test
+    public void liftTestWithResult() throws Exception {
+        Function2<Integer, Integer, Option<Integer>> lift = lift(FunctionTest::sum);
+        Option<Integer> apply = lift.apply(1, 2);
+
+        assertThat(apply.get(), equalTo(3));
+    }
+
+    static int sum(int first, int second) {
+        if (first < 0 || second < 0) {
+            throw new IllegalArgumentException("Only positive integers are allowed");
+        }
+        return first + second;
     }
 }
