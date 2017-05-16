@@ -548,6 +548,18 @@ public class StreamTest {
     }
 
     @Test
+    public void iterate() throws Exception {
+        Integer filtered = Stream.iterate(1000, i -> i + 1)
+                .filter(i -> i % 2 == 0)
+                .peek(i -> System.out.println(i))
+                .skip(5)
+                .findFirst()
+                .orElse(0);
+
+        System.out.println(filtered);
+    }
+
+    @Test
     public void multiplyLists() throws Exception {
         List<List<String>> pathways1 = new ArrayList<>();
         pathways1.add(getArrayList(1, 3));
