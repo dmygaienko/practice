@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static com.mygaienko.common.util.TestUtils.getArrayListOfInts;
+import static java.util.Comparator.*;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.assertEquals;
 
@@ -175,7 +176,7 @@ public class StreamTest {
                 ))
                 .values()
                 .stream()
-                .max(Comparator.naturalOrder());
+                .max(naturalOrder());
 
         System.out.println(max.get());
     }
@@ -542,6 +543,53 @@ public class StreamTest {
         List<Integer> collect = getArrayListOfInts(1, 10).stream()
                 .peek(System.out::println)
                 .skip(5)
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void distinct() throws Exception {
+        ArrayList<Integer> list = getArrayListOfInts(1, 10);
+        list.addAll(getArrayListOfInts(1, 10));
+        System.out.println(list);
+
+        List<Integer> collect = list.stream()
+                .peek(System.out::println)
+                .distinct()
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void sorted() throws Exception {
+        List<Integer> list = Arrays.asList(10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> collect = list.stream()
+                .peek(System.out::println)
+                .sorted()
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void sortedWithNull() throws Exception {
+        List<Integer> list = Arrays.asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> collect = list.stream()
+                .peek(System.out::println)
+                .sorted(nullsFirst(naturalOrder()))
+                .collect(toList());
+
+        System.out.println(collect);
+    }
+
+    @Test
+    public void sortedReversedWithNull() throws Exception {
+        List<Integer> list = Arrays.asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> collect = list.stream()
+                .peek(System.out::println)
+                .sorted(nullsLast(reverseOrder()))
                 .collect(toList());
 
         System.out.println(collect);
