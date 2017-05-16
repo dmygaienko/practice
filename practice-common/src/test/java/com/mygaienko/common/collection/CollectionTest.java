@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.*;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -182,6 +181,16 @@ public class CollectionTest {
         hashMap.computeIfPresent("1", (key, value) -> value + value);
         hashMap.computeIfAbsent("6", (key) -> "default");
         System.out.println(hashMap);
+    }
+
+    @Test
+    public void remove() {
+        HashMap<String, String> hashMap = getHashMap(0, 2);
+        System.out.println(hashMap);
+        boolean removeResult1 = hashMap.remove("0", "1");
+        System.out.println("result: " + removeResult1 + "\n hashMap: \n" + hashMap);
+        boolean removeResult2 = hashMap.remove("0", "0");
+        System.out.println("result: " + removeResult2 + "\n hashMap: \n" + hashMap);
     }
 
 }
