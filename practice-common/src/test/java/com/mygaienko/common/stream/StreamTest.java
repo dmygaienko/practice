@@ -529,6 +529,58 @@ public class StreamTest {
     }
 
     @Test
+    public void allMatch() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 10);
+
+        Boolean allMatch = numbers.stream()
+                .peek(System.out::println)
+                .allMatch(number -> number >= 1 && number <= 10);
+
+        System.out.println(allMatch);
+    }
+
+    @Test
+    public void noneMatch() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 5);
+
+        Boolean noneMatch = numbers.stream()
+                .peek(System.out::println)
+                .noneMatch(number -> number > 5);
+
+        System.out.println(noneMatch);
+    }
+
+    @Test
+    public void count() throws Exception {
+        ArrayList<Integer> numbers = getArrayListOfInts(1, 10);
+
+        long count = numbers.stream()
+                .skip(5)
+                .filter(number -> number % 2 == 0)
+                .peek(System.out::println)
+                .count();
+
+        System.out.println(count);
+    }
+
+    @Test
+    public void findAnyVsFindFirst() throws Exception {
+        Optional<Integer> first = Stream.iterate(1, i -> i + 1)
+                .skip(10)
+                .filter(number -> number % 2 == 0)
+                .findFirst();
+
+        System.out.println("first: " + first.orElse(-1));
+
+        Optional<Integer> any = Stream.iterate(1, i -> i + 1)
+                .skip(10)
+                .filter(number -> number % 2 == 0)
+                .findAny();
+
+        System.out.println("any: " + any.orElse(-1));
+    }
+
+    @Test
     public void limit() throws Exception {
         List<Integer> collect = getArrayListOfInts(1, 10).stream()
                 .peek(System.out::println)
