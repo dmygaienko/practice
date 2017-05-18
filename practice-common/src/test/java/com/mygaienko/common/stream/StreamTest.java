@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.getArrayList;
@@ -564,11 +565,24 @@ public class StreamTest {
     }
 
     @Test
-    public void findAnyVsFindFirst() throws Exception {
+    public void findAnyOnFiniteStream() throws Exception {
+        Optional<Integer> first = IntStream.range(1, 100)
+                .boxed()
+                .skip(10)
+                .parallel()
+                .filter(number -> number % 2 == 0)
+                .findAny();
+
+        System.out.println("first: " + first.orElse(-1));
+    }
+
+    @Test
+    public void findAny() throws Exception {
         Optional<Integer> first = Stream.iterate(1, i -> i + 1)
                 .skip(10)
+                .parallel()
                 .filter(number -> number % 2 == 0)
-                .findFirst();
+                .findAny();
 
         System.out.println("first: " + first.orElse(-1));
 
