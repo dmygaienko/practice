@@ -1,6 +1,7 @@
 package com.mygaienko.common.rxjava;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,7 @@ public class RxJavaTest {
     public void testMerge() throws Exception {
         final Observable<String> observable1 = rxFetch("city1");
         final Observable<String> observable2 = rxFetch("city2").timeout(1000, TimeUnit.MILLISECONDS);
-        final Observable<String> allObservable = observable1.mergeWith(observable2);
+        final Observable<String> allObservable = observable1.mergeWith(observable2).subscribeOn(Schedulers.io());
 
         assertThat(allObservable.blockingFirst(), is("weather in city1"));
     }
