@@ -35,6 +35,14 @@ public class RxJavaTest {
         assertThat(rxFetch("city").blockingFirst(), is("weather in city"));
     }
 
+    @Test
+    public void testInterval() throws Exception {
+        Observable
+                .interval(1, TimeUnit.SECONDS)
+                .take(5)
+                .blockingSubscribe(System.out::println);
+    }
+
     @Test(expected = RuntimeException.class)
     public void testFetchWithTimeout() throws Exception {
         final Observable<String> observable = rxFetch("city")
