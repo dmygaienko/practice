@@ -57,6 +57,16 @@ public class CompletableFutureTest {
         assertThat(anyFuture.get(), is("test3"));
     }
 
+    @Test
+    public void testChainOfTransformations() throws Exception {
+        CompletableFuture<Integer> fi = CompletableFuture.supplyAsync(() -> 2);
+        CompletableFuture<String> finalFuture = fi
+                .thenApply(Integer::valueOf)
+                .thenApply(str -> "final value: " + str);
+
+        assertThat(finalFuture.get(), is("final value: 2"));
+    }
+
     private Supplier<String> getDelayedSupplier(String result) {
         return () -> {
             try {
