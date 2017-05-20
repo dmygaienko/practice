@@ -4,8 +4,10 @@ import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -33,6 +35,24 @@ public class RxJavaTest {
     @Test
     public void testFetch() throws Exception {
         assertThat(rxFetch("city").blockingFirst(), is("weather in city"));
+    }
+
+    @Test
+    public void testObserveNewElements() throws Exception {
+        Observable
+                .interval(1, TimeUnit.SECONDS)
+                .skip(1)
+                .take(5)
+                //.flatMap(i -> rxChildrenOf("parent"))
+                .flatMap(i -> Observable.fromIterable(getArrayList(0, i.intValue())))
+                .distinct()
+                .blockingSubscribe(str -> System.out.println(str));
+    }
+
+    private Observable<String> rxChildrenOf(String parent) {
+        return Observable
+                .fromArray(new File(parent).listFiles())
+                .map(File::getName);
     }
 
     @Test
