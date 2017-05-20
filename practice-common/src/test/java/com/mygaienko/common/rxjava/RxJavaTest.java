@@ -3,6 +3,8 @@ package com.mygaienko.common.rxjava;
 import io.reactivex.Observable;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -19,8 +21,24 @@ public class RxJavaTest {
     }
 
     @Test
+    public void testMerge() throws Exception {
+        final Observable<String> observable1 = rxFetch("city1");
+        final Observable<String> observable2 = rxFetch("city2").timeout(1000, TimeUnit.MILLISECONDS);
+        final Observable<String> allObservable = observable1.mergeWith(observable2);
+
+        assertThat(allObservable.blockingFirst(), is("weather in city1"));
+    }
+
+    @Test
     public void testFetch() throws Exception {
         assertThat(rxFetch("city").blockingFirst(), is("weather in city"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testFetchWithTimeout() throws Exception {
+        final Observable<String> observable = rxFetch("city")
+                .timeout(500, TimeUnit.MILLISECONDS);
+        assertThat(observable.blockingFirst(), is("weather in city"));
     }
 
     private Observable<String> rxFetch(String city) {
