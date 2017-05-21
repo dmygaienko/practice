@@ -2,9 +2,11 @@ package com.mygaienko.common.rxjava;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.TestScheduler;
 import org.junit.Test;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import static com.mygaienko.common.util.TestUtils.getArrayList;
@@ -49,10 +51,40 @@ public class RxJavaTest {
                 .blockingSubscribe(str -> System.out.println(str));
     }
 
+    @Test
+    public void testBufferedObservable() throws Exception {
+        Observable
+                .interval(100, TimeUnit.MILLISECONDS)
+                .buffer(10)
+                .distinct()
+                .blockingSubscribe(str -> System.out.println(str));
+    }
+
     private Observable<String> rxChildrenOf(String parent) {
         return Observable
                 .fromArray(new File(parent).listFiles())
                 .map(File::getName);
+    }
+
+    @Test
+    public void testSchedulers() throws Exception {
+        final TestScheduler testScheduler = new TestScheduler();
+
+        slowService()
+                .timeout(1, TimeUnit.SECONDS, testScheduler)
+                .retry(3)
+                .doOnError(ex -> System.out.println(ex))
+                .onErrorReturn(ex -> BigDecimal.ONE)
+                .blockingSubscribe(str -> System.out.println(str));
+
+        testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    }
+
+    private Observable<BigDecimal> slowService() {
+        return Observable
+                .interval(1, TimeUnit.SECONDS)
+                .just(BigDecimal.ONE);
+
     }
 
     @Test
