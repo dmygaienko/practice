@@ -93,9 +93,15 @@ public class MatcherTest {
     }
 
     @Test
+    public void testEveryItemIsIn() throws Exception {
+        assertThat(asList(1, 2), everyItem(isIn(asList(1, 2, 3))));
+    }
+
+    @Test
     public void testContains() throws Exception {
         assertThat(asList(1, 2, 3), contains(1, 2, 3));
     }
+
 
     @Test
     public void testEmpty() throws Exception {
