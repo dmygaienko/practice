@@ -1,6 +1,7 @@
 package com.mygaienko.common.stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +23,9 @@ import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static com.mygaienko.common.util.TestUtils.getArrayListOfInts;
 import static java.util.Comparator.*;
 import static java.util.stream.Collectors.*;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by dmygaenko on 28/01/2016.
@@ -56,6 +59,15 @@ public class StreamTest {
         Stream<String> mappedStream = stringStream.map(x -> x + 1);
 
         System.out.println(Arrays.toString(mappedStream.toArray()));
+    }
+
+    @Test
+    public void testMapWithEmptyList() {
+        List<Integer> collect = Collections.<Integer>emptyList().stream()
+                .map(x -> x + 1)
+                .collect(toList());
+
+        assertThat(collect, empty());
     }
 
     @Test
