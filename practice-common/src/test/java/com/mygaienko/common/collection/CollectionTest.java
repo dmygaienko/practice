@@ -27,7 +27,7 @@ public class CollectionTest {
 
     private void fillList(List<String> list2) {
         list2.add("string1");
-        list2.add(null);
+//        list2.add(null);
         list2.add("string2");
         list2.add("string3");
     }
@@ -43,9 +43,20 @@ public class CollectionTest {
         assertEquals(set1, set2);
     }
 
+    @Test
+    public void testSetAndListEquality() {
+        Set<String> set1 = new HashSet<>();
+        fillSet(set1);
+
+        List<String> list = new ArrayList<>();
+        fillList(list);
+
+        assertEquals(new HashSet<>(list), set1);
+    }
+
     private void fillSet(Set<String> set1) {
         set1.add("string1");
-        set1.add(null);
+//        set1.add(null);
         set1.add("string2");
         set1.add("string3");
     }
