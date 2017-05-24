@@ -1,6 +1,7 @@
 package com.mygaienko.common.stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,13 +16,16 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static com.mygaienko.common.util.TestUtils.getArrayListOfInts;
 import static java.util.Comparator.*;
 import static java.util.stream.Collectors.*;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by dmygaenko on 28/01/2016.
@@ -55,6 +59,15 @@ public class StreamTest {
         Stream<String> mappedStream = stringStream.map(x -> x + 1);
 
         System.out.println(Arrays.toString(mappedStream.toArray()));
+    }
+
+    @Test
+    public void testMapWithEmptyList() {
+        List<Integer> collect = Collections.<Integer>emptyList().stream()
+                .map(x -> x + 1)
+                .collect(toList());
+
+        assertThat(collect, empty());
     }
 
     @Test
@@ -564,11 +577,24 @@ public class StreamTest {
     }
 
     @Test
-    public void findAnyVsFindFirst() throws Exception {
+    public void findAnyOnFiniteStream() throws Exception {
+        Optional<Integer> first = IntStream.range(1, 100)
+                .boxed()
+                .skip(10)
+                .parallel()
+                .filter(number -> number % 2 == 0)
+                .findAny();
+
+        System.out.println("first: " + first.orElse(-1));
+    }
+
+    @Test
+    public void findAny() throws Exception {
         Optional<Integer> first = Stream.iterate(1, i -> i + 1)
                 .skip(10)
+                .parallel()
                 .filter(number -> number % 2 == 0)
-                .findFirst();
+                .findAny();
 
         System.out.println("first: " + first.orElse(-1));
 
