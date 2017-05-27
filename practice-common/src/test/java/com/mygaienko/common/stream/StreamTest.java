@@ -21,9 +21,10 @@ import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static com.mygaienko.common.util.TestUtils.getArrayListOfInts;
+import static java.util.Arrays.asList;
 import static java.util.Comparator.*;
 import static java.util.stream.Collectors.*;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -136,7 +137,7 @@ public class StreamTest {
 
     @Test
     public void testGroupingWithMapping() {
-        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+        List<Pair<Integer, Integer>> pairs = asList(
                 Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
 
         ConcurrentMap<Integer, List<Integer>> collected = pairs.stream().collect(
@@ -149,7 +150,7 @@ public class StreamTest {
 
     @Test
     public void testStreamWithJoinTypes() {
-        List<JoinObject> joins = Arrays.asList(
+        List<JoinObject> joins = asList(
                 new JoinObject("1", JoinType.INNER),
                 new JoinObject("1", JoinType.OUTER),
                 new JoinObject("1", JoinType.OUTER),
@@ -214,7 +215,7 @@ public class StreamTest {
     }
 
     private List<JoinObject> getJoins() {
-        return Arrays.asList(
+        return asList(
                 new JoinObject("1", JoinType.INNER),
                 new JoinObject("1", JoinType.OUTER),
                 new JoinObject("1", JoinType.OUTER),
@@ -263,7 +264,7 @@ public class StreamTest {
 
     @Test
     public void testGroupingWithReducing() {
-        List<Pair<Integer, Integer>> pairs = Arrays.asList(
+        List<Pair<Integer, Integer>> pairs = asList(
                 Pair.of(0, 1), Pair.of(1, 2), Pair.of(0, 3), Pair.of(0, 4), Pair.of(0, 1), Pair.of(0, 1));
 
         Map<Integer, Integer> collect = pairs.stream().collect(
@@ -366,7 +367,7 @@ public class StreamTest {
 
     @Test
     public void testStreamWithComparator() throws Exception {
-        List<Integer> list = Arrays.asList(1, 4, 45, 12, 5, 6, 9, 101);
+        List<Integer> list = asList(1, 4, 45, 12, 5, 6, 9, 101);
         Comparator<Integer> c1 = (x, y) -> x - y;
         Comparator<Integer> c2 = c1.reversed();
         System.out.println("Smallest = " + list.stream().min(c1).get());
@@ -420,8 +421,8 @@ public class StreamTest {
 
     @Test
     public void testZip1() {
-        List<String> chars = Arrays.asList("A", "B", "C");
-        List<Integer> ints = Arrays.asList(1, 2, 3);
+        List<String> chars = asList("A", "B", "C");
+        List<Integer> ints = asList(1, 2, 3);
 
         List<String> zipped = StreamUtil
                 .zip(chars.stream(), ints.stream(), (a, b) -> a + " " + b)
@@ -432,8 +433,8 @@ public class StreamTest {
 
     @Test
     public void testZip2() {
-        List<String> chars = Arrays.asList("A", "B", "C", "D");
-        List<Integer> ints = Arrays.asList(1, 2, 3);
+        List<String> chars = asList("A", "B", "C", "D");
+        List<Integer> ints = asList(1, 2, 3);
 
         List<String> zipped = StreamUtil
                 .zip(chars.stream(), ints.stream(), (a, b) -> a + " " + b)
@@ -642,7 +643,7 @@ public class StreamTest {
 
     @Test
     public void sorted() throws Exception {
-        List<Integer> list = Arrays.asList(10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> list = asList(10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
         List<Integer> collect = list.stream()
                 .peek(System.out::println)
                 .sorted()
@@ -653,7 +654,7 @@ public class StreamTest {
 
     @Test
     public void sortedWithNull() throws Exception {
-        List<Integer> list = Arrays.asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> list = asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
         List<Integer> collect = list.stream()
                 .peek(System.out::println)
                 .sorted(nullsFirst(naturalOrder()))
@@ -664,7 +665,7 @@ public class StreamTest {
 
     @Test
     public void sortedReversedWithNull() throws Exception {
-        List<Integer> list = Arrays.asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
+        List<Integer> list = asList(null, 10, 9, 8, 1, 2, 3, 4, 5, 5, 4, 11);
         List<Integer> collect = list.stream()
                 .peek(System.out::println)
                 .sorted(nullsLast(reverseOrder()))
@@ -706,11 +707,29 @@ public class StreamTest {
         System.out.println(collect);
     }
 
+    @Test
+    public void testToMapAsGroupingBy() throws Exception {
+        final Map<String, List<String>> collect = getArrayList(0, 10).stream()
+                .collect(
+                        toMap(i -> Integer.valueOf(i) % 2 == 0 ? "0" : "1",
+                                Collections::singletonList
+                                , (a, b) -> {
+                                    List<String> result = new ArrayList<>();
+                                    result.addAll(a);
+                                    result.addAll(b);
+                                    return result;
+                                }));
+        System.out.println(collect);
+        assertThat(collect, hasEntry("0", asList("0", "2", "4", "6", "8", "10")));
+        assertThat(collect, hasEntry(is("0"), is(asList("0", "2", "4", "6", "8", "10"))));
+        assertThat(collect, hasEntry(is("1"), everyItem(isIn(asList("1", "3", "5", "7", "9")))));
+    }
+
     private Map<Key, List<String>> getKeyListMap() {
         return new HashMap<Key, List<String>>() {{
-                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a1", "u1a2")));
-                put(new Key("u2"), new ArrayList<>(Arrays.asList("u2a1", "u2a2")));
-                put(new Key("u1"), new ArrayList<>(Arrays.asList("u1a3", "u1a4")));
+                put(new Key("u1"), new ArrayList<>(asList("u1a1", "u1a2")));
+                put(new Key("u2"), new ArrayList<>(asList("u2a1", "u2a2")));
+                put(new Key("u1"), new ArrayList<>(asList("u1a3", "u1a4")));
             }};
     }
 
