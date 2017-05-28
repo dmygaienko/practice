@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
 
 /**
  * Created by enda1n on 21.05.2017.
