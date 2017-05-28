@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import static com.mygaienko.common.util.TestUtils.getArrayList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
 
 /**
  * Created by enda1n on 21.05.2017.
@@ -23,6 +24,16 @@ public class RxJavaTest {
         Observable<Integer> numbers = Observable.just(1, 2, 3);
 
         numbers.subscribe((number) -> System.out.println(number));
+    }
+
+    @Test
+    public void testGroupBy() throws Exception {
+        Observable.just(1, 2, 3, 4)
+                .groupBy(i -> i % 2 == 0 ? 0 : 1)
+                .subscribe(grouped -> {
+                    System.out.println("key" + grouped.getKey());
+                    grouped.subscribe(System.out::println);
+                });
     }
 
     @Test
