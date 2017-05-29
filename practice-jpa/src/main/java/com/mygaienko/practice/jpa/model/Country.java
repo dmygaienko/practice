@@ -29,7 +29,7 @@ public class Country implements Serializable{
 
     // when remove from collection and persist city also will be deleted on database
     @JsonManagedReference
-    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<City> cities;
 
     public Country() {
