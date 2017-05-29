@@ -70,6 +70,16 @@ public class ProductDaoTest {
     }
 
     @Test
+    public void dynamicUpdate() {
+        Product product = productDao.get(5L);
+        product.setName("updated name3");
+
+        Product actual = productDao.merge(product);
+        assertEquals(Long.valueOf(0), actual.getVersion());
+        assertEquals("updated name", actual.getName());
+    }
+
+    @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW, transactionManager = "jpaTransactionManager")
     public void refresh() {
         Product product = productDao.get(5L);

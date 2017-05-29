@@ -29,17 +29,17 @@ import org.springframework.transaction.annotation.Transactional;
 @DatabaseSetup("/com/mygaienko/practice/jpa/dao/BeanParentChildDaoTest.xml")
 public class BeanParentChildDaoTest {
 
-    @Autowired
-    private BeanParentChildDaoImpl dao;
-
-    @Test
-    public void testFindAll() {
-        dao.getAll();
-    }
-
-    @Test
-    public void testGetAllEager() {
-        dao.getAllEager();
-    }
+//    @Autowired
+//    private BeanParentChildDaoImpl dao;
+//
+//    @Test
+//    public void testFindAll() {
+//        dao.getAll();
+//    }
+//
+//    @Test
+//    public void testGetAllEager() {
+//        dao.getAllEager();
+//    }
 
 }

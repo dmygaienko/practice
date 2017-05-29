@@ -1,11 +1,14 @@
 package com.mygaienko.practice.jpa.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
 /**
  * Created by dmygaenko on 15/01/2016.
  */
 @Entity
+@DynamicUpdate
 public class Product {
 
     @Id
