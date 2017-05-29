@@ -6,7 +6,6 @@ import com.mygaienko.practice.jpa.Application;
 import com.mygaienko.practice.jpa.dao.interfaces.CountryDao;
 import com.mygaienko.practice.jpa.model.City;
 import com.mygaienko.practice.jpa.model.Country;
-import org.apache.xmlbeans.impl.piccolo.xml.EntityManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -53,10 +55,15 @@ public class CountryDaoImplTest {
     public void testRemoveWithOrphanRemoval() throws Exception {
         List<Country> countries = countryDao.getCountries();
         Country country = countries.get(0);
-        country.getCities();
-        country.getCities().get(0);
-        //countryDao.persist(country);
-        //List<City> all = cityRepository.findAll();
+        List<City> cities = country.getCities();
+
+        assertThat(cities, hasSize(3));
+
+        cities.remove(0);
+        countryDao.merge(country);
+        List<City> all = cityRepository.findAll();
+
+        assertThat(all, hasSize(2));
     }
 
 }
