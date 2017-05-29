@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -162,7 +163,7 @@ public class StreamTest {
 
                 new JoinObject("3", JoinType.OUTER),
                 new JoinObject("3", JoinType.INNER)
-                );
+        );
 
         boolean valid = joins.stream().collect(
                 Collectors.groupingBy(
@@ -374,8 +375,27 @@ public class StreamTest {
         System.out.println("Largest = " + list.stream().min(c2).get());
     }
 
-    //page 58 Functional Programming in Java
+    @Test
+    public void testForkJoinPool() throws Exception {
+        System.out.println("default ForkJoinPool with 4");
+        IntStream.range(1, 1_000_000)
+                .parallel()
+                .mapToObj(integer -> Thread.currentThread().getName())
+                .distinct().forEach(System.out::println);
 
+        System.out.println("custom ForkJoinPool");
+        ForkJoinPool forkJoinPool = new ForkJoinPool(8);
+        forkJoinPool.submit(() -> {
+                    System.out.println("> " + Thread.currentThread().getName());
+                    IntStream.range(1, 1_000_000)
+                            .parallel()
+                            .mapToObj(integer -> Thread.currentThread().getName())
+                            .distinct().forEach(System.out::println);
+                }
+        ).get();
+    }
+
+    //page 58 Functional Programming in Java
     private List<Person> createPersons() {
         ArrayList<Person> persons = new ArrayList<>();
         persons.add(new Person("John", 20));
@@ -727,10 +747,10 @@ public class StreamTest {
 
     private Map<Key, List<String>> getKeyListMap() {
         return new HashMap<Key, List<String>>() {{
-                put(new Key("u1"), new ArrayList<>(asList("u1a1", "u1a2")));
-                put(new Key("u2"), new ArrayList<>(asList("u2a1", "u2a2")));
-                put(new Key("u1"), new ArrayList<>(asList("u1a3", "u1a4")));
-            }};
+            put(new Key("u1"), new ArrayList<>(asList("u1a1", "u1a2")));
+            put(new Key("u2"), new ArrayList<>(asList("u2a1", "u2a2")));
+            put(new Key("u1"), new ArrayList<>(asList("u1a3", "u1a4")));
+        }};
     }
 
     static class Key {

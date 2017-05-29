@@ -52,7 +52,7 @@ public class CountryDaoImplTest {
     }
 
     @Test
-    public void testRemoveWithOrphanRemoval() throws Exception {
+    public void testRemoveWithOrphanRemovalAndMerge() throws Exception {
         List<Country> countries = countryDao.getCountries();
         Country country = countries.get(0);
         List<City> cities = country.getCities();
@@ -61,6 +61,21 @@ public class CountryDaoImplTest {
 
         cities.remove(0);
         countryDao.merge(country);
+        List<City> all = cityRepository.findAll();
+
+        assertThat(all, hasSize(2));
+    }
+
+    @Test
+    public void testRemoveWithOrphanRemoval() throws Exception {
+        List<Country> countries = countryDao.getCountries();
+        Country country = countries.get(0);
+        List<City> cities = country.getCities();
+
+        assertThat(cities, hasSize(3));
+
+        cities.remove(0);
+//        countryDao.merge(country);
         List<City> all = cityRepository.findAll();
 
         assertThat(all, hasSize(2));
