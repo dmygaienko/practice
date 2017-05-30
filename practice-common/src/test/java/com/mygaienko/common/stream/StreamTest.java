@@ -1,5 +1,6 @@
 package com.mygaienko.common.stream;
 
+import com.mygaienko.common.functional.BatchCollector;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -704,6 +705,13 @@ public class StreamTest {
                 .orElse(0);
 
         System.out.println(filtered);
+    }
+
+    @Test
+    public void batchCollector() throws Exception {
+        IntStream.range(0, 50)
+                .boxed()
+                .collect(new BatchCollector<>(System.out::println, 5));
     }
 
     @Test
