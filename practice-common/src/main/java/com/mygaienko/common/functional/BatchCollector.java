@@ -39,7 +39,24 @@ public class BatchCollector<T> implements Collector<T, List<T>, List<T>> {
     @Override
     public BinaryOperator<List<T>> combiner() {
         return (listA, listB) -> {
-            listA.addAll(listB);
+            if (listA.size() == batchSize) {
+                consumer.accept(listA);
+                listA.clear();
+            } else {
+                listA.addAll(listB);
+
+                if (listA.size() >= batchSize) {
+                    int fromIndex = listA.size() - batchSize;
+                    consumer.accept(listA.subList(fromIndex, listA.size()));
+
+                    if (fromIndex > 0) {
+                        listA = new ArrayList<>(listA.subList(0, fromIndex));
+                    } else {
+                        listA.clear();
+                    }
+                }
+            }
+
             return listA;
         };
     }
