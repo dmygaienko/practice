@@ -81,6 +81,18 @@ public class StreamTest {
     }
 
     @Test
+    public void testFlatMapOfStreamOfStream() {
+        final Stream<Stream<Integer>> streamStream = Stream.of(Stream.of(1, 2, 3), Stream.of(4, 5));
+
+        final List<Integer> collect = streamStream
+                .flatMap(Function.identity())
+                .map(number -> number * 10)
+                .collect(toList());
+
+        assertThat(collect, is(asList(10, 20, 30, 40, 50)));
+    }
+
+    @Test
     public void testFilter() {
         Stream<String> mappedStream = stringStream.filter(x -> x.matches("string [1|2|3|4|5]"));
 
