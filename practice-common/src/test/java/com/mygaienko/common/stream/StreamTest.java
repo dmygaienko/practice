@@ -82,10 +82,11 @@ public class StreamTest {
 
     @Test
     public void testFlatMapOfStreamOfStream() {
-        final Stream<Stream<Integer>> streamStream = Stream.of(Stream.of(1, 2, 3), Stream.of(4, 5));
+        final Stream<Stream<Integer>> streamStream = Stream.of(Stream.of(1, 2, 3), Stream.of(2, 3, 4, 5));
 
         final List<Integer> collect = streamStream
                 .flatMap(Function.identity())
+                .distinct()
                 .map(number -> number * 10)
                 .collect(toList());
 
