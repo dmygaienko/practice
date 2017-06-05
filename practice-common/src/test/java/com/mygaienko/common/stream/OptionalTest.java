@@ -27,4 +27,16 @@ public class OptionalTest {
 
         System.out.println(empty);
     }
+
+    @Test
+    public void mapOptional() throws Exception {
+
+        Optional<Object> empty = Optional.empty();
+
+        final Optional<String> modified = empty.map(value -> value + "modified");
+
+        assertThat(modified, is(Optional.empty()));
+
+        System.out.println(modified);
+    }
 }
