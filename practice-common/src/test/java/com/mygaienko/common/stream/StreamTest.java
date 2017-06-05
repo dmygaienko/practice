@@ -722,7 +722,7 @@ public class StreamTest {
     @Test
     public void batchCollector() throws Exception {
         IntStream.range(0, 50)
-                .parallel()
+                //.parallel()
                 .boxed()
                 .collect(new BatchCollector<>(System.out::println, 5));
     }

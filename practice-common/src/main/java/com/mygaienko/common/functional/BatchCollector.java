@@ -46,14 +46,8 @@ public class BatchCollector<T> implements Collector<T, List<T>, List<T>> {
                 listA.addAll(listB);
 
                 if (listA.size() >= batchSize) {
-                    int fromIndex = listA.size() - batchSize;
-                    consumer.accept(listA.subList(fromIndex, listA.size()));
-
-                    if (fromIndex > 0) {
-                        listA = new ArrayList<>(listA.subList(0, fromIndex));
-                    } else {
-                        listA.clear();
-                    }
+                    consumer.accept(listA.subList(0, batchSize));
+                    listA = new ArrayList<>(listA.subList(batchSize, listA.size()));
                 }
             }
 
