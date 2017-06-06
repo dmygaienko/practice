@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -350,6 +351,14 @@ public class StreamTest {
                         reducing(BinaryOperator.maxBy(byAge))));
         System.out.println("Oldest person in each alphabet:");
         System.out.println(oldestPersonInEachAlphabet);
+    }
+
+    @Test
+    public void testMax() {
+        Optional<Integer> max = Stream.of(1, 2, 3, 4, 5)
+                .max(Comparator.comparing(Function.identity()));
+
+        assertThat(max, is(Optional.of(5)));
     }
 
     @Test
@@ -723,7 +732,7 @@ public class StreamTest {
     @Test
     public void batchCollector() throws Exception {
         IntStream.range(0, 50)
-                //.parallel()
+                .parallel()
                 .boxed()
                 .collect(new BatchCollector<>(System.out::println, 5));
     }
