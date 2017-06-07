@@ -66,6 +66,10 @@ public class City implements Serializable {
         return cityType;
     }
 
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
     public void setCityType(CityType cityType) {
         this.cityType = cityType;
     }
