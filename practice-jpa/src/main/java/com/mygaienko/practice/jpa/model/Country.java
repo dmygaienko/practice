@@ -32,6 +32,9 @@ public class Country implements Serializable{
     @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<City> cities;
 
+    @Embedded
+    private CitiesWrapper citiesWrapper;
+
     public Country() {
     }
 
@@ -69,6 +72,17 @@ public class Country implements Serializable{
     }
 
     public void setCities(List<City> cities) {
+        for (City city : cities) {
+            city.setCountry(this);
+        }
         this.cities = cities;
+    }
+
+    public CitiesWrapper getCitiesWrapper() {
+        return citiesWrapper;
+    }
+
+    public void setCitiesWrapper(CitiesWrapper citiesWrapper) {
+        this.citiesWrapper = citiesWrapper;
     }
 }
