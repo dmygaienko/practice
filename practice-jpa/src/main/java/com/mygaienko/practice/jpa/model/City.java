@@ -84,4 +84,31 @@ public class City implements Serializable {
     public Country getCountry() {
         return country;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        City city = (City) o;
+
+        if (id != null ? !id.equals(city.id) : city.id != null) return false;
+        if (name != null ? !name.equals(city.name) : city.name != null) return false;
+        if (countryName != null ? !countryName.equals(city.countryName) : city.countryName != null) return false;
+        if (country != null ? !country.equals(city.country) : city.country != null) return false;
+        if (cityType != city.cityType) return false;
+        return shortInfo != null ? shortInfo.equals(city.shortInfo) : city.shortInfo == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (countryName != null ? countryName.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (cityType != null ? cityType.hashCode() : 0);
+        result = 31 * result + (shortInfo != null ? shortInfo.hashCode() : 0);
+        return result;
+    }
 }
