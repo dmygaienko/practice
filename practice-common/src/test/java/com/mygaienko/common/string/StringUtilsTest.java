@@ -5,6 +5,12 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * Created by dmygaenko on 02/06/2016.
  */
@@ -23,5 +29,15 @@ public class StringUtilsTest {
     @Test
     public void testSplit() throws Exception {
         System.out.println(Arrays.toString("........................................".split("")));
+    }
+
+    @Test
+    public void testCapitalize() throws Exception {
+        assertThat(capitalize(lowerCase("ENUM")), is("Enum"));
+    }
+
+    @Test
+    public void testRepeat() throws Exception {
+        assertThat(repeat("three", 3), is("threethreethree"));
     }
 }
