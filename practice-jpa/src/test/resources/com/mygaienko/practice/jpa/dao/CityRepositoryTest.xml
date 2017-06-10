@@ -3,8 +3,8 @@
 
     <Country id1="1" id2="1" name="Ukraine" code1="040" code2="50"/>
 
-    <City id="5" city_type="0" name="Zaporizhiya" country_id1="1" country_id2="1" country_name="Ukraine" />
-    <City id="6" city_type="1" name="Vinnutsiya" country_id1="1" country_id2="1" country_name="Ukraine"/>
+    <City id="5" city_type="0" name="Zaporizhiya" city_enum="CITY ENUM1" country_id1="1" country_id2="1" country_name="Ukraine" />
+    <City id="6" city_type="1" name="Vinnutsiya" city_enum="CITY ENUM2" country_id1="1" country_id2="1" country_name="Ukraine"/>
     <City id="7" city_type="2" name="Lviv" country_id1="1" country_id2="1" country_name="Ukraine"/>
 
 </dataset>

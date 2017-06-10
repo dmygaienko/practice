@@ -1,6 +1,7 @@
 package com.mygaienko.practice.jpa.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.mygaienko.practice.jpa.model.converter.CityEnumConverter;
 import com.mygaienko.practice.jpa.model.listener.CityListener;
 import org.springframework.util.StringUtils;
 
@@ -20,6 +21,10 @@ public class City implements Serializable {
 
     @Column
     private String name;
+
+    @Column(name = "city_enum")
+    @Convert(converter = CityEnumConverter.class)
+    private CityEnum cityEnum;
 
     @Column(name = "country_name")
     private String countryName;
@@ -83,6 +88,14 @@ public class City implements Serializable {
 
     public Country getCountry() {
         return country;
+    }
+
+    public CityEnum getCityEnum() {
+        return cityEnum;
+    }
+
+    public void setCityEnum(CityEnum cityEnum) {
+        this.cityEnum = cityEnum;
     }
 
     @Override
