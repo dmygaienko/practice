@@ -11,8 +11,11 @@ public class FactoryServiceTest {
 
     @Test
     public void getService() throws Exception {
-        Service<Entity1> service = FactoryService.getService(ServiceEnum.ENUM1);
-        service.doService(new Entity1());
+        Service<Entity1> service1 = FactoryService.getService(ServiceEnum.ENUM1);
+        service1.doService(new Entity1());
+
+        Service<Entity2> service2 = FactoryService.getService(ServiceEnum.ENUM2);
+        service2.doService(new Entity2());
     }
 
 }

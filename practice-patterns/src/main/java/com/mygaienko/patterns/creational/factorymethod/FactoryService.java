@@ -5,13 +5,14 @@ package com.mygaienko.patterns.creational.factorymethod;
  */
 public class FactoryService {
 
-    public static Service getService(ServiceEnum serviceEnum) {
+    @SuppressWarnings("unchecked")
+    public static <T extends AbstractEntity> Service<T> getService(ServiceEnum serviceEnum) {
         Service service = null;
         switch (serviceEnum) {
-           case ENUM1: service = new Service1(); break;
-           case ENUM2: service = new Service2(); break;
+            case ENUM1: service = new Service1(); break;
+            case ENUM2: service = new Service2(); break;
         }
-        return service;
+        return (Service<T>) service;
     }
 }
 
