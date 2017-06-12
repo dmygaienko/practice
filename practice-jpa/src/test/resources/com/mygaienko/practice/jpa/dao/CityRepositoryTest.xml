@@ -7,4 +7,18 @@
     <CITY id="6" city_type="1" name="Vinnutsiya" city_enum="CITY ENUM2" country_id1="1" country_id2="1" country_name="Ukraine"/>
     <CITY id="7" city_type="2" name="Lviv" country_id1="1" country_id2="1" country_name="Ukraine"/>
 
+
+    <COUNTRY id1="2" id2="2" name="England" code1="020" code2="30"/>
+
+    <CITY id="8" city_type="0" name="London" city_enum="CITY ENUM1" country_id1="2" country_id2="2" />
+    <CITY id="9" city_type="1" name="Manchester" city_enum="CITY ENUM2" country_id1="2" country_id2="2" />
+
+
+    <COUNTRY id1="3" id2="3" name="USA" code1="020" code2="30"/>
+
+    <CITY id="10" city_type="0" name="New York" city_enum="CITY ENUM1" country_id1="3" country_id2="3" />
+    <CITY id="11" city_type="1" name="Las Vegas" city_enum="CITY ENUM2" country_id1="3" country_id2="3" />
+    <CITY id="12" city_type="1" name="Los Angelos" city_enum="CITY ENUM2" country_id1="3" country_id2="3" />
+    <CITY id="13" city_type="1" name="Washington" city_enum="CITY ENUM2" country_id1="3" country_id2="3" />
+
 </dataset>
