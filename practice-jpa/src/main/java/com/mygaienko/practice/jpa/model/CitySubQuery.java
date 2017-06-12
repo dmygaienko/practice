@@ -1,10 +1,7 @@
 package com.mygaienko.practice.jpa.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.mygaienko.practice.jpa.model.converter.CityEnumConverter;
-import com.mygaienko.practice.jpa.model.listener.CityListener;
 import org.hibernate.annotations.Subselect;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,9 +11,14 @@ import java.io.Serializable;
  */
 @Entity
 @Subselect(
-        "select c.id, c.name, c.city_enum " +
-                "from CITY c" +
-                "join COUNTRY ctry on ctry.id1 = c.country_id1 and ctry.id2 = c.country_id2"
+        "select " +
+                "c.id, " +
+                "c.name, " +
+                "c.city_enum, " +
+                "c.country_id1, " +
+                "c.country_id2, " +
+                "c.city_type " +
+                "from CITY c "
 )
 public class CitySubQuery implements Serializable {
 
@@ -31,15 +33,10 @@ public class CitySubQuery implements Serializable {
     @Convert(converter = CityEnumConverter.class)
     private CityEnum cityEnum;
 
-    @Column(name = "country_name")
-    private String countryName;
-
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "country_id1", referencedColumnName = "id1"),
-            @JoinColumn(name = "country_id2", referencedColumnName = "id2")})
-    private Country country;
+//    @JsonBackReference
+//    @ManyToOne
+//
+//    private Country country;
 
     @Enumerated
     @Column(name = "city_type")
@@ -64,36 +61,21 @@ public class CitySubQuery implements Serializable {
         this.name = name;
     }
 
-    public String getCountryName() {
-        return countryName;
-    }
-
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
-    }
-
     public CityType getCityType() {
         return cityType;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
     }
 
     public void setCityType(CityType cityType) {
         this.cityType = cityType;
     }
 
-    public String getShortInfo() {
-        if (StringUtils.isEmpty(shortInfo)) {
-            shortInfo = id + ": " + name + " - " + countryName;
-        }
-        return shortInfo;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
+//    public void setCountry(Country country) {
+//        this.country = country;
+//    }
+//
+//    public Country getCountry() {
+//        return country;
+//    }
 
     public CityEnum getCityEnum() {
         return cityEnum;
@@ -112,8 +94,7 @@ public class CitySubQuery implements Serializable {
 
         if (id != null ? !id.equals(city.id) : city.id != null) return false;
         if (name != null ? !name.equals(city.name) : city.name != null) return false;
-        if (countryName != null ? !countryName.equals(city.countryName) : city.countryName != null) return false;
-        if (country != null ? !country.equals(city.country) : city.country != null) return false;
+//        if (country != null ? !country.equals(city.country) : city.country != null) return false;
         if (cityType != city.cityType) return false;
         return shortInfo != null ? shortInfo.equals(city.shortInfo) : city.shortInfo == null;
 
@@ -123,8 +104,7 @@ public class CitySubQuery implements Serializable {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (countryName != null ? countryName.hashCode() : 0);
-        result = 31 * result + (country != null ? country.hashCode() : 0);
+//        result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (cityType != null ? cityType.hashCode() : 0);
         result = 31 * result + (shortInfo != null ? shortInfo.hashCode() : 0);
         return result;

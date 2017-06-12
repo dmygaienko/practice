@@ -1,6 +1,7 @@
 package com.mygaienko.practice.jpa.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 
 @Entity
+@Table(name = "COUNTRY")
 @NamedNativeQuery(
         name = "getAllCountriesNamedQuery",
         query = "select * FROM COUNTRY",
@@ -29,13 +31,17 @@ public class Country implements Serializable{
     @Embedded
     private ZipCode code;
 
-    // when remove from collection and persist city also will be deleted on database
+ //    when remove from collection and persist city also will be deleted on database
     @JsonManagedReference
     @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    @Fetch(FetchMode.SUBSELECT)
     private List<City> cities;
 
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER)
+    @BatchSize(size=10)
+    @JoinColumns({
+            @JoinColumn(name = "country_id1", referencedColumnName = "id1"),
+            @JoinColumn(name = "country_id2", referencedColumnName = "id2")})
     private List<CitySubQuery> cities1;
 
     @Embedded
