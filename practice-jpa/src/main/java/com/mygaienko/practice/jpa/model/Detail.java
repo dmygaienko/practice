@@ -16,8 +16,8 @@ public class Detail {
     @Column
     private String name;
 
-//    @ManyToOne
-//    private Product product;
+    @ManyToOne
+    private Product product;
 
     public Long getId() {
         return id;
@@ -35,11 +35,11 @@ public class Detail {
         this.name = name;
     }
 
-//    public Product getProduct() {
-//        return product;
-//    }
-//
-//    public void setProduct(Product product) {
-//        this.product = product;
-//    }
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }
