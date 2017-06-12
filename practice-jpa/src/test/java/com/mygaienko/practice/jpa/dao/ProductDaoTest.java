@@ -19,6 +19,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -42,7 +44,8 @@ public class ProductDaoTest {
     @DatabaseSetup("/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
-        productDao.findAll();
+        List<Product> all = productDao.findAll();
+        System.out.println(all);
     }
 
     @Test
