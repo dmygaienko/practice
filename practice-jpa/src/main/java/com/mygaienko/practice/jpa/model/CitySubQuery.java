@@ -13,8 +13,12 @@ import java.io.Serializable;
  * Created by mygadmy on 03/12/15.
  */
 @Entity
-@EntityListeners(CityListener.class)
-public class City implements Serializable {
+@Subselect(
+        "select c.id, c.name, c.city_enum " +
+                "from CITY c" +
+                "join COUNTRY ctry on ctry.id1 = c.country_id1 and ctry.id2 = c.country_id2"
+)
+public class CitySubQuery implements Serializable {
 
     @Id
     @GeneratedValue
@@ -30,6 +34,7 @@ public class City implements Serializable {
     @Column(name = "country_name")
     private String countryName;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "country_id1", referencedColumnName = "id1"),
@@ -103,7 +108,7 @@ public class City implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        City city = (City) o;
+        CitySubQuery city = (CitySubQuery) o;
 
         if (id != null ? !id.equals(city.id) : city.id != null) return false;
         if (name != null ? !name.equals(city.name) : city.name != null) return false;
