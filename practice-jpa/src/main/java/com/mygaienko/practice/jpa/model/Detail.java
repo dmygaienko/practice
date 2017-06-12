@@ -17,6 +17,7 @@ public class Detail {
     private String name;
 
     @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
     public Long getId() {
