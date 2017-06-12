@@ -1,6 +1,8 @@
 package com.mygaienko.practice.jpa.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +15,7 @@ import java.util.List;
 @Entity
 @NamedNativeQuery(
         name = "getAllCountriesNamedQuery",
-        query = "select * FROM country",
+        query = "select * FROM COUNTRY",
         resultClass = Country.class
 )
 public class Country implements Serializable{
@@ -32,6 +34,10 @@ public class Country implements Serializable{
     @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<City> cities;
 
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(mappedBy = "country", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    private List<CitySubQuery> cities1;
+
     @Embedded
     private CitiesWrapper citiesWrapper;
 
@@ -41,6 +47,14 @@ public class Country implements Serializable{
     public Country(CountryId id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public List<CitySubQuery> getCities1() {
+        return cities1;
+    }
+
+    public void setCities1(List<CitySubQuery> cities1) {
+        this.cities1 = cities1;
     }
 
     public CountryId getId() {
