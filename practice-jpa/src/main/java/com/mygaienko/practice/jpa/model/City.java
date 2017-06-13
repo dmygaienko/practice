@@ -31,9 +31,11 @@ public class City implements Serializable {
     private String countryName;
 
     @ManyToOne
-    @JoinColumns({
+    /*@JoinColumns({
             @JoinColumn(name = "country_id1", referencedColumnName = "id1"),
             @JoinColumn(name = "country_id2", referencedColumnName = "id2")})
+    */
+    @PrimaryKeyJoinColumn
     private Country country;
 
     @Enumerated
