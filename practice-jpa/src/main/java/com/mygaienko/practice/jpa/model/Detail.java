@@ -23,4 +23,12 @@ public class Detail {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
+    @Override
+    public String toString() {
+        return "Detail{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", product.name=" + product.getName() +
+                '}';
+    }
 }

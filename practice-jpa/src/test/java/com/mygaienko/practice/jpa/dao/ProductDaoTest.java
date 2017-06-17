@@ -3,6 +3,7 @@ package com.mygaienko.practice.jpa.dao;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import com.mygaienko.practice.jpa.model.Component;
 import com.mygaienko.practice.jpa.model.Detail;
 import com.mygaienko.practice.jpa.model.Product;
 import org.junit.Test;
@@ -13,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by dmygaenko on 15/01/2016.
@@ -29,10 +32,13 @@ public class ProductDaoTest extends AbstractDaoTest {
     @ExpectedDatabase(value = "/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
         List<Product> all = productDao.getByIds(Arrays.asList("5", "6"));
-        System.out.println("===========");
-        List<Detail> details = all.get(0).getDetails();
         System.out.println("==============");
-        System.out.println(details.get(0));
+        List<Detail> details = all.get(0).getDetails();
+        assertThat(all.get(0).getComponents(), contains(
+                new Component("Apple 1 component 1"),
+                new Component("Apple 1 component 2"),
+                new Component("Apple 1 component 3")));
+        System.out.println("==============");
     }
 
     @Test

@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.List;
@@ -31,10 +32,14 @@ public class Product {
     @Column
     private String code;
 
+    @Formula("NAME || ' | ' || CODE")
+    private String shortInfo;
+
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST, mappedBy = "product")
     private List<Detail> details;
 
+    @OrderBy("name")
     @Fetch(FetchMode.SUBSELECT)
     @ElementCollection
     @CollectionTable(name = "COMPONENT",joinColumns = {
