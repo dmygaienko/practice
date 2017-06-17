@@ -1,6 +1,7 @@
 package com.mygaienko.practice.jpa.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
@@ -9,8 +10,12 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 @Data
+@NoArgsConstructor
 public class Component {
 
     private String name;
 
+    public Component(String name) {
+        this.name = name;
+    }
 }
