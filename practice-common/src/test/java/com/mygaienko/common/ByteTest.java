@@ -24,8 +24,8 @@ public class ByteTest {
         System.out.println("b1 & b2:" + Integer.toBinaryString(b1 & b2));
         System.out.println("b1 ^ b2:" + Integer.toBinaryString(b1 ^ b2));
         System.out.println("b1 ^ b3:" + Integer.toBinaryString(b1 ^ b3));
-        System.out.println("b1 >> 2:" + Integer.toBinaryString(b2 >> 2));
+        System.out.println("b2 >> 2:" + Integer.toBinaryString(b2 >> 2));
         System.out.println("b1 >>> 2:" + Integer.toBinaryString(b2 >>> 2));
-        System.out.println("b1 << b2:" + Integer.toBinaryString(b2 << 2));
+        System.out.println("b1 << 4:" + Integer.toBinaryString(b2 << 4));
     }
 }
