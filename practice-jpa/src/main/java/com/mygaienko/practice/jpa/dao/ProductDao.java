@@ -41,6 +41,15 @@ public class ProductDao {
         return entityManager.createQuery(query).getSingleResult();
     }
 
+    public List<Product> getByIds(List<String> ids) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Product> query = builder.createQuery(Product.class);
+        Root<Product> productRoot = query.from(Product.class);
+        query.where(productRoot.get(Product_.id).in(ids));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
     public Product get(String name) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = builder.createQuery(Product.class);

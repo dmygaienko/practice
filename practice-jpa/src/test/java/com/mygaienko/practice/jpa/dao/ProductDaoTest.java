@@ -5,6 +5,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import com.mygaienko.practice.jpa.Application;
+import com.mygaienko.practice.jpa.model.Detail;
 import com.mygaienko.practice.jpa.model.Product;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -44,8 +46,11 @@ public class ProductDaoTest {
     @DatabaseSetup("/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
-        List<Product> all = productDao.findAll();
-        System.out.println(all);
+        List<Product> all = productDao.getByIds(Arrays.asList("5", "6"));
+        System.out.println("===========");
+        List<Detail> details = all.get(0).getDetails();
+        System.out.println("==============");
+        System.out.println(details.get(0));
     }
 
     @Test

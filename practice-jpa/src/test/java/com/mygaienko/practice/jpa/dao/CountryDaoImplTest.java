@@ -28,8 +28,8 @@ public class CountryDaoImplTest extends AbstractDaoTest {
     @Test
     public void testDelete() throws Exception {
         List<Country> countries = countryDao.getCountries();
-        countryDao.remove(countries.get(0));
-        countryDao.getCountries();
+        System.out.println("====================");
+        countries.get(0).getCities().get(0).getName();
     }
 
     @Test
