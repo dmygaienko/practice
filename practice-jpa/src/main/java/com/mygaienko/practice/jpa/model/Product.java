@@ -1,11 +1,13 @@
 package com.mygaienko.practice.jpa.model;
 
+import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dmygaenko on 15/01/2016.
@@ -13,6 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "PRODUCT")
 @DynamicUpdate
+@Data
 public class Product {
 
     @Id
@@ -32,43 +35,11 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST, mappedBy = "product")
     private List<Detail> details;
 
-    public Long getId() {
-        return id;
-    }
+    @Fetch(FetchMode.SUBSELECT)
+    @ElementCollection
+    @CollectionTable(name = "COMPONENT",joinColumns = {
+            @JoinColumn(name = "PRODUCT_ID")
+    })
+    private Set<Component> components;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public List<Detail> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<Detail> details) {
-        this.details = details;
-    }
 }

@@ -7,6 +7,9 @@
     <DETAIL id="1" name="Apple 1 detail 1" product_id="5"  />
     <DETAIL id="2" name="Apple 1 detail 2" product_id="5"  />
 
+    <COMPONENT name="Apple 1 component 1" PRODUCT_ID="5"  />
+    <COMPONENT name="Apple 1 component 2" PRODUCT_ID="5"  />
+
 
     <PRODUCT id="6" version="1" name="Apple 2" code="2" />
 
