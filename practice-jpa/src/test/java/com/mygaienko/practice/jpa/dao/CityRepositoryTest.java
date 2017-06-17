@@ -1,35 +1,18 @@
 package com.mygaienko.practice.jpa.dao;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
-import com.mygaienko.practice.jpa.Application;
-import com.mygaienko.practice.jpa.model.CityType;
 import com.mygaienko.practice.jpa.model.City;
+import com.mygaienko.practice.jpa.model.CityType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@ActiveProfiles("local")
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DbUnitTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class})
 @DatabaseSetup("/com/mygaienko/practice/jpa/dao/CityRepositoryTest.xml")
-public class CityRepositoryTest {
+public class CityRepositoryTest extends AbstractDaoTest {
 
     @Autowired
     private  CityRepository cityRepository;
