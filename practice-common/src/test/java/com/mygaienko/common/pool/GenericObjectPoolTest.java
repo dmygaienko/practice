@@ -6,6 +6,8 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.Test;
 
 /**
+ * Comment
+ *
  * Created by enda1n on 30.08.2017.
  */
 public class GenericObjectPoolTest {
