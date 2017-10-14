@@ -59,12 +59,18 @@ public class ProductDao {
         return entityManager.createQuery(query).getSingleResult();
     }
 
-    @Transactional(transactionManager = "jpaTransactionManager")
     public Product merge(Product product) {
         return entityManager.merge(product);
     }
 
-    @Transactional(transactionManager = "jpaTransactionManager")
+    public void persist(Product product) {
+        entityManager.persist(product);
+    }
+
+    public void remove(Product product) {
+        entityManager.remove(entityManager.contains(product) ? product : entityManager.merge(product));
+    }
+
     public Product pessimisticMerge(Product product) {
         Product productToMerge = entityManager.find(Product.class, product.getId(), LockModeType.PESSIMISTIC_WRITE);
         productToMerge.setCode(product.getCode());
@@ -73,9 +79,11 @@ public class ProductDao {
         return entityManager.merge(productToMerge);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, transactionManager = "jpaTransactionManager")
     public void refresh(Product product) {
         entityManager.refresh(product);
     }
 
+    public void flush() {
+        entityManager.flush();
+    }
 }
