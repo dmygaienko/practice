@@ -1,12 +1,13 @@
 package com.mygaienko.practice.jpa.model;
 
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class Product {
     @Version
     private Long version;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
@@ -36,7 +37,8 @@ public class Product {
     private String shortInfo;
 
     @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.PERSIST, mappedBy = "product")
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "product")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Detail> details;
 
     @OrderBy("name")

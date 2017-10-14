@@ -54,6 +54,49 @@ public class ProductDaoTest extends AbstractDaoTest {
         assertEquals("Apple 1 (new)", actual.getName());
     }
 
+    @Test(expected = javax.persistence.OptimisticLockException.class)
+    public void mergeWithWrongVersion() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(1L);
+        product.setName("Apple 1 (new)");
+        product.setCode("1 new");
+
+        productDao.merge(product);
+    }
+
+    @Test(expected = javax.persistence.PersistenceException.class)
+    public void removeAndPersistThrowsException() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(0L);
+        product.setName("Apple 1");
+        product.setCode("1 new");
+
+        productDao.remove(product);
+
+        product.setId(null);
+
+        productDao.persist(product);
+    }
+
+    @Test
+    public void removeAndPersistWithFlush() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(0L);
+        product.setName("Apple 1");
+        product.setCode("1");
+
+        productDao.remove(product);
+        productDao.flush();
+
+        product.setId(null);
+
+        productDao.persist(product);
+        productDao.flush();
+    }
+
     @Test
     public void pessimisticMerge() {
         Product product = new Product();
@@ -72,7 +115,7 @@ public class ProductDaoTest extends AbstractDaoTest {
 
         Product actual = productDao.merge(product);
         assertEquals(Long.valueOf(0), actual.getVersion());
-        assertEquals("updated name", actual.getName());
+        assertEquals("updated name3", actual.getName());
     }
 
     @Test
