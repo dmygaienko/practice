@@ -97,6 +97,32 @@ public class ProductDaoTest extends AbstractDaoTest {
         productDao.flush();
     }
 
+    @Test(expected = javax.persistence.PersistenceException.class)
+    public void updateAndSaveWithException() {
+        Product product = productDao.get(5L);
+        product.setName("Apple new");
+        productDao.merge(product);
+
+        Product newProduct = new Product();
+        newProduct.setName("Apple 1");
+        newProduct.setCode("new code");
+        productDao.persist(newProduct);
+    }
+
+    @Test
+    public void updateAndSaveWithFlush() {
+        Product product = productDao.get(5L);
+        product.setName("Apple new");
+        productDao.merge(product);
+        productDao.flush();
+
+        Product newProduct = new Product();
+        newProduct.setName("Apple 1");
+        newProduct.setCode("new code");
+        productDao.persist(newProduct);
+        productDao.flush();
+    }
+
     @Test
     public void pessimisticMerge() {
         Product product = new Product();
