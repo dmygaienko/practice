@@ -1,10 +1,14 @@
 package com.mygaienko.common.concurrency;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.Assert.assertNotEquals;
 
@@ -13,13 +17,22 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class CopyOnWriteArrayListTest {
 
-    private final CopyOnWriteArrayList<String> copyOnWriteArrayList = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<String> copyOnWriteArrayList;
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
+
+    private ReentrantLock lock = new ReentrantLock();
+
+    private volatile boolean writed = false;
+
+    @Before
+    public void init() {
+        copyOnWriteArrayList = new CopyOnWriteArrayList<>();
+        copyOnWriteArrayList.add("value1");
+        copyOnWriteArrayList.add("value2");
+    }
 
     @Test
     public void test() {
-        addValue("value1");
-        addValue("value2");
         iterate();
         addValue("value3");
         addValue("value4");
@@ -35,6 +48,63 @@ public class CopyOnWriteArrayListTest {
                 assertNotEquals("value4", s);
             }
         });
+    }
+
+    @Test
+    public void testWriteRead() throws InterruptedException {
+        executor.execute(readableTask());
+        executor.execute(writableTask());
+
+        executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+    }
+
+    private Runnable writableTask() {
+        return () -> {
+            System.out.println("writable lock 1");
+            lock.lock();
+
+            writed = true;
+            copyOnWriteArrayList.add("value3");
+            copyOnWriteArrayList.add("value4");
+
+            System.out.println("writable unlock 1");
+            lock.unlock();
+        };
+    }
+
+    private Runnable readableTask() {
+        return () -> {
+            System.out.println("readable lock 1");
+            lock.lock();
+
+            Iterator<String> iterator = copyOnWriteArrayList.iterator();
+
+            System.out.println("readable unlock 1");
+            lock.unlock();
+
+            while (!writed) {
+                try {
+                    System.out.println("sleeped");
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                }
+            }
+
+            System.out.println("readable lock 2");
+            lock.lock();
+
+            while (iterator.hasNext()) {
+                System.out.println("iterator 1: " +  iterator.next());
+            }
+
+            for (String s : copyOnWriteArrayList) {
+                System.out.println("iterator 2: " + s);
+            }
+
+            System.out.println("readable unlock 2");
+            lock.unlock();
+        };
 
     }
 }
