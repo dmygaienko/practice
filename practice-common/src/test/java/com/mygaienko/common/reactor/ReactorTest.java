@@ -80,4 +80,25 @@ public class ReactorTest {
         ;
     }
 
+    @Test
+    public void testZipWith() {
+        Flux.just("One", "Two", "Three", "Four")
+                .zipWith(Flux.range(0, 4))
+                .subscribe(tuple -> System.out.println(tuple))
+        ;
+    }
+
+    @Test
+    public void testZipWithCombinator() {
+        Flux.just("One", "Two", "Three", "Four", "Five", "Six")
+                .zipWith(Flux.range(0, 6), (s, i) -> i + ". " + s)
+                .delayElementsMillis(1)
+                .distinct()
+                .sort()
+                .buffer(2)
+                .take(2)
+                .subscribe(combination -> System.out.println(combination))
+        ;
+    }
+
 }
