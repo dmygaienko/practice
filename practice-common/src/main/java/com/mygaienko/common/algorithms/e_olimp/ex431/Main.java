@@ -3,7 +3,10 @@ package com.mygaienko.common.algorithms.e_olimp.ex431;
 import com.mygaienko.common.algorithms.PathCombinations;
 
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Main {
@@ -44,12 +47,12 @@ public class Main {
 
     private static long countTree(List<List<Integer>> tree, int[] weights, int n, int k, List<List<List<Integer>>> paths) {
         countPathsInSubtree(tree, 0, paths);
-        return paths.stream().reduce(0, (size, list) -> size += list.size(), (size1, size2) -> size1 + size2);
+        return 0l;
     }
 
-    public static void countPathsInSubtree(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
+    private static void countPathsInSubtree(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
 
-        paths.get(currentVertex).add(Collections.singletonList(currentVertex));
+        paths.get(currentVertex).add(Arrays.asList(currentVertex));
 
         for (Integer vertex : tree.get(currentVertex)) {
             countPathsInSubtree(tree, vertex, paths);
@@ -59,16 +62,13 @@ public class Main {
     }
 
     private static void splice(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
-        List<Integer> adjacentVertices = tree.get(currentVertex);
-        int size = adjacentVertices.size();
+        List<Integer> adjacent = tree.get(currentVertex);
+        int size = adjacent.size();
 
-        List<List<Integer>> allCombinations = new ArrayList<>();
-        for (int i = 1; i <= size; i++) {
-            allCombinations.addAll(PathCombinations.detectSubsets(i, currentVertex, adjacentVertices, paths));
-        }
-
-        if (!allCombinations.isEmpty()) {
-            paths.get(currentVertex).addAll(allCombinations);
+        for (int i = 0; i < size; i++) {
+//            PathCombinations.countSubsets(i, adjacent, paths);
         }
     }
+
+
 }
