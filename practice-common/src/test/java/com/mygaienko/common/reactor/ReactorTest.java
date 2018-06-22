@@ -58,4 +58,26 @@ public class ReactorTest {
         assertThat(map, hasEntry("2", "2"));
     }
 
+    @Test
+    public void testDoOnNext() {
+        Flux.just("1", "2", "3", "4")
+                .doOnNext(item -> System.out.println("some action with " + item))
+                .map(item -> item + "_mapped")
+                .take(2)
+//                .doFinally(item -> System.out.println("Finally with item " + item))
+                .doOnNext(item -> {
+                    if (item.equals("2_mapped")) {
+                        throw new RuntimeException("Test runtime exc");
+                    }
+                })
+                .subscribe(
+                        item -> System.out.println("subscribe " + item),
+                        error -> System.out.println(error),
+                        () -> System.out.println("On complete")
+                );
+
+
+        ;
+    }
+
 }
