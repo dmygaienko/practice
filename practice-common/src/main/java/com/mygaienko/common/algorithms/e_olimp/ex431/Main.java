@@ -47,7 +47,7 @@ public class Main {
 
     private static long countTree(List<List<Integer>> tree, int[] weights, int n, int k, List<List<List<Integer>>> paths) {
         countPathsInSubtree(tree, 0, paths);
-        return context.sets;
+        return 0l;
     }
 
     private static void countPathsInSubtree(List<List<Integer>> tree, int currentVertex, List<List<List<Integer>>> paths) {
@@ -66,7 +66,7 @@ public class Main {
         int size = adjacent.size();
 
         for (int i = 0; i < size; i++) {
-            PathCombinations.countSubsets(i, adjacent, paths);
+//            PathCombinations.countSubsets(i, adjacent, paths);
         }
     }
 
