@@ -41,6 +41,15 @@ public class ProductDao {
         return entityManager.createQuery(query).getSingleResult();
     }
 
+    public List<Product> getByIds(List<String> ids) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Product> query = builder.createQuery(Product.class);
+        Root<Product> productRoot = query.from(Product.class);
+        query.where(productRoot.get(Product_.id).in(ids));
+
+        return entityManager.createQuery(query).getResultList();
+    }
+
     public Product get(String name) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = builder.createQuery(Product.class);
@@ -50,12 +59,18 @@ public class ProductDao {
         return entityManager.createQuery(query).getSingleResult();
     }
 
-    @Transactional(transactionManager = "jpaTransactionManager")
     public Product merge(Product product) {
         return entityManager.merge(product);
     }
 
-    @Transactional(transactionManager = "jpaTransactionManager")
+    public void persist(Product product) {
+        entityManager.persist(product);
+    }
+
+    public void remove(Product product) {
+        entityManager.remove(entityManager.contains(product) ? product : entityManager.merge(product));
+    }
+
     public Product pessimisticMerge(Product product) {
         Product productToMerge = entityManager.find(Product.class, product.getId(), LockModeType.PESSIMISTIC_WRITE);
         productToMerge.setCode(product.getCode());
@@ -64,9 +79,11 @@ public class ProductDao {
         return entityManager.merge(productToMerge);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, transactionManager = "jpaTransactionManager")
     public void refresh(Product product) {
         entityManager.refresh(product);
     }
 
+    public void flush() {
+        entityManager.flush();
+    }
 }

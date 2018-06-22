@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.mygaienko.common.util.TestUtils.*;
@@ -28,7 +27,7 @@ public class CollectionTest {
 
     private void fillList(List<String> list2) {
         list2.add("string1");
-        list2.add(null);
+//        list2.add(null);
         list2.add("string2");
         list2.add("string3");
     }
@@ -44,9 +43,20 @@ public class CollectionTest {
         assertEquals(set1, set2);
     }
 
+    @Test
+    public void testSetAndListEquality() {
+        Set<String> set1 = new HashSet<>();
+        fillSet(set1);
+
+        List<String> list = new ArrayList<>();
+        fillList(list);
+
+        assertEquals(new HashSet<>(list), set1);
+    }
+
     private void fillSet(Set<String> set1) {
         set1.add("string1");
-        set1.add(null);
+//        set1.add(null);
         set1.add("string2");
         set1.add("string3");
     }
@@ -115,6 +125,24 @@ public class CollectionTest {
     }
 
     @Test
+    public void subLists(){
+
+        List<String> l = new ArrayList<>();
+        l.add("1");
+        l.add("2");
+        l.add("3");
+        l.add("4");
+
+        List<String> sl = l.subList(1, 3);
+        sl.add("FF");
+        sl.set(0, "");
+
+        System.out.println("subList " + sl);
+        System.out.println("original " + l);
+    }
+
+
+    @Test
     public void testGetHashMapAndCompute() {
         HashMap<String, String> hashMap = getHashMap(0, 5);
         hashMap.compute("6", (key, value) -> value == null ? "default" : value + value);
@@ -164,6 +192,16 @@ public class CollectionTest {
         hashMap.computeIfPresent("1", (key, value) -> value + value);
         hashMap.computeIfAbsent("6", (key) -> "default");
         System.out.println(hashMap);
+    }
+
+    @Test
+    public void remove() {
+        HashMap<String, String> hashMap = getHashMap(0, 2);
+        System.out.println(hashMap);
+        boolean removeResult1 = hashMap.remove("0", "1");
+        System.out.println("result: " + removeResult1 + "\n hashMap: \n" + hashMap);
+        boolean removeResult2 = hashMap.remove("0", "0");
+        System.out.println("result: " + removeResult2 + "\n hashMap: \n" + hashMap);
     }
 
 }

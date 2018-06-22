@@ -1,39 +1,28 @@
 package com.mygaienko.practice.jpa.dao;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
-import com.mygaienko.practice.jpa.Application;
+import com.mygaienko.practice.jpa.model.Component;
+import com.mygaienko.practice.jpa.model.Detail;
 import com.mygaienko.practice.jpa.model.Product;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by dmygaenko on 15/01/2016.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@ActiveProfiles("local")
-@Transactional(transactionManager = "jpaTransactionManager")
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        DbUnitTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class})
 @DatabaseSetup("/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml")
-public class ProductDaoTest {
+public class ProductDaoTest extends AbstractDaoTest {
 
     @Autowired
     private ProductDao productDao;
@@ -42,7 +31,14 @@ public class ProductDaoTest {
     @DatabaseSetup("/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
-        productDao.findAll();
+        List<Product> all = productDao.getByIds(Arrays.asList("5", "6"));
+        System.out.println("==============");
+        List<Detail> details = all.get(0).getDetails();
+        assertThat(all.get(0).getComponents(), contains(
+                new Component("Apple 1 component 1"),
+                new Component("Apple 1 component 2"),
+                new Component("Apple 1 component 3")));
+        System.out.println("==============");
     }
 
     @Test
@@ -58,6 +54,75 @@ public class ProductDaoTest {
         assertEquals("Apple 1 (new)", actual.getName());
     }
 
+    @Test(expected = javax.persistence.OptimisticLockException.class)
+    public void mergeWithWrongVersion() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(1L);
+        product.setName("Apple 1 (new)");
+        product.setCode("1 new");
+
+        productDao.merge(product);
+    }
+
+    @Test(expected = javax.persistence.PersistenceException.class)
+    public void removeAndPersistThrowsException() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(0L);
+        product.setName("Apple 1");
+        product.setCode("1 new");
+
+        productDao.remove(product);
+
+        product.setId(null);
+
+        productDao.persist(product);
+    }
+
+    @Test
+    public void removeAndPersistWithFlush() {
+        Product product = new Product();
+        product.setId(5L);
+        product.setVersion(0L);
+        product.setName("Apple 1");
+        product.setCode("1");
+
+        productDao.remove(product);
+        productDao.flush();
+
+        product.setId(null);
+
+        productDao.persist(product);
+        productDao.flush();
+    }
+
+    @Test(expected = javax.persistence.PersistenceException.class)
+    public void updateAndSaveWithException() {
+        Product product = productDao.get(5L);
+        product.setName("Apple new");
+        productDao.merge(product);
+
+        Product newProduct = new Product();
+        newProduct.setName("Apple 1");
+        newProduct.setCode("new code");
+        productDao.persist(newProduct);
+    }
+
+    @Test
+    public void updateAndSaveWithFlush() {
+        Product product = productDao.get(5L);
+        product.setName("Apple new");
+        productDao.merge(product);
+        productDao.flush();
+
+        Product newProduct = new Product();
+        newProduct.setName("Apple 1");
+        newProduct.setCode("new code");
+        productDao.persist(newProduct);
+        productDao.flush();
+    }
+
     @Test
     public void pessimisticMerge() {
         Product product = new Product();
@@ -67,6 +132,16 @@ public class ProductDaoTest {
         product.setCode("1 new");
 
         productDao.pessimisticMerge(product);
+    }
+
+    @Test
+    public void dynamicUpdate() {
+        Product product = productDao.get(5L);
+        product.setName("updated name3");
+
+        Product actual = productDao.merge(product);
+        assertEquals(Long.valueOf(0), actual.getVersion());
+        assertEquals("updated name3", actual.getName());
     }
 
     @Test

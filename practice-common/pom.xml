@@ -21,27 +21,27 @@
                 </configuration>
             </plugin>
 
-            <!-- Prepares Agent JAR before test execution -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-              <!--  <version>2.4</version>-->
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <!--<premain-class> com.mygaienko.common.memory.Agent</premain-class>-->
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--Prepares Agent JAR before test execution-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-jar-plugin</artifactId>-->
+              <!--&lt;!&ndash;  <version>2.4</version>&ndash;&gt;-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>process-classes</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>jar</goal>-->
+                        <!--</goals>-->
+                        <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<archive>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<manifestEntries>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<premain-class>com.mygaienko.common.memory.Agent</premain-class>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</manifestEntries>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</archive>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
            <!--  executes test with -javaagent option-->
             <!--<plugin>-->
@@ -123,11 +123,46 @@
             <artifactId>jibx-extras</artifactId>
             <version>1.2.6</version>
         </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.0.0-RC1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-rx</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
+
+        <!--<dependency>-->
+            <!--<groupId>io.javaslang</groupId>-->
+            <!--<artifactId>javaslang</artifactId>-->
+            <!--<version>2.0.5</version>-->
+        <!--</dependency>-->
 
         <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.4.1</version>
         </dependency>
 
     </dependencies>

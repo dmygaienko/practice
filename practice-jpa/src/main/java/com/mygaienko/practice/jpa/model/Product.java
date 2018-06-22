@@ -1,11 +1,23 @@
 package com.mygaienko.practice.jpa.model;
 
+import lombok.Data;
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dmygaenko on 15/01/2016.
  */
 @Entity
+@Table(name = "PRODUCT")
+@DynamicUpdate
+@Data
 public class Product {
 
     @Id
@@ -15,41 +27,26 @@ public class Product {
     @Version
     private Long version;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
     private String code;
 
-    public Long getId() {
-        return id;
-    }
+    @Formula("NAME || ' | ' || CODE")
+    private String shortInfo;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "product")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Detail> details;
 
-    public Long getVersion() {
-        return version;
-    }
+    @OrderBy("name")
+    @Fetch(FetchMode.SUBSELECT)
+    @ElementCollection
+    @CollectionTable(name = "COMPONENT",joinColumns = {
+            @JoinColumn(name = "PRODUCT_ID")
+    })
+    private Set<Component> components;
 
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }

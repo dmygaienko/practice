@@ -20,6 +20,7 @@
         <module>practice-cglib</module>
         <module>practice-patterns</module>
         <module>practice-spring-web</module>
+        <module>practice-aspectj</module>
     </modules>
 
     <properties>

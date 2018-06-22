@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <A id="1" a1="a11_value" s1="a11_s1_value"  />
+    <A id="2" a1="a12_value" s1="a12_s1_value"  />
+    <B id="1" b1="b11_value" s1="b11_s1_value"  />
+
+</dataset>
