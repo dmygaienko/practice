@@ -3,9 +3,12 @@ package com.mygaienko.common.reactor;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static org.hamcrest.Matchers.contains;
@@ -92,13 +95,27 @@ public class ReactorTest {
     public void testZipWithCombinator() {
         Flux.just("One", "Two", "Three", "Four", "Five", "Six")
                 .zipWith(Flux.range(0, 6), (s, i) -> i + ". " + s)
-                .delayElementsMillis(1)
+//                .delayElementsMillis(1)
                 .distinct()
                 .sort()
                 .buffer(2)
                 .take(2)
                 .subscribe(combination -> System.out.println(combination))
         ;
+    }
+
+    @Test
+    public void testFluxOnAnotherThread() {
+        List<String> lists = Flux.range(0, 100000)
+                .publishOn(Schedulers.fromExecutorService(Executors.newFixedThreadPool(2)))
+                .filter(item -> !item.equals("2"))
+                .map(item -> "item executed on " + Thread.currentThread())
+//                .doOnNext(System.out::println)
+                .distinct()
+                .collectList()
+                .block();
+
+        System.out.println(lists);
     }
 
 }
