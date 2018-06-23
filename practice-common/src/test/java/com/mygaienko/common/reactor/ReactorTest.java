@@ -2,10 +2,14 @@ package com.mygaienko.common.reactor;
 
 import org.junit.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.GroupedFlux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -117,5 +121,27 @@ public class ReactorTest {
 
         System.out.println(lists);
     }
+
+    @Test
+    public void testParallel() {
+        Flux.range(1, 10)
+                .parallel(2)
+                .runOn(Schedulers.parallel())
+                .subscribe(i -> System.out.println(Thread.currentThread().getName() + " -> " + i));
+    }
+
+    @Test
+    //not working
+    public void test() {
+        Map<Integer, List<Integer>> grouped = Flux.range(1, 10)
+                .groupBy(item -> item % 3)
+                .doOnNext(item -> System.out.println(item))
+                .collectMap(group -> group.key(), group -> group.collectList().subscribe().peek())
+
+                .block();
+
+        System.out.println(grouped);
+    }
+
 
 }
