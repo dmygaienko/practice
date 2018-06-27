@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public class EnumMapTest {
 
     @Test
+    //asd
     public void testConstructor() throws Exception {
         EnumMap<Status, String> enumMap = getEnumMap();
         System.out.println(enumMap);
