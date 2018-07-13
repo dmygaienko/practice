@@ -48,3 +48,5 @@ class EnumType<T> {
 class AType { }
 
 class BType { }
+
+//first simple step
