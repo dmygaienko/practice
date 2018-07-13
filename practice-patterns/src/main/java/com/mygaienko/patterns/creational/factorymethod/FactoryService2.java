@@ -50,3 +50,5 @@ class AType { }
 class BType { }
 
 //first simple step
+//second simple step
+//third simple step
