@@ -1,15 +1,20 @@
 package com.mygaienko.common.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JacksonAnyGetterTest {
+public class JacksonAnyGetterSetterTest {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void test() throws JsonProcessingException {
@@ -19,7 +24,13 @@ public class JacksonAnyGetterTest {
         e.addEntry("e3", "v3");
         e.addEntry("e4", "v4");
 
-        System.out.println(new ObjectMapper().writeValueAsString(e));
+        System.out.println(objectMapper.writeValueAsString(e));
+    }
+
+    @Test
+    public void testAnySetter() throws IOException {
+        E e = objectMapper.readValue("{\"e11111\":\"v1\",\"e2\":\"v2\",\"e3\":\"v3\",\"e4\":\"v4\"}", E.class);
+        System.out.println(e);
     }
 }
 
@@ -34,6 +45,7 @@ class E {
         return e1;
     }
 
+    @JsonSetter("e11111")
     public void setE1(String e1) {
         this.e1 = e1;
     }
@@ -47,7 +59,16 @@ class E {
         this.map = map;
     }
 
+    @JsonAnySetter
     public void addEntry(String key, String value) {
         map.put(key, value);
+    }
+
+    @Override
+    public String toString() {
+        return "E{" +
+                "e1='" + e1 + '\'' +
+                ", map=" + map +
+                '}';
     }
 }
