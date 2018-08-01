@@ -1,8 +1,8 @@
 package com.mygaienko.common.collection.commons;
 
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
-import org.apache.commons.collections.bag.TreeBag;
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.bag.HashBag;
+import org.apache.commons.collections4.bag.TreeBag;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -12,19 +12,10 @@ public class BagTest {
 
     @Test
     public void testHashBag() {
-        Bag bag = new HashBag();
-        bag.add("1", 3);
-        bag.add(2, 1);
-        bag.add(3, 4);
-        bag.add(5, 4);
-
-        assertThat(bag.getCount("1"), is(3));
-        assertThat(bag.getCount(2), is(1));
+        testBag(new HashBag<>());
     }
 
-    @Test
-    public void testTreeBag() {
-        TreeBag bag = new TreeBag();
+    private void testBag(Bag<String> bag) {
         bag.add("1", 3);
         bag.add("2", 1);
         bag.add("3", 4);
@@ -32,6 +23,11 @@ public class BagTest {
 
         assertThat(bag.getCount("1"), is(3));
         assertThat(bag.getCount("2"), is(1));
+    }
+
+    @Test
+    public void testTreeBag() {
+        testBag(new TreeBag<>());
     }
 
 }
