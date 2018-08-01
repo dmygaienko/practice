@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class Product {
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "product")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Detail> details;
+    private List<Detail> details = new ArrayList<>();
 
     @OrderBy("name")
     @Fetch(FetchMode.SUBSELECT)

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -28,10 +29,9 @@ public class ProductDaoTest extends AbstractDaoTest {
     private ProductDao productDao;
 
     @Test
-    @DatabaseSetup("/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/jpa/dao/ProductDaoTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
-        List<Product> all = productDao.getByIds(Arrays.asList("5", "6"));
+        List<Product> all = productDao.getByIds(Arrays.asList("6"));
         System.out.println("==============");
         List<Detail> details = all.get(0).getDetails();
         assertThat(all.get(0).getComponents(), contains(
@@ -49,9 +49,27 @@ public class ProductDaoTest extends AbstractDaoTest {
         product.setName("Apple 1 (new)");
         product.setCode("1 new");
 
-        Product actual = productDao.merge(product);
-        assertEquals(Long.valueOf(0), actual.getVersion());
-        assertEquals("Apple 1 (new)", actual.getName());
+        product = productDao.merge(product);
+        assertEquals(Long.valueOf(0), product.getVersion());
+        assertEquals("Apple 1 (new)", product.getName());
+
+        Product actual = productDao.get(5L);
+        assertThat(actual.getVersion(), is(1L));
+    }
+
+    @Test
+    public void updateAndSave() {
+        Product product = productDao.get(5L);
+        product.setVersion(3L);
+        product.setName("Apple 1 (new)");
+        product.setCode("1 new");
+
+        product = productDao.merge(product);
+        assertEquals(Long.valueOf(3), product.getVersion());
+        assertEquals("Apple 1 (new)", product.getName());
+
+        Product actual = productDao.get(5L);
+        assertThat(actual.getVersion(), is(1L)); // hibernate still decide on his own what version to insert
     }
 
     @Test(expected = javax.persistence.OptimisticLockException.class)
