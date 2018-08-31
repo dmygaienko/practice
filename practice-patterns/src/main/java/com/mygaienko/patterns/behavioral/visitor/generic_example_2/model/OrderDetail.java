@@ -1,8 +1,6 @@
 package com.mygaienko.patterns.behavioral.visitor.generic_example_2.model;
 
 
-import com.mygaienko.patterns.behavioral.visitor.generic_example_2.visitors.Visitor;
-
 /**
  * Created by dmygaenko on 23/09/2016.
  */
@@ -13,11 +11,6 @@ public class OrderDetail implements Visitable<OrderDetail>{
     private Long detailId;
     private Part part;
     private int quantity;
-
-    @Override
-    public void accept(Visitor<OrderDetail> visitor) {
-        visitor.visit(this);
-    }
 
     public Long getDetailId() {
         return detailId;

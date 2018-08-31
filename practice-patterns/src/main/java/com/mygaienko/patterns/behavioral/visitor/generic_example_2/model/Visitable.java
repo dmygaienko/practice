@@ -8,5 +8,7 @@ import com.mygaienko.patterns.behavioral.visitor.generic_example_2.visitors.Visi
  */
 public interface Visitable<T> {
 
-    void accept(Visitor<T> t);
+    default void accept(Visitor<T> visitor) {
+        visitor.visit((T) this);
+    }
 }
