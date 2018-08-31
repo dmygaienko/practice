@@ -1,8 +1,6 @@
 package com.mygaienko.patterns.behavioral.visitor.generic_example_2.model;
 
 
-import com.mygaienko.patterns.behavioral.visitor.generic_example_2.visitors.Visitor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +14,6 @@ public class OrderHeader implements Visitable<OrderHeader>{
 
     private List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
     private List<ValidationError> errors = new ArrayList<ValidationError>();
-
-    @Override
-    public void accept(Visitor<OrderHeader> visitor) {
-        visitor.visit(this);
-    }
 
     public Long getOrderId() {
         return orderId;

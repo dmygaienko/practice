@@ -12,6 +12,7 @@ import java.util.List;
 public class OrderHasDetailValidationVisitor implements Visitor<OrderHeader> {
 
     public void visit(OrderHeader header) {
+        System.out.println("OrderHasDetailValidationVisitor: " + header);
         List<OrderDetail> details = header.getOrderDetails();
         if (details == null || details.size() == 0) {
             header.addValidationError(new ValidationError("There are no Order Lines"));
