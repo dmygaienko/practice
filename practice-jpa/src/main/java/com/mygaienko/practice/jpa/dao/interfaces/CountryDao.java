@@ -12,6 +12,8 @@ public interface CountryDao {
 
     Country get(CountryId id);
 
+    Country getAndIncrement(CountryId id);
+
     void remove(Country country);
 
     List<Country> getCountries();

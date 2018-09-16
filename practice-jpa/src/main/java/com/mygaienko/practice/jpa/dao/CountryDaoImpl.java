@@ -7,6 +7,7 @@ import com.mygaienko.practice.jpa.model.Country_;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -30,6 +31,11 @@ public class CountryDaoImpl implements CountryDao {
         query.where(builder.equal(author.get(Country_.id), id));
 
         return  entityManager.createQuery(query).getSingleResult();
+    }
+
+    @Override
+    public Country getAndIncrement(CountryId id) {
+        return entityManager.find(Country.class, id, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
     }
 
     @Override
