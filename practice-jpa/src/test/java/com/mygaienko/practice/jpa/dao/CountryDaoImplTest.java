@@ -44,7 +44,7 @@ public class CountryDaoImplTest extends AbstractDaoTest {
         countryDao.merge(country);
         List<City> all = cityRepository.findAll();
 
-        assertThat(all, hasSize(2));
+        assertThat(all, hasSize(8));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CountryDaoImplTest extends AbstractDaoTest {
 //        countryDao.merge(country);
         List<City> all = cityRepository.findAll();
 
-        assertThat(all, hasSize(2));
+        assertThat(all, hasSize(8));
     }
 
 }

@@ -25,6 +25,9 @@ public class Country implements Serializable{
     @EmbeddedId
     private CountryId id;
 
+    @Version
+    private Integer version;
+
     @Column
     private String name;
 
@@ -61,6 +64,14 @@ public class Country implements Serializable{
 
     public void setCities1(List<CitySubQuery> cities1) {
         this.cities1 = cities1;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public CountryId getId() {
