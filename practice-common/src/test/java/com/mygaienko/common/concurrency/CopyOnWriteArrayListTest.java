@@ -4,10 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.Assert.assertNotEquals;
@@ -107,4 +104,44 @@ public class CopyOnWriteArrayListTest {
         };
 
     }
+
+    @Test
+    public void testReadTaskNotSeeWrittenValues() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        executor.execute(() -> safeTestRead(countDownLatch));
+
+        executor.execute(() -> {
+            copyOnWriteArrayList.add("new value xxx");
+            countDownLatch.countDown();
+        });
+
+        executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+    }
+
+    private void safeTestRead(CountDownLatch countDownLatch) {
+        try {
+            testRead(countDownLatch);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void testRead(CountDownLatch countDownLatch) throws InterruptedException {
+        Iterator<String> iterator = copyOnWriteArrayList.iterator();
+
+        int i = 0;
+        while (iterator.hasNext()) {
+            String value = iterator.next();
+
+            if (i == 1) {
+                countDownLatch.await();
+            }
+
+            assertNotEquals("new value xxx", value);
+            System.out.println(value);
+            i++;
+        }
+    }
+
 }
