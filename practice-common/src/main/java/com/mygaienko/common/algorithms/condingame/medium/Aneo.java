@@ -1,7 +1,11 @@
 package com.mygaienko.common.algorithms.condingame.medium;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
@@ -29,17 +33,26 @@ class Solution {
         return i*1000/3600;
     }
 
-    private static int countSpeed(int maxSpeed, List<Light> lights) {
+    public static int countSpeed(int maxSpeed, List<Light> lights) {
         Map<Light, List<SpeedInterval>> speedIntervals = countSpeedIntervalsForAllLights(maxSpeed, lights);
         return findCommonMaxSpeed(speedIntervals);
     }
 
     private static int findCommonMaxSpeed(Map<Light, List<SpeedInterval>> speedIntervals) {
-        Collection<List<SpeedInterval>> values = speedIntervals.values();
-        for (int i = 0; i < values.size(); i++) {
-
+        Map<Integer, Integer> speedIndex = new TreeMap<>();
+        for (List<SpeedInterval> intervals : speedIntervals.values()) {
+            for (SpeedInterval interval : intervals) {
+                for (int i = interval.getMin().intValue(); interval.getMax().compareTo(new BigDecimal(i)) > -1; i++) {
+                    speedIndex.compute(i, (k, v) -> v == null ? 1 : v + 1);
+                }
+            }
         }
-        return 0;
+
+        return speedIndex.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(speedIntervals.size()))
+                .findFirst()
+                .get()
+                .getKey();
     }
 
     private static Map<Light, List<SpeedInterval>> countSpeedIntervalsForAllLights(int maxSpeed, List<Light> lights) {
@@ -47,25 +60,28 @@ class Solution {
                .collect(toMap(identity(), light -> countSpeedIntervalsForLight(maxSpeed, light)));
     }
 
-    private static List<SpeedInterval> countSpeedIntervalsForLight(int maxSpeed, Light light) {
+    public static List<SpeedInterval> countSpeedIntervalsForLight(int maxSpeed, Light light) {
         int minDuration = light.getDistance() / maxSpeed;
 
         List<SpeedInterval> speedIntervals = new ArrayList<>();
         if (minDuration < light.getDuration()) {
-            int minSpeed = light.getDistance()/light.getDuration();
-            speedIntervals.add(new SpeedInterval(minSpeed, maxSpeed));
+            BigDecimal minSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(light.getDuration()), MathContext.DECIMAL32);
+            speedIntervals.add(new SpeedInterval(minSpeed, new BigDecimal(maxSpeed)));
         }
 
         int nextDuration = 0;
-        int nextMinSpeed;
-        int nextMaxSpeed;
+        BigDecimal nextMinSpeed;
+        BigDecimal nextMaxSpeed;
         do {
             nextDuration = nextDuration + light.getDuration() * 2;
-            nextMaxSpeed = light.getDistance()/nextDuration;
-            nextMinSpeed = light.getDistance()/(nextDuration - light.getDuration());
+            nextMinSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration), MathContext.DECIMAL32);
+            nextMaxSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration - light.getDuration()), MathContext.DECIMAL32);
 
-            speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
-        } while (nextMinSpeed > 0 && nextMaxSpeed > 0);
+            if (nextMinSpeed.intValue() < maxSpeed && nextMaxSpeed.intValue() < maxSpeed) {
+                    speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
+            }
+
+        } while (nextMinSpeed.compareTo(ONE) > 0 && nextMaxSpeed.compareTo(ONE) > 0);
 
         return speedIntervals;
     }
@@ -80,12 +96,12 @@ class Solution {
         return lights;
     }
 
-    private static class Light {
+    public static class Light {
 
         private final int distance;
         private final int duration;
 
-        private Light(int distance, int duration) {
+        public Light(int distance, int duration) {
             this.distance = distance;
             this.duration = duration;
         }
@@ -117,22 +133,61 @@ class Solution {
         }
     }
 
-    private static class SpeedInterval {
-        private final int min;
-        private final int max;
+    public static class SpeedInterval {
+        private final BigDecimal min;
+        private final BigDecimal max;
 
-        private SpeedInterval(int min, int max) {
+        public SpeedInterval(BigDecimal min, BigDecimal max) {
             this.min = min;
             this.max = max;
         }
 
-        public int getMin() {
+        public BigDecimal getMin() {
             return min;
         }
 
-        public int getMax() {
+        public BigDecimal getMax() {
             return max;
         }
+
+        public SpeedInterval merge(SpeedInterval that) {
+            BigDecimal newMin = BigDecimal.ZERO;
+            BigDecimal newMax = BigDecimal.ZERO;
+
+            if (min.compareTo(that.min) < 0) {
+                if (max.compareTo(that.max) > 0) {
+                    newMin = that.min;
+                    newMax = that.max;
+                } else if (max.compareTo(that.min) > 0){
+                    newMin = that.min;
+                    newMax = max;
+                }
+
+            } else if (that.min.compareTo(min) < 0) {
+                if (that.max.compareTo(max) > 0) {
+                    newMin = min;
+                    newMax = max;
+                } else if (that.max.compareTo(min) > 0) {
+                    newMin = min;
+                    newMax = that.max;
+                }
+            }
+
+            return new SpeedInterval(newMin, newMax);
+        }
+
+        public boolean isEmpty() {
+            return min.equals(ZERO) && max.equals(ZERO);
+        }
+
+        @Override
+        public String toString() {
+            return "SpeedInterval{" +
+                    "min=" + min +
+                    ", max=" + max +
+                    '}';
+        }
+
     }
 
 }
