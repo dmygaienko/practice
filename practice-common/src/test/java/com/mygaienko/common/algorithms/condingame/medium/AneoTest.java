@@ -50,4 +50,23 @@ public class AneoTest {
                 .merge(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(2))));
     }
 
+    @Test
+    public void testMerge12_13() {
+        System.out.println(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(2))
+                .merge(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(3))));
+
+        System.out.println(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(3))
+                .merge(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(2))));
+    }
+
+    @Test
+    public void testFindCommonMaxSpeed() {
+        int commonMaxSpeed = Solution.findCommonMaxSpeed(Arrays.asList(
+                Arrays.asList(new Solution.SpeedInterval(1, 3)),
+                Arrays.asList(new Solution.SpeedInterval(1, 2)),
+                Arrays.asList(new Solution.SpeedInterval(1, 4))
+        ));
+
+        System.out.println(commonMaxSpeed);
+    }
 }

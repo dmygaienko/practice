@@ -2,12 +2,13 @@ package com.mygaienko.common.algorithms.condingame.medium;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -34,30 +35,45 @@ class Solution {
     }
 
     public static int countSpeed(int maxSpeed, List<Light> lights) {
-        Map<Light, List<SpeedInterval>> speedIntervals = countSpeedIntervalsForAllLights(maxSpeed, lights);
+        List<List<SpeedInterval>> speedIntervals = countSpeedIntervalsForAllLights(maxSpeed, lights);
         return findCommonMaxSpeed(speedIntervals);
     }
 
-    private static int findCommonMaxSpeed(Map<Light, List<SpeedInterval>> speedIntervals) {
-        Map<Integer, Integer> speedIndex = new TreeMap<>();
-        for (List<SpeedInterval> intervals : speedIntervals.values()) {
-            for (SpeedInterval interval : intervals) {
-                for (int i = interval.getMin().intValue(); interval.getMax().compareTo(new BigDecimal(i)) > -1; i++) {
-                    speedIndex.compute(i, (k, v) -> v == null ? 1 : v + 1);
+    public static int findCommonMaxSpeed(List<List<SpeedInterval>> allSpeedIntervals) {
+        SpeedInterval common = null;
+        for (SpeedInterval speedInterval : allSpeedIntervals.get(0)) {
+            if (common == null || common.isEmpty()) {
+                common = speedInterval;
+            }
+
+
+            for (int i = 1; i < allSpeedIntervals.size(); i++) {
+                List<SpeedInterval> allSpeedInterval = allSpeedIntervals.get(i);
+
+                SpeedInterval merged = null;
+                for (SpeedInterval interval : allSpeedInterval) {
+                    merged = common.merge(interval);
+
+                    if (!merged.isEmpty()) {
+                        common = merged;
+                        break;
+                    }
                 }
+
+                if (merged == null || merged.isEmpty()) {
+                    common = null;
+                    break;
+                }
+
             }
         }
-
-        return speedIndex.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(speedIntervals.size()))
-                .findFirst()
-                .get()
-                .getKey();
+        return common != null ? common.max.intValue() : 0;
     }
 
-    private static Map<Light, List<SpeedInterval>> countSpeedIntervalsForAllLights(int maxSpeed, List<Light> lights) {
+    private static List<List<SpeedInterval>> countSpeedIntervalsForAllLights(int maxSpeed, List<Light> lights) {
        return lights.stream()
-               .collect(toMap(identity(), light -> countSpeedIntervalsForLight(maxSpeed, light)));
+               .map(light -> countSpeedIntervalsForLight(maxSpeed, light))
+               .collect(Collectors.toList());
     }
 
     public static List<SpeedInterval> countSpeedIntervalsForLight(int maxSpeed, Light light) {
@@ -142,6 +158,11 @@ class Solution {
             this.max = max;
         }
 
+        public SpeedInterval(int min, int max) {
+            this.min = new BigDecimal(min);
+            this.max = new BigDecimal(max);
+        }
+
         public BigDecimal getMin() {
             return min;
         }
@@ -163,7 +184,7 @@ class Solution {
                     newMax = max;
                 }
 
-            } else if (that.min.compareTo(min) < 0) {
+            } else {
                 if (that.max.compareTo(max) > 0) {
                     newMin = min;
                     newMax = max;
