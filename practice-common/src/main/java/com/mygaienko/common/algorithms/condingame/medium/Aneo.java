@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 
 /**
@@ -27,10 +26,14 @@ class Solution {
         // Write an action using System.out.println()
         // To debug: System.err.println("Debug messages...");
 
-        System.out.println(averageSpeed);
+        System.out.println(meterPerSecToKmPerHour(averageSpeed));
     }
 
-    private static int kmPerHourToMeterPerSec(int i) {
+    public static int meterPerSecToKmPerHour(int averageSpeed) {
+        return averageSpeed*3600/1000;
+    }
+
+    public static int kmPerHourToMeterPerSec(int i) {
         return i*1000/3600;
     }
 
@@ -93,11 +96,14 @@ class Solution {
             nextMinSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration), MathContext.DECIMAL32);
             nextMaxSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration - light.getDuration()), MathContext.DECIMAL32);
 
-            if (nextMinSpeed.intValue() < maxSpeed && nextMaxSpeed.intValue() < maxSpeed) {
-                    speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
+            if (nextMinSpeed.intValue() <= maxSpeed) {
+                 if (nextMaxSpeed.intValue() > maxSpeed) {
+                    nextMaxSpeed = new BigDecimal(maxSpeed);
+                 }
+                 speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
             }
 
-        } while (nextMinSpeed.compareTo(ONE) > 0 && nextMaxSpeed.compareTo(ONE) > 0);
+        } while (nextMinSpeed.compareTo(new BigDecimal(5)) > 0 && nextMaxSpeed.compareTo(new BigDecimal(5)) > 0);
 
         return speedIntervals;
     }
@@ -176,7 +182,7 @@ class Solution {
             BigDecimal newMax = BigDecimal.ZERO;
 
             if (min.compareTo(that.min) < 0) {
-                if (max.compareTo(that.max) > 0) {
+                if (max.compareTo(that.max) > -1) {
                     newMin = that.min;
                     newMax = that.max;
                 } else if (max.compareTo(that.min) > 0){
@@ -185,7 +191,7 @@ class Solution {
                 }
 
             } else {
-                if (that.max.compareTo(max) > 0) {
+                if (that.max.compareTo(max) > -1) {
                     newMin = min;
                     newMax = max;
                 } else if (that.max.compareTo(min) > 0) {

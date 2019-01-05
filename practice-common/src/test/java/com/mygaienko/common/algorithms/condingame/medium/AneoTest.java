@@ -16,11 +16,13 @@ public class AneoTest {
 
     @Test
     public void testCountSpeed() {
-        System.out.println(Solution.countSpeed(25, Arrays.asList(
+        int x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(90), Arrays.asList(
                 new Solution.Light(300, 30),
                 new Solution.Light(1500, 30),
                 new Solution.Light(3000, 30)
-        )));
+        ));
+
+        System.out.println(Solution.meterPerSecToKmPerHour(x));
     }
 
     @Test
@@ -57,6 +59,12 @@ public class AneoTest {
 
         System.out.println(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(3))
                 .merge(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(2))));
+    }
+
+    @Test
+    public void testMerge10_25() {
+        System.out.println(new Solution.SpeedInterval(10, 25)
+                .merge(new Solution.SpeedInterval(25, 25)));
     }
 
     @Test
