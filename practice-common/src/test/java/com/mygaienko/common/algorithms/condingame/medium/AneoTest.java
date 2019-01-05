@@ -16,7 +16,7 @@ public class AneoTest {
 
     @Test
     public void testCountSpeed() {
-        int x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(90), Arrays.asList(
+        BigDecimal x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(90), Arrays.asList(
                 new Solution.Light(300, 30),
                 new Solution.Light(1500, 30),
                 new Solution.Light(3000, 30)
@@ -24,6 +24,16 @@ public class AneoTest {
 
         System.out.println(Solution.meterPerSecToKmPerHour(x));
     }
+
+    @Test
+    public void testCountSpeed1() {
+        BigDecimal x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(50), Arrays.asList(
+                new Solution.Light(200, 15)
+        ));
+
+        System.out.println(Solution.meterPerSecToKmPerHour(x));
+    }
+
 
     @Test
     public void testMerge14_23() {
@@ -69,7 +79,7 @@ public class AneoTest {
 
     @Test
     public void testFindCommonMaxSpeed() {
-        int commonMaxSpeed = Solution.findCommonMaxSpeed(Arrays.asList(
+        BigDecimal commonMaxSpeed = Solution.findCommonMaxSpeed(Arrays.asList(
                 Arrays.asList(new Solution.SpeedInterval(1, 3)),
                 Arrays.asList(new Solution.SpeedInterval(1, 2)),
                 Arrays.asList(new Solution.SpeedInterval(1, 4))

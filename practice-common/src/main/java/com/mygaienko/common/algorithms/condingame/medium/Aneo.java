@@ -17,11 +17,11 @@ class Solution {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        int maxSpeed = kmPerHourToMeterPerSec(in.nextInt());
+        double maxSpeed = kmPerHourToMeterPerSec(in.nextInt());
         int lightCount = in.nextInt();
 
         List<Light> lights = readLights(in, lightCount);
-        int averageSpeed = countSpeed(maxSpeed, lights);
+        BigDecimal averageSpeed = countSpeed(maxSpeed, lights);
 
         // Write an action using System.out.println()
         // To debug: System.err.println("Debug messages...");
@@ -29,20 +29,20 @@ class Solution {
         System.out.println(meterPerSecToKmPerHour(averageSpeed));
     }
 
-    public static int meterPerSecToKmPerHour(int averageSpeed) {
-        return averageSpeed*3600/1000;
+    public static int meterPerSecToKmPerHour(BigDecimal averageSpeed) {
+        return averageSpeed.multiply(new BigDecimal(3600)).divide(new BigDecimal(1000, MathContext.DECIMAL32)).intValue();
     }
 
-    public static int kmPerHourToMeterPerSec(int i) {
-        return i*1000/3600;
+    public static double kmPerHourToMeterPerSec(int i) {
+        return i*1000/3600d;
     }
 
-    public static int countSpeed(int maxSpeed, List<Light> lights) {
+    public static BigDecimal countSpeed(double maxSpeed, List<Light> lights) {
         List<List<SpeedInterval>> speedIntervals = countSpeedIntervalsForAllLights(maxSpeed, lights);
         return findCommonMaxSpeed(speedIntervals);
     }
 
-    public static int findCommonMaxSpeed(List<List<SpeedInterval>> allSpeedIntervals) {
+    public static BigDecimal findCommonMaxSpeed(List<List<SpeedInterval>> allSpeedIntervals) {
         SpeedInterval common = null;
         for (SpeedInterval speedInterval : allSpeedIntervals.get(0)) {
             if (common == null || common.isEmpty()) {
@@ -70,20 +70,20 @@ class Solution {
 
             }
         }
-        return common != null ? common.max.intValue() : 0;
+        return common != null ? common.max : ZERO;
     }
 
-    private static List<List<SpeedInterval>> countSpeedIntervalsForAllLights(int maxSpeed, List<Light> lights) {
+    private static List<List<SpeedInterval>> countSpeedIntervalsForAllLights(double maxSpeed, List<Light> lights) {
        return lights.stream()
                .map(light -> countSpeedIntervalsForLight(maxSpeed, light))
                .collect(Collectors.toList());
     }
 
-    public static List<SpeedInterval> countSpeedIntervalsForLight(int maxSpeed, Light light) {
-        int minDuration = light.getDistance() / maxSpeed;
+    public static List<SpeedInterval> countSpeedIntervalsForLight(double maxSpeed, Light light) {
+        double minDuration = light.getDistance() / maxSpeed;
 
         List<SpeedInterval> speedIntervals = new ArrayList<>();
-        if (minDuration < light.getDuration()) {
+        if (minDuration <= light.getDuration()) {
             BigDecimal minSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(light.getDuration()), MathContext.DECIMAL32);
             speedIntervals.add(new SpeedInterval(minSpeed, new BigDecimal(maxSpeed)));
         }
