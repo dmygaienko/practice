@@ -10,7 +10,7 @@ public class AneoTest {
 
     @Test
     public void test() {
-        List<Solution.SpeedInterval> speedIntervals = Solution.countSpeedIntervalsForLight(25, new Solution.Light(200, 10));
+        List<Solution.SpeedInterval> speedIntervals = Solution.countSpeedIntervalsForLight(new BigDecimal(25), new Solution.Light(200, 10));
         System.out.println(speedIntervals);
     }
 
@@ -34,6 +34,25 @@ public class AneoTest {
         System.out.println(Solution.meterPerSecToKmPerHour(x));
     }
 
+    @Test
+    public void testCountSpeed2() {
+        BigDecimal x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(50), Arrays.asList(
+                new Solution.Light(200, 10)
+        ));
+
+        System.out.println(Solution.meterPerSecToKmPerHour(x));
+    }
+
+    @Test
+    public void testCountSpeed4() {
+        BigDecimal x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(90), Arrays.asList(
+                new Solution.Light(300, 30),
+                new Solution.Light(1500, 20),
+                new Solution.Light(3000, 10)
+        ));
+
+        System.out.println(Solution.meterPerSecToKmPerHour(x));
+    }
 
     @Test
     public void testMerge14_23() {

@@ -1,13 +1,13 @@
 package com.mygaienko.common.algorithms.condingame.medium;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
+import static java.math.MathContext.DECIMAL32;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -17,7 +17,7 @@ class Solution {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        double maxSpeed = kmPerHourToMeterPerSec(in.nextInt());
+        BigDecimal maxSpeed = kmPerHourToMeterPerSec(in.nextInt());
         int lightCount = in.nextInt();
 
         List<Light> lights = readLights(in, lightCount);
@@ -30,14 +30,14 @@ class Solution {
     }
 
     public static int meterPerSecToKmPerHour(BigDecimal averageSpeed) {
-        return averageSpeed.multiply(new BigDecimal(3600)).divide(new BigDecimal(1000, MathContext.DECIMAL32)).intValue();
+        return averageSpeed.multiply(new BigDecimal(3600)).divide(new BigDecimal(1000), DECIMAL32).intValue();
     }
 
-    public static double kmPerHourToMeterPerSec(int i) {
-        return i*1000/3600d;
+    public static BigDecimal kmPerHourToMeterPerSec(int i) {
+        return new BigDecimal(i).multiply(new BigDecimal(1000)).divide(new BigDecimal(3600), DECIMAL32);
     }
 
-    public static BigDecimal countSpeed(double maxSpeed, List<Light> lights) {
+    public static BigDecimal countSpeed(BigDecimal maxSpeed, List<Light> lights) {
         List<List<SpeedInterval>> speedIntervals = countSpeedIntervalsForAllLights(maxSpeed, lights);
         return findCommonMaxSpeed(speedIntervals);
     }
@@ -73,34 +73,35 @@ class Solution {
         return common != null ? common.max : ZERO;
     }
 
-    private static List<List<SpeedInterval>> countSpeedIntervalsForAllLights(double maxSpeed, List<Light> lights) {
+    private static List<List<SpeedInterval>> countSpeedIntervalsForAllLights(BigDecimal maxSpeed, List<Light> lights) {
        return lights.stream()
                .map(light -> countSpeedIntervalsForLight(maxSpeed, light))
                .collect(Collectors.toList());
     }
 
-    public static List<SpeedInterval> countSpeedIntervalsForLight(double maxSpeed, Light light) {
-        double minDuration = light.getDistance() / maxSpeed;
+    public static List<SpeedInterval> countSpeedIntervalsForLight(BigDecimal maxSpeed, Light light) {
+        BigDecimal minDuration = new BigDecimal(light.getDistance()).divide(maxSpeed, DECIMAL32);
 
         List<SpeedInterval> speedIntervals = new ArrayList<>();
-        if (minDuration <= light.getDuration()) {
-            BigDecimal minSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(light.getDuration()), MathContext.DECIMAL32);
-            speedIntervals.add(new SpeedInterval(minSpeed, new BigDecimal(maxSpeed)));
+        if (minDuration.compareTo(new BigDecimal(light.getDuration())) < 1) {
+            BigDecimal minSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(light.getDuration()), DECIMAL32);
+            speedIntervals.add(new SpeedInterval(minSpeed, maxSpeed));
         }
 
-        int nextDuration = 0;
+        int nextDuration = light.getDuration();
         BigDecimal nextMinSpeed;
         BigDecimal nextMaxSpeed;
         do {
             nextDuration = nextDuration + light.getDuration() * 2;
-            nextMinSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration), MathContext.DECIMAL32);
-            nextMaxSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration - light.getDuration()), MathContext.DECIMAL32);
+            nextMinSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration - 1), DECIMAL32);
+            nextMaxSpeed = new BigDecimal(light.getDistance()).divide(new BigDecimal(nextDuration - light.getDuration()), DECIMAL32);
 
-            if (nextMinSpeed.intValue() <= maxSpeed) {
-                 if (nextMaxSpeed.intValue() > maxSpeed) {
-                    nextMaxSpeed = new BigDecimal(maxSpeed);
-                 }
-                 speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
+            if (nextMinSpeed.compareTo(maxSpeed) < 1) {
+                 if (nextMaxSpeed.compareTo(maxSpeed) > 0) {
+//                    nextMaxSpeed = nextMinSpeed;
+                    nextMaxSpeed = maxSpeed;
+                }
+                speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
             }
 
         } while (nextMinSpeed.compareTo(new BigDecimal(5)) > 0 && nextMaxSpeed.compareTo(new BigDecimal(5)) > 0);
