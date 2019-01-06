@@ -104,7 +104,7 @@ class Solution {
                 speedIntervals.add(new SpeedInterval(nextMinSpeed, nextMaxSpeed));
             }
 
-        } while (nextMinSpeed.compareTo(new BigDecimal(5)) > 0 && nextMaxSpeed.compareTo(new BigDecimal(5)) > 0);
+        } while (nextMinSpeed.compareTo(new BigDecimal(1)) > 0 && nextMaxSpeed.compareTo(new BigDecimal(1)) > 0);
 
         return speedIntervals;
     }
