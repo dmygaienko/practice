@@ -55,6 +55,30 @@ public class AneoTest {
     }
 
     @Test
+    public void testCountSpeed10() {
+        BigDecimal x = Solution.countSpeed(Solution.kmPerHourToMeterPerSec(90), Arrays.asList(
+                new Solution.Light(1234, 5),
+                new Solution.Light(2468, 5),
+                new Solution.Light(3702, 5),
+                new Solution.Light(6170, 5),
+                new Solution.Light(8638, 5),
+                new Solution.Light(13574, 5),
+                new Solution.Light(16042, 5),
+                new Solution.Light(20978, 5),
+                new Solution.Light(23446, 5),
+                new Solution.Light(28382, 5),
+                new Solution.Light(35786, 5),
+                new Solution.Light(38254, 5),
+                new Solution.Light(45658, 5),
+                new Solution.Light(50594, 5),
+                new Solution.Light(53062, 5),
+                new Solution.Light(57998, 5)
+        ));
+
+        System.out.println(Solution.meterPerSecToKmPerHour(x));
+    }
+
+    @Test
     public void testMerge14_23() {
         System.out.println(new Solution.SpeedInterval(new BigDecimal(1), new BigDecimal(4))
                 .merge(new Solution.SpeedInterval(new BigDecimal(2), new BigDecimal(3))));
