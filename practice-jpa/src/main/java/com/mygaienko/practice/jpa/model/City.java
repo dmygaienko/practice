@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.mygaienko.practice.jpa.model.converter.CityEnumConverter;
 import com.mygaienko.practice.jpa.model.listener.CityListener;
 import org.hibernate.annotations.Subselect;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.io.Serializable;
  * Created by mygadmy on 03/12/15.
  */
 @Entity
-@EntityListeners(CityListener.class)
+@EntityListeners({CityListener.class, AuditingEntityListener.class})
 public class City implements Serializable {
 
     @Id
