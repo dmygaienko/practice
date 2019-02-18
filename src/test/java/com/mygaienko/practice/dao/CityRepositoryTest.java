@@ -32,31 +32,27 @@ import static org.junit.Assert.assertEquals;
 public class CityRepositoryTest {
 
     @Autowired
-    private  CityRepository cityRepository;
+    private CityRepository cityRepository;
 
     @Test
-    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAll() {
         cityRepository.findAll();
     }
 
     @Test
-    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
     public void testFindByNameAndCountryNameAllIgnoringCaseExactCase() {
         City actual = cityRepository.findByNameAndCountryNameAllIgnoringCase("Zaporizhiya", "Ukraine");
         assertEquals(5, (long) actual.getId());
     }
 
     @Test
-    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
     public void testFindByNameAndCountryNameAllIgnoringCaseUpperCase() {
         City actual = cityRepository.findByNameAndCountryNameAllIgnoringCase("zaporizhiya", "UKRAINE");
         assertEquals(5, (long) actual.getId());
     }
 
     @Test
-    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest_testFindAndChangeCityType.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testFindAndChangeCityType() {
         City city = cityRepository.findByNameAndCountryNameAllIgnoringCase("zaporizhiya", "UKRAINE");
@@ -64,7 +60,6 @@ public class CityRepositoryTest {
         cityRepository.save(city);
     }
 
-    @DatabaseSetup("/com/mygaienko/practice/dao/CityRepositoryTest.xml")
     @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest_testDelete.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     @Test
     public void testDeleteVinnutsiya() {
