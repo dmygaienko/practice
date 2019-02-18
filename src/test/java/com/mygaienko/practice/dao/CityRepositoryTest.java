@@ -7,6 +7,9 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import com.mygaienko.practice.Application;
 import com.mygaienko.practice.model.City;
 import com.mygaienko.practice.model.CityType;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import javax.persistence.EntityManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,6 +38,9 @@ public class CityRepositoryTest {
 
     @Autowired
     private CityRepository cityRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @ExpectedDatabase(value = "/com/mygaienko/practice/dao/CityRepositoryTest.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
@@ -67,12 +75,19 @@ public class CityRepositoryTest {
     }
 
     @Test
+    @Ignore
     public void testSaveNewCity() {
         City city = new City();
         city.setCityType(CityType.CITY_TYPE3);
         city.setName("testName");
         city.setCountryName("testCountryName");
         cityRepository.save(city);
+
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+//        Object singleResult = auditReader.createQuery().forEntitiesAtRevision(City.class, 1).getResultList();
+        Object singleResult = auditReader.findRevision(City.class, 1);
+
+        System.out.println(singleResult);
     }
 
 }
