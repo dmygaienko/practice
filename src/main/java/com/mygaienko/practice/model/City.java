@@ -1,8 +1,9 @@
 package com.mygaienko.practice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mygaienko.practice.model.listener.CityListener;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * Created by mygadmy on 03/12/15.
  */
 @Entity
+@Audited
 @EntityListeners(CityListener.class)
 public class City implements Serializable {
 
@@ -25,6 +27,7 @@ public class City implements Serializable {
     @Column(name = "country_name")
     private String countryName;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @JsonBackReference
     @ManyToOne
     @JoinColumns({

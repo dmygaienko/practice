@@ -66,4 +66,13 @@ public class CityRepositoryTest {
         cityRepository.deleteById((long) 5);
     }
 
+    @Test
+    public void testSaveNewCity() {
+        City city = new City();
+        city.setCityType(CityType.CITY_TYPE3);
+        city.setName("testName");
+        city.setCountryName("testCountryName");
+        cityRepository.save(city);
+    }
+
 }
