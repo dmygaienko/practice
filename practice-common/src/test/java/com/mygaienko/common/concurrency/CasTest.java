@@ -6,7 +6,7 @@ import org.springframework.util.StopWatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
 public class CasTest {
@@ -15,13 +15,13 @@ public class CasTest {
     public void testAtomicInteger() throws InterruptedException {
         StopWatch stopWatch = new StopWatch();
 
-        AtomicInteger atomicInteger = new AtomicInteger();
+        AtomicLong atomicInteger = new AtomicLong();
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
         stopWatch.start();
-        for (int i = 0; i < 100000; i++) {
-            int finalI = i;
+        for (long i = 0; i < 1000000; i++) {
+            long finalI = i;
             executorService.execute(() -> atomicInteger.addAndGet(finalI));
         }
 
@@ -41,8 +41,8 @@ public class CasTest {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
         stopWatch.start();
-        for (int i = 0; i < 100000; i++) {
-            int finalI = i;
+        for (long i = 0; i < 1000000; i++) {
+            long finalI = i;
             executorService.execute(() -> longAdder.add(finalI));
         }
 
