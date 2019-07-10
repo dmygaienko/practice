@@ -12,8 +12,11 @@ public class ConcurrentHashMapTest {
     public void test() throws InterruptedException {
         ConcurrentMap<Long, Long> map = new ConcurrentHashMap<>();
 
-        for (int i = 0; i < 20000; i++) {
+        for (int i = 0; i < 200; i++) {
             long finalI = i;
+            if (i % 20 == 0) {
+                executorService.execute(() -> System.out.println(map));
+            }
             executorService.execute(() -> map.compute(finalI, this::add));
         }
 
