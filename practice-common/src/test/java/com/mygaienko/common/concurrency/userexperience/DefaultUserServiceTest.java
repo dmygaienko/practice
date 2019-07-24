@@ -144,4 +144,20 @@ public class DefaultUserServiceTest {
         assertEquals(12, userService.getLevel(1));
     }
 
+    @Test
+    public void test10000ExpInParallelToTwoUsers() throws ExecutionException, InterruptedException {
+        CompletableFuture[] futures = new CompletableFuture[10000];
+        for (int i = 0; i < 10000; i++) {
+            int finalI = i;
+            futures[i] = (CompletableFuture.runAsync(() -> userService.addExperience(finalI % 2 + 1, 2), executorService));
+        }
+        CompletableFuture.allOf(futures).get();
+
+        assertEquals(10000, userService.getExperience(1));
+        assertEquals(11, userService.getLevel(1));
+
+        assertEquals(10000, userService.getExperience(2));
+        assertEquals(11, userService.getLevel(2));
+    }
+
 }
