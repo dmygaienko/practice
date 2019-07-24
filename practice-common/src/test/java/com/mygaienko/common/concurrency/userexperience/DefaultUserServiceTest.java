@@ -49,10 +49,51 @@ public class DefaultUserServiceTest {
     }
 
     @Test
-    public void test() {
+    public void testSimpleAdd() {
         userService.addExperience(1, 300);
         assertEquals(300, userService.getExperience(1));
         assertEquals(3, userService.getLevel(1));
+    }
+
+    @Test
+    public void test0lvlLowestExp0() {
+        userService.addExperience(1, 0);
+        assertEquals(0, userService.getExperience(1));
+        assertEquals(0, userService.getLevel(1));
+    }
+
+    @Test
+    public void test0lvlLowestExp1() {
+        userService.addExperience(1, 1);
+        assertEquals(1, userService.getExperience(1));
+        assertEquals(0, userService.getLevel(1));
+    }
+
+    @Test
+    public void test0lvlPeakExp() {
+        userService.addExperience(1, 99);
+        assertEquals(99, userService.getExperience(1));
+        assertEquals(0, userService.getLevel(1));
+    }
+
+    public void test1lvlLowestExp0() {
+        userService.addExperience(1, 100);
+        assertEquals(100, userService.getExperience(1));
+        assertEquals(1, userService.getLevel(1));
+    }
+
+    @Test
+    public void test1lvlLowestExp1() {
+        userService.addExperience(1, 101);
+        assertEquals(101, userService.getExperience(1));
+        assertEquals(1, userService.getLevel(1));
+    }
+
+    @Test
+    public void test1lvlPeakExp() {
+        userService.addExperience(1, 199);
+        assertEquals(199, userService.getExperience(1));
+        assertEquals(1, userService.getLevel(1));
     }
 
     @Test
@@ -90,4 +131,17 @@ public class DefaultUserServiceTest {
             runnable.run();
         };
     }
+
+    @Test
+    public void test10000ExpInParallel() throws ExecutionException, InterruptedException {
+        CompletableFuture[] futures = new CompletableFuture[10000];
+        for (int i = 0; i < 10000; i++) {
+            futures[i] = (CompletableFuture.runAsync(() -> userService.addExperience(1, 2), executorService));
+        }
+        CompletableFuture.allOf(futures).get();
+
+        assertEquals(20000, userService.getExperience(1));
+        assertEquals(12, userService.getLevel(1));
+    }
+
 }

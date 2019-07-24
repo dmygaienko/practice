@@ -62,7 +62,7 @@ public class DefaultUserService implements UserService {
                 .filter(entry -> entry.getValue() > experience)
                 .map(entry -> entry.getKey() - 1)
                 .findFirst()
-                .orElse(0L);
+                .orElse(12L);
     }
 
 }
