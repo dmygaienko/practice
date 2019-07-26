@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -24,12 +25,6 @@ public class DefaultUserServiceTest {
 
     @Mock
     private ConfigProvider configProvider;
-
-    @Mock
-    private Subscriber subscriber;
-
-    @Mock
-    private Subscriber subscriberTwo;
 
     private List<Subscriber> subscribers = new ArrayList<>();
 
@@ -58,17 +53,21 @@ public class DefaultUserServiceTest {
         ));
 
         userService = new DefaultUserService(configProvider);
-        addSubscriber(subscriber);
-        addSubscriber(subscriberTwo);
+        addSubscriber();
+        addSubscriber();
     }
 
-    private void addSubscriber(Subscriber subscriber) {
+    private void addSubscriber() {
+        Subscriber subscriber = Mockito.mock(Subscriber.class);
         userService.addSubscriber(subscriber);
         subscribers.add(subscriber);
     }
 
     @Test
     public void testSimpleAdd() {
+        addSubscriber();
+        addSubscriber();
+
         userService.addExperience(1, 300);
         assertEquals(300, userService.getExperience(1));
         assertEquals(3, userService.getLevel(1));
