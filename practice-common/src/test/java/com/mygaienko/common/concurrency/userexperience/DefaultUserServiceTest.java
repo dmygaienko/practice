@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,6 +82,10 @@ public class DefaultUserServiceTest {
     }
 
     private void verifySubscribersNotified(Long userIdFrom, Long userIdTo, Long levelFrom, Long levelTo) {
+       verifySubscribersNotified(userIdFrom, userIdTo, levelFrom, levelTo, subscribers);
+    }
+
+    private void verifySubscribersNotified(Long userIdFrom, Long userIdTo, Long levelFrom, Long levelTo, List<Subscriber> subscribers) {
         LongStream.rangeClosed(userIdFrom, userIdTo)
                 .forEach(userId ->
                         LongStream.rangeClosed(levelFrom, levelTo)
@@ -100,7 +106,7 @@ public class DefaultUserServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNullSubcriber() {
+    public void testNullSubscriber() {
         userService.addSubscriber(null);
     }
 
@@ -215,6 +221,46 @@ public class DefaultUserServiceTest {
         assertEquals(11, userService.getLevel(2));
 
         verifySubscribersNotified(1L, 2L, 1L, 11L);
+    }
+
+    @Test
+    public void test10000ExpInParallelToTwoUsersAdditionalSubscribers() throws ExecutionException, InterruptedException {
+        CompletableFuture[] futures = new CompletableFuture[10000];
+
+        Subscriber additionalSubscriber = null;
+        for (int i = 0; i < 10000; i++) {
+            int finalI = i;
+
+            if (finalI == 2500) {
+                additionalSubscriber = Mockito.mock(Subscriber.class);
+                waitForLevel(Arrays.asList(1L, 2L), 3L);
+                userService.addSubscriber(additionalSubscriber);
+            }
+            futures[i] = (CompletableFuture.runAsync(() -> userService.addExperience(finalI % 2 + 1, 2), executorService));
+        }
+        CompletableFuture.allOf(futures).get();
+
+        assertEquals(10000, userService.getExperience(1));
+        assertEquals(11, userService.getLevel(1));
+
+        assertEquals(10000, userService.getExperience(2));
+        assertEquals(11, userService.getLevel(2));
+
+        verifySubscribersNotified(1L, 2L, 1L, 11L);
+        verifySubscribersNotified(1L, 2L, 4L, 11L, singletonList(additionalSubscriber));
+    }
+
+    private void waitForLevel(List<Long> userIds, long level) {
+        for (Long userId : userIds) {
+            while (userService.getLevel(userId) < level) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 
 }
