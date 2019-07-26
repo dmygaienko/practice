@@ -1,7 +1,5 @@
 package com.mygaienko.common.concurrency.userexperience;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,14 +8,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.LongStream;
 
-@RequiredArgsConstructor
 public class DefaultUserService implements UserService {
 
     private List<Subscriber> subscribers = new CopyOnWriteArrayList<>();
 
     private Map<Long, UserInfo> userInfos = new ConcurrentHashMap<>();
 
-    private final ConfigProvider configProvider;
+    private final TreeMap<Long, Long> sortedConfigs;
+
+    public DefaultUserService(ConfigProvider configProvider) {
+        this.sortedConfigs = new TreeMap<>(configProvider.getConfigs());
+    }
 
     @Override
     public long getLevel(long userId) {
@@ -92,7 +93,7 @@ public class DefaultUserService implements UserService {
     }
 
     private long computeLevel(long previousLevel, long experience) {
-        return new TreeMap<>(configProvider.getConfigs())
+        return sortedConfigs
                 .tailMap(previousLevel)
                 .entrySet()
                 .stream()

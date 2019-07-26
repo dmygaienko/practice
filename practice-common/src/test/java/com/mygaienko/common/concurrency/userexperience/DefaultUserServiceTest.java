@@ -231,9 +231,9 @@ public class DefaultUserServiceTest {
         for (int i = 0; i < 10000; i++) {
             int finalI = i;
 
-            if (finalI == 2500) {
+            if (finalI == 4998) {
                 additionalSubscriber = Mockito.mock(Subscriber.class);
-                waitForLevel(Arrays.asList(1L, 2L), 3L);
+                waitForLevel(Arrays.asList(1L, 2L), 9L);
                 userService.addSubscriber(additionalSubscriber);
             }
             futures[i] = (CompletableFuture.runAsync(() -> userService.addExperience(finalI % 2 + 1, 2), executorService));
@@ -247,14 +247,14 @@ public class DefaultUserServiceTest {
         assertEquals(11, userService.getLevel(2));
 
         verifySubscribersNotified(1L, 2L, 1L, 11L);
-        verifySubscribersNotified(1L, 2L, 4L, 11L, singletonList(additionalSubscriber));
+        verifySubscribersNotified(1L, 2L, 10L, 11L, singletonList(additionalSubscriber));
     }
 
     private void waitForLevel(List<Long> userIds, long level) {
         for (Long userId : userIds) {
             while (userService.getLevel(userId) < level) {
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
