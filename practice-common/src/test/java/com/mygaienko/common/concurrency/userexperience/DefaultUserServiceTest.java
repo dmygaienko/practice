@@ -74,7 +74,7 @@ public class DefaultUserServiceTest {
         assertEquals(300, userService.getExperience(1));
         assertEquals(3, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 3L);
+        verifySubscribersNotified(1L, 1L, 3L);
     }
 
     private void verifySubscribersNotified(Long userId, Long levelFrom, Long levelTo) {
@@ -82,7 +82,7 @@ public class DefaultUserServiceTest {
     }
 
     private void verifySubscribersNotified(Long userIdFrom, Long userIdTo, Long levelFrom, Long levelTo) {
-       verifySubscribersNotified(userIdFrom, userIdTo, levelFrom, levelTo, subscribers);
+        verifySubscribersNotified(userIdFrom, userIdTo, levelFrom, levelTo, subscribers);
     }
 
     private void verifySubscribersNotified(Long userIdFrom, Long userIdTo, Long levelFrom, Long levelTo, List<Subscriber> subscribers) {
@@ -129,7 +129,7 @@ public class DefaultUserServiceTest {
         assertEquals(100, userService.getExperience(1));
         assertEquals(1, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 1L);
+        verifySubscribersNotified(1L, 1L, 1L);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class DefaultUserServiceTest {
         assertEquals(101, userService.getExperience(1));
         assertEquals(1, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 1L);
+        verifySubscribersNotified(1L, 1L, 1L);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class DefaultUserServiceTest {
         assertEquals(199, userService.getExperience(1));
         assertEquals(1, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 1L);
+        verifySubscribersNotified(1L, 1L, 1L);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class DefaultUserServiceTest {
         assertEquals(3300, userService.getExperience(1));
         assertEquals(8, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 8L);
+        verifySubscribersNotified(1L, 1L, 8L);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class DefaultUserServiceTest {
         assertEquals(3300, userService.getExperience(1));
         assertEquals(8, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 8L);
+        verifySubscribersNotified(1L, 1L, 8L);
     }
 
     private Runnable inParallel(CountDownLatch latch, Runnable runnable) {
@@ -202,7 +202,7 @@ public class DefaultUserServiceTest {
         assertEquals(20000, userService.getExperience(1));
         assertEquals(12, userService.getLevel(1));
 
-        verifySubscribersNotified(1L,1L, 12L);
+        verifySubscribersNotified(1L, 1L, 12L);
     }
 
     @Test
