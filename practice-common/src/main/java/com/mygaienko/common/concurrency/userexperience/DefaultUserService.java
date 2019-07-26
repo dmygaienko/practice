@@ -21,6 +21,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public long getLevel(long userId) {
+        validateUserId(userId);
         return getUserInfo(userId)
                 .map(UserInfo::getLevel)
                 .orElse(0L);
@@ -32,18 +33,34 @@ public class DefaultUserService implements UserService {
 
     @Override
     public long getExperience(long userId) {
+        validateUserId(userId);
         return getUserInfo(userId)
                 .map(UserInfo::getExperience)
                 .orElse(0L);
     }
 
+    private void validateUserId(long userId) {
+        if (userId < 1) {
+            throw new IllegalArgumentException("User id should be positive");
+        }
+    }
+
     @Override
     public void addSubscriber(Subscriber subscriber) {
+        validateSubscriber(subscriber);
         subscribers.add(subscriber);
+    }
+
+    private void validateSubscriber(Subscriber subscriber) {
+        if (subscriber == null) {
+            throw new IllegalArgumentException("Subscriber should be non null");
+        }
     }
 
     @Override
     public void addExperience(long userId, long experience) {
+        validateUserId(userId);
+        validateExperience(experience);
         userInfos.compute(userId,
                 (existingUserId, userInfo) -> {
                     long newExperience = (userInfo == null ? 0 : userInfo.getExperience()) + experience;
@@ -55,6 +72,12 @@ public class DefaultUserService implements UserService {
                             newLevel,
                             newExperience);
                 });
+    }
+
+    private void validateExperience(long experience) {
+        if (experience < 1) {
+            throw new IllegalArgumentException("Experience should be positive");
+        }
     }
 
     private void notifyAll(long userId, long previousLevel, long newLevel) {

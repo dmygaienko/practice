@@ -89,11 +89,19 @@ public class DefaultUserServiceTest {
                                 ));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test0lvlLowestExp0() {
         userService.addExperience(1, 0);
-        assertEquals(0, userService.getExperience(1));
-        assertEquals(0, userService.getLevel(1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeLevel() {
+        userService.addExperience(-1, 100);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullSubcriber() {
+        userService.addSubscriber(null);
     }
 
     @Test
