@@ -152,11 +152,12 @@ public class DefaultUserServiceTest {
     public void testThreeAddsInParallel() throws ExecutionException, InterruptedException {
         CountDownLatch latch = new CountDownLatch(3);
 
-        CompletableFuture.allOf(
-                CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 300)), executorService),
-                CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 1000)), executorService),
-                CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 2000)), executorService)).
-                get();
+        CompletableFuture
+                .allOf(
+                        CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 300)), executorService),
+                        CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 1000)), executorService),
+                        CompletableFuture.runAsync(inParallel(latch, () -> userService.addExperience(1, 2000)), executorService))
+                .get();
 
         assertEquals(3300, userService.getExperience(1));
         assertEquals(8, userService.getLevel(1));
