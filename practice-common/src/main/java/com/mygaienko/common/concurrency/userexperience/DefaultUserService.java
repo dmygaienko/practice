@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.LongStream;
 
 @RequiredArgsConstructor
 public class DefaultUserService implements UserService {
@@ -46,12 +47,25 @@ public class DefaultUserService implements UserService {
         userInfos.compute(userId,
                 (existingUserId, userInfo) -> {
                     long newExperience = (userInfo == null ? 0 : userInfo.getExperience()) + experience;
-                    long level = computeLevel(userInfo == null ? 0 : userInfo.getLevel(), newExperience);
+                    long previousLevel = userInfo == null ? 0 : userInfo.getLevel();
+                    long newLevel = computeLevel(previousLevel, newExperience);
+                    notifyAll(userId, previousLevel, newLevel);
                     return new UserInfo(
                             userId,
-                            level,
+                            newLevel,
                             newExperience);
                 });
+    }
+
+    private void notifyAll(long userId, long previousLevel, long newLevel) {
+        if (newLevel <= previousLevel) {
+            return;
+        }
+
+        LongStream.rangeClosed(previousLevel + 1, newLevel)
+                .forEach(levelRaised ->
+                        subscribers
+                                .forEach(subscriber -> subscriber.notify(userId, levelRaised)));
     }
 
     private long computeLevel(long previousLevel, long experience) {

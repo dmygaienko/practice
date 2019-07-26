@@ -7,12 +7,16 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -20,6 +24,14 @@ public class DefaultUserServiceTest {
 
     @Mock
     private ConfigProvider configProvider;
+
+    @Mock
+    private Subscriber subscriber;
+
+    @Mock
+    private Subscriber subscriberTwo;
+
+    private List<Subscriber> subscribers = new ArrayList<>();
 
     private UserService userService;
 
@@ -46,6 +58,13 @@ public class DefaultUserServiceTest {
         ));
 
         userService = new DefaultUserService(configProvider);
+        addSubscriber(subscriber);
+        addSubscriber(subscriberTwo);
+    }
+
+    private void addSubscriber(Subscriber subscriber) {
+        userService.addSubscriber(subscriber);
+        subscribers.add(subscriber);
     }
 
     @Test
@@ -53,6 +72,18 @@ public class DefaultUserServiceTest {
         userService.addExperience(1, 300);
         assertEquals(300, userService.getExperience(1));
         assertEquals(3, userService.getLevel(1));
+
+        verifySubscribersNotified(1L, 1L, 1L, 3L);
+    }
+
+    private void verifySubscribersNotified(Long userIdFrom, Long userIdTo, Long levelFrom, Long levelTo) {
+        LongStream.rangeClosed(userIdFrom, userIdTo)
+                .forEach(userId ->
+                        LongStream.rangeClosed(levelFrom, levelTo)
+                                .forEach(levelRaised ->
+                                        subscribers
+                                                .forEach(subscriber -> verify(subscriber).notify(userId, levelRaised))
+                                ));
     }
 
     @Test
@@ -158,6 +189,8 @@ public class DefaultUserServiceTest {
 
         assertEquals(10000, userService.getExperience(2));
         assertEquals(11, userService.getLevel(2));
+
+        verifySubscribersNotified(1L, 2L, 1L, 11L);
     }
 
 }
