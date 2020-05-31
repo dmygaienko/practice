@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <single_table id="1" e1="e11_value" DTYPE="ETYPE"  />
+    <single_table id="2" e1="e21_value" DTYPE="ETYPE"  />
+    <single_table id="3" e1="e31_value" DTYPE="ETYPE"  />
+    <single_table id="10" f1="f10_value" DTYPE="FTYPE"  />
+
+</dataset>

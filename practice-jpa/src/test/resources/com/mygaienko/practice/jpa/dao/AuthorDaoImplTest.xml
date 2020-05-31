@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+    <bean_a id="1" name="beanAName1"/>
+    <bean_a id="2" name="beanAName2"/>
+    <bean_a id="3" name="beanAName3"/>
+
+    <bean_b id="1" code="beanBName1"/>
+    <bean_b id="2" code="beanBName2"/>
+    <bean_b id="3" code="beanBName3"/>
+
+    <Author id="1" name="Author1" DATE_OF_BIRTH="1990-11-09" bean_a_id="1" bean_b_id="1" />
+    <Author id="2" name="Author2" DATE_OF_BIRTH="1990-11-09" bean_a_id="2" bean_b_id="2" />
+    <Author id="3" name="Author3" DATE_OF_BIRTH="1990-11-09" bean_a_id="3" bean_b_id="3" />
+
+    <author_address author_id="1" street="1" number="1" flat="1"/>
+    <author_address author_id="2" street="2" number="2" flat="2"/>
+    <author_address author_id="3" street="3" number="3" flat="3"/>
+
+</dataset>

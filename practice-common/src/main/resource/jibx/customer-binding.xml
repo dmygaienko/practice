@@ -1,0 +1,34 @@
+<binding>
+    <mapping name="customer" class="com.mygaienko.common.jibx.Customer">
+
+   <!--     <structure name="person" field="person">
+            <value name="cust-num" field="customerNumber"/>
+            <value name="first-name" field="firstName"/>
+            <value name="last-name" field="lastName"/>
+        </structure>-->
+
+        <structure field="person"/>
+
+        <value name="street" field="street"/>
+        <value name="city" field="city"/>
+        <value name="state" field="state"/>
+        <value name="zip" field="zip" usage="optional"/>
+        <value name="phone" field="phone"/>
+    </mapping>
+
+    <mapping name="person" class="com.mygaienko.common.jibx.Person">
+        <collection name="addresses" field="addresses" item-type="com.mygaienko.common.jibx.Address" create-type="java.util.ArrayList"/>
+
+        <value name="cust-num" field="customerNumber"/>
+        <value name="first-name" field="firstName"/>
+        <value name="last-name" field="lastName"/>
+    </mapping>
+
+    <mapping name="address" class="com.mygaienko.common.jibx.Address">
+        <value name="street" field="street"/>
+        <value name="city" field="city"/>
+        <value name="state" field="state"/>
+    </mapping>
+</binding>
+
+

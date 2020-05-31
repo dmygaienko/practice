@@ -6,12 +6,29 @@
 
     <groupId>com.mygaienko</groupId>
     <artifactId>practice</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>practice-jpa</module>
+        <module>practice-elacticsearch</module>
+        <module>practice-cassandra</module>
+        <module>practice-mongodb</module>
+        <module>practice-cglib</module>
+        <module>practice-patterns</module>
+        <module>practice-spring-web</module>
+        <module>practice-aspectj</module>
+    </modules>
+
+    <properties>
+        <myNeo4jVersion>4.0.0.RELEASE</myNeo4jVersion>
+    </properties>
+
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.RELEASE</version>
+        <version>1.3.0.RELEASE</version>
     </parent>
     <dependencies>
         <!-- Spring Boot Starter dependencies -->
@@ -30,11 +47,17 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>5.0.4.Final</version>
         </dependency>
 
+
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-envers</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
         </dependency>
 
         <!-- others -->
@@ -63,13 +86,55 @@
             <version>1.2.1</version>
             <!--<scope>test</scope>-->
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
             <version>2.5.1</version>
             <!--<scope>test</scope>-->
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+        </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <name>Spring Releases</name>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+        <repository>
+            <id>neo4j</id>
+            <name>Neo4j</name>
+            <url>http://m2.neo4j.org/</url>
+        </repository>
+    </repositories>
 
 </project>
