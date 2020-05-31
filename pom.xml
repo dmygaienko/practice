@@ -15,6 +15,7 @@
         <module>practice-cassandra</module>
         <module>practice-mongodb</module>
         <module>practice-cglib</module>
+        <module>practice-common</module>
         <module>practice-patterns</module>
         <module>practice-spring-web</module>
         <module>practice-aspectj</module>
