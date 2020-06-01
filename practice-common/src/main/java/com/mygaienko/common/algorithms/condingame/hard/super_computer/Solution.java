@@ -3,6 +3,9 @@ package com.mygaienko.common.algorithms.condingame.hard.super_computer;
 import java.util.*;
 import java.io.*;
 import java.math.*;
+import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.Collections.singletonList;
 
 /**
  *
@@ -33,19 +36,58 @@ import java.math.*;
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
  **/
-class Solution {
+public class Solution {
 
     public static void main(String args[]) {
+        System.err.println("running");
         Scanner in = new Scanner(System.in);
         int N = in.nextInt();
+
+        TreeMap<Integer, List<Integer>> requests = new TreeMap<>();
         for (int i = 0; i < N; i++) {
-            int J = in.nextInt();
-            int D = in.nextInt();
+            int startDay = in.nextInt();
+            int duration = in.nextInt();
+            requests.compute(startDay, (k, v) -> (v == null) ? singletonList(duration) : concat(v, duration));
         }
+        System.err.println(requests);
+
+        LongAdder quantity = new LongAdder();
+        satisfyRequests(quantity, requests);
+
 
         // Write an answer using System.out.println()
         // To debug: System.err.println("Debug messages...");
 
-        System.out.println("answer");
+        System.out.println(quantity);
     }
+
+    private static void satisfyRequests(LongAdder quantity, TreeMap<Integer, List<Integer>> requests) {
+        satisfyRequest(quantity, true, requests.firstEntry(), requests);
+    }
+
+    private static void satisfyRequest(LongAdder quantity, boolean isOpen, Map.Entry<Integer, List<Integer>> requestDayEntry,
+                                       TreeMap<Integer, List<Integer>> requests) {
+        Integer day = requestDayEntry.getKey();
+        Map.Entry<Integer, List<Integer>> nextRequestDayEntry = requests.higherEntry(day);
+
+        boolean nextDayOpen = false;
+        if (nextRequestDayEntry != null) {
+            if (isOpen && requestDayEntry.getValue().stream()
+                    .anyMatch(duration -> day + duration <= nextRequestDayEntry.getKey())) {
+                quantity.increment();
+                nextDayOpen = true;
+            }
+
+            satisfyRequest(quantity, nextDayOpen, nextRequestDayEntry, requests);
+        } else {
+            quantity.increment();
+        }
+    }
+
+    private static List<Integer> concat(List<Integer> prevDurations, int duration) {
+        List<Integer> durations = new ArrayList<>(prevDurations);
+        durations.add(duration);
+        return durations;
+    }
+
 }
