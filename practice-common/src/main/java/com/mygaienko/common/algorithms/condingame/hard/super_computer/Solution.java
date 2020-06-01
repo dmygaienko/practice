@@ -6,6 +6,7 @@ import java.math.*;
 import java.util.concurrent.atomic.LongAdder;
 
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.naturalOrder;
 
 /**
  *
@@ -62,26 +63,35 @@ public class Solution {
     }
 
     private static void satisfyRequests(LongAdder quantity, TreeMap<Integer, List<Integer>> requests) {
-        satisfyRequest(quantity, true, requests.firstEntry(), requests);
+        Map.Entry<Integer, List<Integer>> startDayEntry = requests.firstEntry();
+        satisfyRequest(quantity, startDayEntry.getKey(), startDayEntry, requests);
     }
 
-    private static void satisfyRequest(LongAdder quantity, boolean isOpen, Map.Entry<Integer, List<Integer>> requestDayEntry,
+    private static void satisfyRequest(LongAdder quantity, Integer nextOpenDay, Map.Entry<Integer, List<Integer>> requestDayEntry,
                                        TreeMap<Integer, List<Integer>> requests) {
         Integer day = requestDayEntry.getKey();
+
+        boolean isOpen = false;
+        if (day >= nextOpenDay) {
+            quantity.increment();
+            isOpen = true;
+        }
+
         Map.Entry<Integer, List<Integer>> nextRequestDayEntry = requests.higherEntry(day);
 
-        boolean nextDayOpen = false;
         if (nextRequestDayEntry != null) {
-            if (isOpen && requestDayEntry.getValue().stream()
-                    .anyMatch(duration -> day + duration <= nextRequestDayEntry.getKey())) {
-                quantity.increment();
-                nextDayOpen = true;
+            if (isOpen) {
+                nextOpenDay = findNextOpenDay(requestDayEntry, day, nextRequestDayEntry);
             }
 
-            satisfyRequest(quantity, nextDayOpen, nextRequestDayEntry, requests);
-        } else {
-            quantity.increment();
+            satisfyRequest(quantity, nextOpenDay, nextRequestDayEntry, requests);
         }
+    }
+
+    private static Integer findNextOpenDay(Map.Entry<Integer, List<Integer>> requestDayEntry, Integer day, Map.Entry<Integer, List<Integer>> nextRequestDayEntry) {
+        return day + requestDayEntry.getValue().stream()
+                .min(naturalOrder())
+                .get();
     }
 
     private static List<Integer> concat(List<Integer> prevDurations, int duration) {
