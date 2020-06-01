@@ -44,11 +44,11 @@ public class Solution {
         Scanner in = new Scanner(System.in);
         int N = in.nextInt();
 
-        TreeMap<Integer, List<Integer>> requests = new TreeMap<>();
+        TreeMap<Integer, Integer> requests = new TreeMap<>();
         for (int i = 0; i < N; i++) {
             int startDay = in.nextInt();
             int duration = in.nextInt();
-            requests.compute(startDay, (k, v) -> (v == null) ? singletonList(duration) : concat(v, duration));
+            requests.compute(startDay, (k, v) -> (v == null) ? duration : Math.min(v, duration));
         }
         System.err.println(requests);
 
@@ -62,13 +62,13 @@ public class Solution {
         System.out.println(quantity);
     }
 
-    private static void satisfyRequests(LongAdder quantity, TreeMap<Integer, List<Integer>> requests) {
-        Map.Entry<Integer, List<Integer>> startDayEntry = requests.firstEntry();
+    private static void satisfyRequests(LongAdder quantity, TreeMap<Integer, Integer> requests) {
+        Map.Entry<Integer, Integer> startDayEntry = requests.firstEntry();
         satisfyRequest(quantity, startDayEntry.getKey(), startDayEntry, requests);
     }
 
-    private static void satisfyRequest(LongAdder quantity, Integer nextOpenDay, Map.Entry<Integer, List<Integer>> requestDayEntry,
-                                       TreeMap<Integer, List<Integer>> requests) {
+    private static void satisfyRequest(LongAdder quantity, Integer nextOpenDay, Map.Entry<Integer, Integer> requestDayEntry,
+                                       TreeMap<Integer, Integer> requests) {
         Integer day = requestDayEntry.getKey();
 
         boolean isOpen = false;
@@ -77,27 +77,15 @@ public class Solution {
             isOpen = true;
         }
 
-        Map.Entry<Integer, List<Integer>> nextRequestDayEntry = requests.higherEntry(day);
+        Map.Entry<Integer, Integer> nextRequestDayEntry = requests.higherEntry(day);
 
         if (nextRequestDayEntry != null) {
             if (isOpen) {
-                nextOpenDay = findNextOpenDay(requestDayEntry, day, nextRequestDayEntry);
+                nextOpenDay = day + requestDayEntry.getValue();
             }
 
             satisfyRequest(quantity, nextOpenDay, nextRequestDayEntry, requests);
         }
-    }
-
-    private static Integer findNextOpenDay(Map.Entry<Integer, List<Integer>> requestDayEntry, Integer day, Map.Entry<Integer, List<Integer>> nextRequestDayEntry) {
-        return day + requestDayEntry.getValue().stream()
-                .min(naturalOrder())
-                .get();
-    }
-
-    private static List<Integer> concat(List<Integer> prevDurations, int duration) {
-        List<Integer> durations = new ArrayList<>(prevDurations);
-        durations.add(duration);
-        return durations;
     }
 
 }
